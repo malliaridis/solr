@@ -445,14 +445,9 @@ public class OverseerTaskProcessor implements Runnable, Closeable {
 
   public static List<String> getSortedElectionNodes(SolrZkClient zk, String path)
       throws KeeperException, InterruptedException {
-    List<String> children = null;
-    try {
-      children = zk.getChildren(path, null, true);
-      LeaderElector.sortSeqs(children);
-      return children;
-    } catch (Exception e) {
-      throw e;
-    }
+    List<String> children = zk.getChildren(path, null, true);
+    LeaderElector.sortSeqs(children);
+    return children;
   }
 
   public static String getLeaderNode(SolrZkClient zkClient)

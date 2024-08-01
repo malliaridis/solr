@@ -2344,8 +2344,6 @@ public abstract class SolrTestCaseJ4 extends SolrTestCase {
         props.store(writer, null);
       }
       return tempSolrHome.toString();
-    } catch (RuntimeException e) {
-      throw e;
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

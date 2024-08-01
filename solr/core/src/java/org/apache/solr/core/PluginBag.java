@@ -506,7 +506,7 @@ public class PluginBag<T> implements AutoCloseable {
       return lazyInst;
     }
 
-    private synchronized boolean createInst() {
+    private synchronized boolean createInst() throws SolrException {
       if (lazyInst != null) return false;
       if (log.isInfoEnabled()) {
         log.info("Going to create a new {} with {} ", pluginMeta.getCleanTag(), pluginInfo);
@@ -514,14 +514,8 @@ public class PluginBag<T> implements AutoCloseable {
 
       @SuppressWarnings({"unchecked"})
       Class<T> clazz = (Class<T>) pluginMeta.clazz;
-      T localInst = null;
-      try {
-        localInst =
-            SolrCore.createInstance(
-                pluginInfo.className, clazz, pluginMeta.getCleanTag(), null, resourceLoader);
-      } catch (SolrException e) {
-        throw e;
-      }
+      T localInst = SolrCore.createInstance(
+            pluginInfo.className, clazz, pluginMeta.getCleanTag(), null, resourceLoader);
       initInstance(localInst, pluginInfo);
       if (localInst instanceof SolrCoreAware) {
         SolrResourceLoader.assertAwareCompatibility(SolrCoreAware.class, localInst);

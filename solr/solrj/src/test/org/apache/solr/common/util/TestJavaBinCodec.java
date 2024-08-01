@@ -200,8 +200,6 @@ public class TestJavaBinCodec extends SolrTestCaseJ4 {
       List<Object> unmarshaledObj = (List<Object>) javabin.unmarshal(is);
       List<Object> matchObj = generateAllDataTypes();
       compareObjects(unmarshaledObj, matchObj);
-    } catch (IOException e) {
-      throw e;
     }
   }
 
@@ -244,8 +242,6 @@ public class TestJavaBinCodec extends SolrTestCaseJ4 {
       SolrDocument sdoc = (SolrDocument) javabin.unmarshal(is);
       SolrDocument matchSolrDoc = generateSolrDocumentWithChildDocs();
       assertTrue(compareSolrDocument(sdoc, matchSolrDoc));
-    } catch (IOException e) {
-      throw e;
     }
   }
 

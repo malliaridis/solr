@@ -109,8 +109,6 @@ class ShardLeaderElectionContextBase extends ElectionContext {
           List<Op> ops =
               List.of(Op.check(parent, leaderZkNodeParentVersion), Op.delete(leaderPath, -1));
           zkClient.multi(ops, true);
-        } catch (InterruptedException e) {
-          throw e;
         } catch (IllegalArgumentException e) {
           log.error("Illegal argument", e);
         }
