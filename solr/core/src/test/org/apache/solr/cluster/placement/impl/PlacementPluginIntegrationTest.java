@@ -311,8 +311,6 @@ public class PlacementPluginIntegrationTest extends SolrCloudTestCase {
     assertTrue(rsp.isSuccess());
     cluster.waitForActiveCollection(SECONDARY_COLLECTION, 1, 3);
     DocCollection secondary = cloudManager.getClusterState().getCollection(SECONDARY_COLLECTION);
-    Set<String> secondaryNodes = new HashSet<>();
-    secondary.forEachReplica((shard, replica) -> secondaryNodes.add(replica.getNodeName()));
 
     rsp =
         CollectionAdminRequest.createCollection(COLLECTION, "conf", 2, 2)
