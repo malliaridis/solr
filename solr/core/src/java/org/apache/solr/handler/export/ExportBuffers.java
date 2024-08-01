@@ -110,17 +110,13 @@ class ExportBuffers {
               exportWriter.fillOutDocs(mergeIterator, buffer);
               count += (buffer.outDocsIndex + 1);
               // log.debug("--- filler count={}, exchange buffer from {}", count, buffer);
-              try {
-                long startBufferWait = System.nanoTime();
-                exchangeBuffers();
-                long endBufferWait = System.nanoTime();
-                if (log.isDebugEnabled()) {
-                  log.debug(
-                      "Waited for writer thread:{}",
-                      Long.toString(((endBufferWait - startBufferWait) / 1000000)));
-                }
-              } finally {
-
+              long startBufferWait = System.nanoTime();
+              exchangeBuffers();
+              long endBufferWait = System.nanoTime();
+              if (log.isDebugEnabled()) {
+                log.debug(
+                    "Waited for writer thread:{}",
+                    Long.toString(((endBufferWait - startBufferWait) / 1000000)));
               }
 
               buffer = getFillBuffer();
@@ -130,11 +126,8 @@ class ExportBuffers {
               }
             }
             buffer.outDocsIndex = Buffer.NO_MORE_DOCS;
-            try {
-              exchangeBuffers();
-            } finally {
+            exchangeBuffers();
 
-            }
             buffer = getFillBuffer();
             // log.debug("--- filler final got buffer {}", buffer);
           } catch (Throwable e) {

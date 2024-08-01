@@ -613,13 +613,7 @@ class FacetRangeProcessor extends FacetProcessor<FacetRange> {
   private void doSubs(SimpleOrderedMap bucket, int slot) throws IOException {
     // handle sub-facets for this bucket
     DocSet subBase = intersections[slot];
-    try {
-      processSubs(bucket, filters[slot], subBase, false, null);
-    } finally {
-      // subContext.base.decref();  // OFF-HEAP
-      // subContext.base = null;  // do not modify context after creation... there may be deferred
-      // execution (i.e. streaming)
-    }
+    processSubs(bucket, filters[slot], subBase, false, null);
   }
 
   // Essentially copied from SimpleFacets...

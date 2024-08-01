@@ -1340,27 +1340,17 @@ public class ReplicationHandler extends RequestHandlerBase
           if (reader != null
               && reader.getIndexCommit() != null
               && reader.getIndexCommit().getGeneration() != 1L) {
-            try {
-              if (replicateOnOptimize) {
-                Collection<IndexCommit> commits = DirectoryReader.listCommits(reader.directory());
-                for (IndexCommit ic : commits) {
-                  if (ic.getSegmentCount() == 1) {
-                    if (indexCommitPoint == null
-                        || indexCommitPoint.getGeneration() < ic.getGeneration())
-                      indexCommitPoint = ic;
-                  }
+            if (replicateOnOptimize) {
+              Collection<IndexCommit> commits = DirectoryReader.listCommits(reader.directory());
+              for (IndexCommit ic : commits) {
+                if (ic.getSegmentCount() == 1) {
+                  if (indexCommitPoint == null
+                      || indexCommitPoint.getGeneration() < ic.getGeneration())
+                    indexCommitPoint = ic;
                 }
-              } else {
-                indexCommitPoint = reader.getIndexCommit();
               }
-            } finally {
-              // We don't need to save commit points for replication, the SolrDeletionPolicy
-              // always saves the last commit point (and the last optimized commit point, if needed)
-              /*
-              if(indexCommitPoint != null){
-               core.getDeletionPolicy().saveCommitPoint(indexCommitPoint.getGeneration());
-              }
-              */
+            } else {
+              indexCommitPoint = reader.getIndexCommit();
             }
           }
 

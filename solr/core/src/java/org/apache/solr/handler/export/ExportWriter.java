@@ -708,55 +708,52 @@ public class ExportWriter implements SolrCore.RawWriter, Closeable {
 
   public MergeIterator getMergeIterator(
       List<LeafReaderContext> leaves, FixedBitSet[] bits, SortDoc sortDoc) throws IOException {
-    try {
-      long totalDocs = 0;
-      for (int i = 0; i < leaves.size(); i++) {
-        totalDocs += leaves.get(i).reader().maxDoc();
-      }
-
-      // Resize the priorityQueueSize down for small result sets.
-      this.priorityQueueSize = Math.min(this.priorityQueueSize, (int) (this.totalHits * 1.2));
-
-      if (log.isDebugEnabled()) {
-        log.debug("Total priority queue size {}:", this.priorityQueueSize);
-      }
-
-      int[] sizes = new int[leaves.size()];
-
-      int combineQueueSize = 0;
-      for (int i = 0; i < leaves.size(); i++) {
-        long maxDoc = leaves.get(i).reader().maxDoc();
-        int sortQueueSize =
-            Math.min(
-                (int) (((double) maxDoc / (double) totalDocs) * this.priorityQueueSize), batchSize);
-
-        // Protect against too small a queue size as well
-        if (sortQueueSize < 10) {
-          sortQueueSize = 10;
-        }
-
-        if (log.isDebugEnabled()) {
-          log.debug("Segment priority queue size {}:", sortQueueSize);
-        }
-
-        sizes[i] = sortQueueSize;
-        combineQueueSize += sortQueueSize;
-      }
-
-      if (log.isDebugEnabled()) {
-        log.debug("Combined priority queue size {}:", combineQueueSize);
-      }
-
-      SegmentIterator[] segmentIterators = new SegmentIterator[leaves.size()];
-      for (int i = 0; i < segmentIterators.length; i++) {
-        SortQueue sortQueue = new SortQueue(sizes[i], sortDoc.copy());
-        segmentIterators[i] =
-            new SegmentIterator(bits[i], leaves.get(i), sortQueue, sortDoc.copy());
-      }
-
-      return new MergeIterator(segmentIterators, sortDoc);
-    } finally {
+    long totalDocs = 0;
+    for (int i = 0; i < leaves.size(); i++) {
+      totalDocs += leaves.get(i).reader().maxDoc();
     }
+
+    // Resize the priorityQueueSize down for small result sets.
+    this.priorityQueueSize = Math.min(this.priorityQueueSize, (int) (this.totalHits * 1.2));
+
+    if (log.isDebugEnabled()) {
+      log.debug("Total priority queue size {}:", this.priorityQueueSize);
+    }
+
+    int[] sizes = new int[leaves.size()];
+
+    int combineQueueSize = 0;
+    for (int i = 0; i < leaves.size(); i++) {
+      long maxDoc = leaves.get(i).reader().maxDoc();
+      int sortQueueSize =
+          Math.min(
+              (int) (((double) maxDoc / (double) totalDocs) * this.priorityQueueSize), batchSize);
+
+      // Protect against too small a queue size as well
+      if (sortQueueSize < 10) {
+        sortQueueSize = 10;
+      }
+
+      if (log.isDebugEnabled()) {
+        log.debug("Segment priority queue size {}:", sortQueueSize);
+      }
+
+      sizes[i] = sortQueueSize;
+      combineQueueSize += sortQueueSize;
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("Combined priority queue size {}:", combineQueueSize);
+    }
+
+    SegmentIterator[] segmentIterators = new SegmentIterator[leaves.size()];
+    for (int i = 0; i < segmentIterators.length; i++) {
+      SortQueue sortQueue = new SortQueue(sizes[i], sortDoc.copy());
+      segmentIterators[i] =
+          new SegmentIterator(bits[i], leaves.get(i), sortQueue, sortDoc.copy());
+    }
+
+    return new MergeIterator(segmentIterators, sortDoc);
   }
 
   private static class SegmentIterator {

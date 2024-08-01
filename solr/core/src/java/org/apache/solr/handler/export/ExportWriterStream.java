@@ -182,7 +182,6 @@ public class ExportWriterStream extends TupleStream implements Expressible {
               res = Tuple.EXCEPTION(e, true);
             }
             break;
-          } finally {
           }
         }
       } catch (InterruptedException e) {
