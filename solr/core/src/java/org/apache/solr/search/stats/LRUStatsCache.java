@@ -108,12 +108,8 @@ public class LRUStatsCache extends ExactStatsCache {
     lruCacheInitArgs.computeIfAbsent(SolrCache.SIZE_PARAM, s -> String.valueOf(DEFAULT_MAX_SIZE));
     lruCacheInitArgs.computeIfAbsent(
         SolrCache.MAX_IDLE_TIME_PARAM, t -> String.valueOf(DEFAULT_MAX_IDLE_TIME));
-    Map<String, Object> map = new HashMap<>(lruCacheInitArgs);
-    map.put(CommonParams.NAME, "globalTermStats");
     currentGlobalTermStats.init(lruCacheInitArgs, null, null);
     currentGlobalTermStats.setState(SolrCache.State.LIVE);
-    map = new HashMap<>(lruCacheInitArgs);
-    map.put(CommonParams.NAME, "globalColStats");
     currentGlobalColStats.init(lruCacheInitArgs, null, null);
     currentGlobalColStats.setState(SolrCache.State.LIVE);
   }
