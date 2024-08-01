@@ -303,14 +303,6 @@ public class StreamExpressionTest extends SolrCloudTestCase {
             cluster.getZkServer().getZkAddress(), COLLECTIONORALIAS, streamContext);
 
     try {
-      StringBuilder buf = new StringBuilder();
-      for (String shardUrl : shardUrls) {
-        if (buf.length() > 0) {
-          buf.append(",");
-        }
-        buf.append(shardUrl);
-      }
-
       ModifiableSolrParams solrParams = new ModifiableSolrParams();
       solrParams.add("qt", "/stream");
       solrParams.add("expr", "sort(search(" + COLLECTIONORALIAS + "), by=\"a_i asc\")");
@@ -364,14 +356,6 @@ public class StreamExpressionTest extends SolrCloudTestCase {
             cluster.getZkServer().getZkAddress(), COLLECTIONORALIAS, streamContext);
 
     try {
-      StringBuilder buf = new StringBuilder();
-      for (String shardUrl : shardUrls) {
-        if (buf.length() > 0) {
-          buf.append(",");
-        }
-        buf.append(shardUrl);
-      }
-
       ModifiableSolrParams solrParams = new ModifiableSolrParams();
       solrParams.add("qt", "/stream");
       solrParams.add(
@@ -2173,14 +2157,6 @@ public class StreamExpressionTest extends SolrCloudTestCase {
             cluster.getZkServer().getZkAddress(), COLLECTIONORALIAS, streamContext);
 
     try {
-      StringBuilder buf = new StringBuilder();
-      for (String shardUrl : shardUrls) {
-        if (buf.length() > 0) {
-          buf.append(",");
-        }
-        buf.append(shardUrl);
-      }
-
       ModifiableSolrParams solrParams = new ModifiableSolrParams();
       solrParams.add("qt", "/stream");
       solrParams.add(
