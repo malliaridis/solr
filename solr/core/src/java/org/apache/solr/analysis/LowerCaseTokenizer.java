@@ -79,7 +79,7 @@ public final class LowerCaseTokenizer extends Tokenizer {
       CharacterUtils.newCharacterBuffer(IO_BUFFER_SIZE);
 
   @Override
-  public final boolean incrementToken() throws IOException {
+  public boolean incrementToken() throws IOException {
     clearAttributes();
     int length = 0;
     int start = -1; // this variable is always initialized
@@ -135,7 +135,7 @@ public final class LowerCaseTokenizer extends Tokenizer {
   }
 
   @Override
-  public final void end() throws IOException {
+  public void end() throws IOException {
     super.end();
     // set final offset
     offsetAtt.setOffset(finalOffset, finalOffset);

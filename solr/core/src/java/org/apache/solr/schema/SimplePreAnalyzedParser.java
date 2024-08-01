@@ -201,7 +201,7 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
     return baos.toByteArray();
   }
 
-  static final int charToNibble(char c) {
+  static int charToNibble(char c) {
     if (c >= '0' && c <= '9') {
       return c - '0';
     } else if (c >= 'a' && c <= 'f') {

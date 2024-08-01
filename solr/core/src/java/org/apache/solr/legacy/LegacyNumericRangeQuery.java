@@ -419,7 +419,7 @@ public final class LegacyNumericRangeQuery<T extends Number> extends MultiTermQu
   }
 
   @Override
-  public final boolean equals(final Object o) {
+  public boolean equals(final Object o) {
     if (o == this) return true;
     if (!super.equals(o)) return false;
     if (o instanceof LegacyNumericRangeQuery) {
@@ -515,7 +515,7 @@ public final class LegacyNumericRangeQuery<T extends Number> extends MultiTermQu
             LegacyNumericUtils.splitLongRange(
                 new LegacyNumericUtils.LongRangeBuilder() {
                   @Override
-                  public final void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
+                  public void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
                     rangeBounds.add(minPrefixCoded);
                     rangeBounds.add(maxPrefixCoded);
                   }
@@ -564,7 +564,7 @@ public final class LegacyNumericRangeQuery<T extends Number> extends MultiTermQu
             LegacyNumericUtils.splitIntRange(
                 new LegacyNumericUtils.IntRangeBuilder() {
                   @Override
-                  public final void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
+                  public void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
                     rangeBounds.add(minPrefixCoded);
                     rangeBounds.add(maxPrefixCoded);
                   }
@@ -592,7 +592,7 @@ public final class LegacyNumericRangeQuery<T extends Number> extends MultiTermQu
     }
 
     @Override
-    protected final BytesRef nextSeekTerm(BytesRef term) {
+    protected BytesRef nextSeekTerm(BytesRef term) {
       while (rangeBounds.size() >= 2) {
         nextRange();
 
@@ -609,7 +609,7 @@ public final class LegacyNumericRangeQuery<T extends Number> extends MultiTermQu
     }
 
     @Override
-    protected final AcceptStatus accept(BytesRef term) {
+    protected AcceptStatus accept(BytesRef term) {
       while (currentUpperBound == null || term.compareTo(currentUpperBound) > 0) {
         if (rangeBounds.isEmpty()) return AcceptStatus.END;
         // peek next sub-range, only seek if the current term is smaller than next lower bound

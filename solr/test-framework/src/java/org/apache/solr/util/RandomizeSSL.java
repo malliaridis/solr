@@ -150,7 +150,7 @@ public @interface RandomizeSSL {
     }
 
     /** Returns an SSLRandomizer suitable for the specified (test) class */
-    public static final SSLRandomizer getSSLRandomizerForClass(Class<?> clazz) {
+    public static SSLRandomizer getSSLRandomizerForClass(Class<?> clazz) {
 
       final SuppressSSL suppressSSL = clazz.getAnnotation(SuppressSSL.class);
       if (null != suppressSSL) {

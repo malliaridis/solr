@@ -58,7 +58,7 @@ public final class TimeZoneUtils {
    * @see #KNOWN_TIMEZONE_IDS
    * @see TimeZone
    */
-  public static final TimeZone getTimeZone(final String ID) {
+  public static TimeZone getTimeZone(final String ID) {
     if (null == ID) return null;
     if (KNOWN_TIMEZONE_IDS.contains(ID)) return TimeZone.getTimeZone(ID);
 

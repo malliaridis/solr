@@ -180,7 +180,7 @@ public final class ZookeeperInfoHandler extends RequestHandlerBase {
      * user is filtering by.
      */
     @SuppressWarnings("unchecked")
-    final boolean matchesStatusFilter(Map<String, Object> collectionState, Set<String> liveNodes) {
+    boolean matchesStatusFilter(Map<String, Object> collectionState, Set<String> liveNodes) {
 
       if (filterType != FilterType.status || filter == null || filter.length() == 0)
         return true; // no status filter, so all match
@@ -231,7 +231,7 @@ public final class ZookeeperInfoHandler extends RequestHandlerBase {
       return true;
     }
 
-    final boolean matches(final Pattern filter, final String collName) {
+    boolean matches(final Pattern filter, final String collName) {
       return filter.matcher(collName).matches();
     }
 

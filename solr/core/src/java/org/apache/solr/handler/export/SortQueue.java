@@ -60,7 +60,7 @@ final class SortQueue {
     this.maxSize = maxSize;
   }
 
-  private static final boolean lessThan(SortDoc t1, SortDoc t2) {
+  private static boolean lessThan(SortDoc t1, SortDoc t2) {
     return t1.lessThan(t2);
   }
 
@@ -88,7 +88,7 @@ final class SortQueue {
    *
    * @return the new 'top' element in the queue.
    */
-  public final SortDoc add(SortDoc element) {
+  public SortDoc add(SortDoc element) {
     size++;
     heap[size] = element;
     upHeap();
@@ -96,7 +96,7 @@ final class SortQueue {
   }
 
   /** Returns the least element of the PriorityQueue in constant time. */
-  public final SortDoc top() {
+  public SortDoc top() {
     // We don't need to check size here: if maxSize is 0,
     // then heap is length 2 array with both entries null.
     // If size is 0 then heap[1] is already null.
@@ -104,7 +104,7 @@ final class SortQueue {
   }
 
   /** Removes and returns the least element of the PriorityQueue in log(size) time. */
-  public final SortDoc pop() {
+  public SortDoc pop() {
     if (size > 0) {
       SortDoc result = heap[1]; // save first value
       heap[1] = heap[size]; // move last to first
@@ -136,25 +136,25 @@ final class SortQueue {
    *
    * @return the new 'top' element.
    */
-  public final SortDoc updateTop() {
+  public SortDoc updateTop() {
     downHeap();
     return heap[1];
   }
 
   /** Returns the number of elements currently stored in the PriorityQueue. */
-  public final int size() {
+  public int size() {
     return size;
   }
 
   /** Removes all entries from the PriorityQueue. */
-  public final void clear() {
+  public void clear() {
     for (int i = 0; i <= size; i++) {
       heap[i] = null;
     }
     size = 0;
   }
 
-  private final void upHeap() {
+  private void upHeap() {
     int i = size;
     SortDoc node = heap[i]; // save bottom node
     int j = i >>> 1;
@@ -166,7 +166,7 @@ final class SortQueue {
     heap[i] = node; // install saved node
   }
 
-  private final void downHeap() {
+  private void downHeap() {
     int i = 1;
     SortDoc node = heap[i]; // save top node
     int j = i << 1; // find smaller child

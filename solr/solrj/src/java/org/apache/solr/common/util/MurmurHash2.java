@@ -84,7 +84,7 @@ public final class MurmurHash2 {
    * @param len length of the array elements to hash
    * @return 32 bit hash of the given array
    */
-  public static final int hash32(final byte[] data, int offset, int len) {
+  public static int hash32(final byte[] data, int offset, int len) {
     return MurmurHash2.hash(data, 0x9747b28c, offset, len);
   }
 
