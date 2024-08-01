@@ -396,7 +396,7 @@ public class JettySolrRunner {
 
       debugFilter = root.addFilter(DebugFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
       for (Map.Entry<Class<? extends Filter>, String> entry : config.extraFilters.entrySet()) {
-          root.addFilter(entry.getKey(), entry.getValue(), EnumSet.of(DispatcherType.REQUEST));
+        root.addFilter(entry.getKey(), entry.getValue(), EnumSet.of(DispatcherType.REQUEST));
       }
 
       for (Map.Entry<ServletHolder, String> entry : config.extraServlets.entrySet()) {

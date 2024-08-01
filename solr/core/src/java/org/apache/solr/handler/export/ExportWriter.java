@@ -749,8 +749,7 @@ public class ExportWriter implements SolrCore.RawWriter, Closeable {
     SegmentIterator[] segmentIterators = new SegmentIterator[leaves.size()];
     for (int i = 0; i < segmentIterators.length; i++) {
       SortQueue sortQueue = new SortQueue(sizes[i], sortDoc.copy());
-      segmentIterators[i] =
-          new SegmentIterator(bits[i], leaves.get(i), sortQueue, sortDoc.copy());
+      segmentIterators[i] = new SegmentIterator(bits[i], leaves.get(i), sortQueue, sortDoc.copy());
     }
 
     return new MergeIterator(segmentIterators, sortDoc);

@@ -29,10 +29,8 @@ import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.AbstractUpdateRequest;
 import org.apache.solr.client.solrj.request.RequestWriter;
 import org.apache.solr.client.solrj.request.UpdateRequest;
-import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * A subclass of SolrExampleTests that explicitly uses the HTTP2 client and the streaming update

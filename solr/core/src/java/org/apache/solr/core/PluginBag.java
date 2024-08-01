@@ -514,8 +514,9 @@ public class PluginBag<T> implements AutoCloseable {
 
       @SuppressWarnings({"unchecked"})
       Class<T> clazz = (Class<T>) pluginMeta.clazz;
-      T localInst = SolrCore.createInstance(
-            pluginInfo.className, clazz, pluginMeta.getCleanTag(), null, resourceLoader);
+      T localInst =
+          SolrCore.createInstance(
+              pluginInfo.className, clazz, pluginMeta.getCleanTag(), null, resourceLoader);
       initInstance(localInst, pluginInfo);
       if (localInst instanceof SolrCoreAware) {
         SolrResourceLoader.assertAwareCompatibility(SolrCoreAware.class, localInst);
