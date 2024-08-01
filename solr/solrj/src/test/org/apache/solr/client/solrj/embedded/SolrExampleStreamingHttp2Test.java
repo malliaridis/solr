@@ -29,8 +29,10 @@ import org.apache.solr.client.solrj.impl.XMLResponseParser;
 import org.apache.solr.client.solrj.request.AbstractUpdateRequest;
 import org.apache.solr.client.solrj.request.RequestWriter;
 import org.apache.solr.client.solrj.request.UpdateRequest;
+import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrInputDocument;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * A subclass of SolrExampleTests that explicitly uses the HTTP2 client and the streaming update
@@ -63,7 +65,6 @@ public class SolrExampleStreamingHttp2Test extends SolrExampleTests {
 
   public void testWaitOptions() throws Exception {
     // SOLR-3903
-    final List<Throwable> failures = new ArrayList<>();
     final String serverUrl = getBaseUrl();
     try (Http2SolrClient http2Client = new Http2SolrClient.Builder().build();
         ConcurrentUpdateHttp2SolrClient concurrentClient =
@@ -87,10 +88,6 @@ public class SolrExampleStreamingHttp2Test extends SolrExampleTests {
       }
       concurrentClient.commit();
       concurrentClient.blockUntilFinished();
-    }
-
-    if (0 != failures.size()) {
-      assertNull(failures.size() + " Unexpected Exception, starting with...", failures.get(0));
     }
   }
 
