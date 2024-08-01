@@ -168,15 +168,12 @@ public class SelectStream extends TupleStream implements Expressible {
             }
           } catch (Throwable e) {
             Throwable t = e;
-            while (true) {
+            do {
               if (t instanceof EvaluatorException) {
                 throw new IOException(t);
               }
               t = t.getCause();
-              if (t == null) {
-                break;
-              }
-            }
+            } while (t != null);
             // it was not handled, so treat as a non-evaluator
           }
         }

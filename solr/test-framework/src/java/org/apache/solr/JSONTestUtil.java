@@ -292,10 +292,7 @@ class CollectionTester {
     int a = 0;
     int b = 0;
     pushPath(null);
-    for (; ; ) {
-      if (a >= expectedList.size() && b >= v.size()) {
-        break;
-      }
+    while (a < expectedList.size() || b < v.size()) {
 
       if (a >= expectedList.size() || b >= v.size()) {
         popPath();

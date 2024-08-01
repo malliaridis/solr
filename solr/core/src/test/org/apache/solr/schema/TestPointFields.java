@@ -4710,13 +4710,10 @@ public class TestPointFields extends SolrTestCaseJ4 {
     int number1 = random().nextInt();
     int number2;
     long inc1;
-    for (; ; ) {
+    do {
       number2 = random().nextInt();
       inc1 = (long) number2 - number1;
-      if (Math.abs(inc1) < (long) Integer.MAX_VALUE) {
-        break;
-      }
-    }
+    } while (Math.abs(inc1) >= (long) Integer.MAX_VALUE);
     assertU(adoc(sdoc("id", "1", field, String.valueOf(number1))));
     assertU(commit());
 
@@ -4736,13 +4733,10 @@ public class TestPointFields extends SolrTestCaseJ4 {
     long number1 = random().nextLong();
     long number2;
     BigInteger inc1;
-    for (; ; ) {
+    do {
       number2 = random().nextLong();
       inc1 = BigInteger.valueOf(number2).subtract(BigInteger.valueOf(number1));
-      if (inc1.abs().compareTo(BigInteger.valueOf(Long.MAX_VALUE)) <= 0) {
-        break;
-      }
-    }
+    } while (inc1.abs().compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0);
     assertU(adoc(sdoc("id", "1", field, String.valueOf(number1))));
     assertU(commit());
 

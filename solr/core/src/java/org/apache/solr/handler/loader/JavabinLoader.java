@@ -129,8 +129,7 @@ public class JavabinLoader extends ContentStreamLoader {
           }
         };
     FastInputStream in = FastInputStream.wrap(stream);
-    for (; ; ) {
-      if (in.peek() == -1) return;
+    while (in.peek() != -1) {
       try {
         update = new JavaBinUpdateRequestCodec().unmarshal(in, handler);
       } catch (EOFException e) {

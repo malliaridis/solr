@@ -179,7 +179,7 @@ interface SweepCountAware {
       // can (and must!) safely set `maxIdx` based on `activeSegCounts.length` (as opposed to
       // `countAccs.length`).
       final int maxIdx = activeSegCounts.length - 1;
-      for (; ; ) {
+      do {
         if (seen[segOrd]) {
           int i = maxIdx;
           int slot = toGlobal == null ? segOrd : (int) toGlobal.get(segOrd);
@@ -190,10 +190,7 @@ interface SweepCountAware {
             }
           } while (i-- > 0);
         }
-        if (--segOrd < 0) {
-          break;
-        }
-      }
+      } while (--segOrd >= 0);
     }
   }
 }

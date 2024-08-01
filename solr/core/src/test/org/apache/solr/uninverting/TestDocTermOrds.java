@@ -412,12 +412,9 @@ public class TestDocTermOrds extends SolrTestCase {
     if (VERBOSE) {
       System.out.println("TEST: TERMS:");
       te.seekExact(0);
-      while (true) {
+      do {
         System.out.println("  ord=" + te.ord() + " term=" + te.term().utf8ToString());
-        if (te.next() == null) {
-          break;
-        }
-      }
+      } while (te.next() != null);
     }
 
     SortedSetDocValues iter = dto.iterator(r);

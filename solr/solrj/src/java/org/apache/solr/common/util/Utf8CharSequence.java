@@ -60,8 +60,7 @@ public interface Utf8CharSequence extends CharSequence, Comparable<Utf8CharSeque
     byte[] buf = new byte[1024];
     int start = 0;
     int totalWritten = 0;
-    for (; ; ) {
-      if (totalWritten >= size()) break;
+    while (totalWritten < size()) {
       int sz = write(start, buf, 0);
       totalWritten += sz;
       if (sz > 0) os.write(buf, 0, sz);

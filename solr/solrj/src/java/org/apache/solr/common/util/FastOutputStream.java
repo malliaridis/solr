@@ -228,8 +228,7 @@ public class FastOutputStream extends OutputStream implements DataOutput {
   public void writeUtf8CharSeq(Utf8CharSequence utf8) throws IOException {
     int start = 0;
     int totalWritten = 0;
-    for (; ; ) {
-      if (totalWritten >= utf8.size()) break;
+    while (totalWritten < utf8.size()) {
       if (pos >= buf.length) flushBuffer();
       int sz = utf8.write(start, buf, pos);
       pos += sz;

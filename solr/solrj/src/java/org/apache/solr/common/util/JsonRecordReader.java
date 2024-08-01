@@ -616,7 +616,7 @@ public class JsonRecordReader {
 
   public static void consumeTillMatchingEnd(JSONParser parser, int obj, int arr)
       throws IOException {
-    for (; ; ) {
+    do {
       int event = parser.nextEvent();
       if (event == OBJECT_START) obj++;
       if (event == OBJECT_END) obj--;
@@ -624,7 +624,6 @@ public class JsonRecordReader {
       if (event == ARRAY_START) arr++;
       if (event == ARRAY_END) arr--;
       assert arr >= 0;
-      if (obj == 0 && arr == 0) break;
-    }
+    } while (obj != 0 || arr != 0);
   }
 }

@@ -189,7 +189,7 @@ public class CSVParser {
   public String[] getLine() throws IOException {
     String[] ret = EMPTY_STRING_ARRAY;
     record.clear();
-    while (true) {
+    do {
       reusableToken.reset();
       nextToken(reusableToken);
       switch (reusableToken.type) {
@@ -212,10 +212,7 @@ public class CSVParser {
           throw new IOException("(line " + getLineNumber() + ") invalid parse sequence");
           // unreachable: break;
       }
-      if (reusableToken.type != TT_TOKEN) {
-        break;
-      }
-    }
+    } while (reusableToken.type == TT_TOKEN);
     if (!record.isEmpty()) {
       ret = record.toArray(new String[0]);
     }

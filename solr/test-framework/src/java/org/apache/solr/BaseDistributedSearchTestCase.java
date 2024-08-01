@@ -730,10 +730,7 @@ public abstract class BaseDistributedSearchTestCase extends SolrTestCaseJ4 {
     int posa = 0, posb = 0;
     int aSkipped = 0, bSkipped = 0;
 
-    for (; ; ) {
-      if (posa >= a.size() && posb >= b.size()) {
-        break;
-      }
+    while (posa < a.size() || posb < b.size()) {
 
       String namea = null, nameb = null;
       Object vala = null, valb = null;
