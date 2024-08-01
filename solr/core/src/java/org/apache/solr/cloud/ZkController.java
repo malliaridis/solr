@@ -231,9 +231,6 @@ public class ZkController implements Closeable {
 
   private volatile boolean isClosed;
 
-  private final ConcurrentHashMap<String, Throwable> replicasMetTragicEvent =
-      new ConcurrentHashMap<>();
-
   @Deprecated
   // keeps track of replicas that have been asked to recover by leaders running on this node
   private final Map<String, String> replicasInLeaderInitiatedRecovery = new HashMap<>();
@@ -1813,7 +1810,6 @@ public class ZkController implements Closeable {
     final String coreNodeName = cd.getCloudDescriptor().getCoreNodeName();
     final String collection = cd.getCloudDescriptor().getCollectionName();
     getCollectionTerms(collection).remove(cd.getCloudDescriptor().getShardId(), cd);
-    replicasMetTragicEvent.remove(collection + ":" + coreNodeName);
 
     if (StrUtils.isNullOrEmpty(collection)) {
       log.error("No collection was specified.");
