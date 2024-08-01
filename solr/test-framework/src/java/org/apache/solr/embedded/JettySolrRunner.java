@@ -128,8 +128,6 @@ public class JettySolrRunner {
 
   private volatile boolean startedBefore = false;
 
-  private List<FilterHolder> extraFilters;
-
   private static final String excludePatterns =
       "/partials/.+,/libs/.+,/css/.+,/js/.+,/img/.+,/templates/.+";
 
@@ -397,10 +395,8 @@ public class JettySolrRunner {
           });
 
       debugFilter = root.addFilter(DebugFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
-      extraFilters = new ArrayList<>();
       for (Map.Entry<Class<? extends Filter>, String> entry : config.extraFilters.entrySet()) {
-        extraFilters.add(
-            root.addFilter(entry.getKey(), entry.getValue(), EnumSet.of(DispatcherType.REQUEST)));
+          root.addFilter(entry.getKey(), entry.getValue(), EnumSet.of(DispatcherType.REQUEST));
       }
 
       for (Map.Entry<ServletHolder, String> entry : config.extraServlets.entrySet()) {
