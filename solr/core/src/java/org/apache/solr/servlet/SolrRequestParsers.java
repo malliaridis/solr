@@ -84,7 +84,6 @@ public class SolrRequestParsers {
 
   public static final String REQUEST_TIMER_SERVLET_ATTRIBUTE = "org.apache.solr.RequestTimer";
 
-  private final HashMap<String, SolrRequestParser> parsers = new HashMap<>();
   private final boolean enableRemoteStreams;
   private final boolean enableStreamBody;
   private StandardRequestParser standard;
@@ -138,15 +137,6 @@ public class SolrRequestParsers {
     RawRequestParser raw = new RawRequestParser();
     FormDataRequestParser formdata = new FormDataRequestParser(formUploadLimitKB);
     standard = new StandardRequestParser(multi, raw, formdata);
-
-    // I don't see a need to have this publicly configured just yet
-    // adding it is trivial
-    parsers.put(MULTIPART, multi);
-    parsers.put(FORMDATA, formdata);
-    parsers.put(RAW, raw);
-    parsers.put(SIMPLE, new SimpleRequestParser());
-    parsers.put(STANDARD, standard);
-    parsers.put("", standard);
   }
 
   private static RTimerTree getRequestTimer(HttpServletRequest req) {
