@@ -974,7 +974,6 @@ public class ExtendedDismaxQParser extends QParser {
     // used when constructing boosting part of query via sloppy phrases
     boolean exceptions; //  allow exceptions to be thrown (for example on a missing field)
 
-    private Map<String, Analyzer> nonStopFilterAnalyzerPerField;
     private boolean removeStopFilter;
     String minShouldMatch; // for inner boolean queries produced from a single fieldQuery
 
@@ -1097,13 +1096,7 @@ public class ExtendedDismaxQParser extends QParser {
         throws SyntaxError {
       Analyzer actualAnalyzer;
       if (removeStopFilter) {
-        if (nonStopFilterAnalyzerPerField == null) {
-          nonStopFilterAnalyzerPerField = new HashMap<>();
-        }
-        actualAnalyzer = nonStopFilterAnalyzerPerField.get(field);
-        if (actualAnalyzer == null) {
-          actualAnalyzer = noStopwordFilterAnalyzer(field);
-        }
+        actualAnalyzer = noStopwordFilterAnalyzer(field);
       } else {
         actualAnalyzer = parser.getReq().getSchema().getFieldType(field).getQueryAnalyzer();
       }
