@@ -246,9 +246,7 @@ public class ClusterStatus {
       throw new SolrException(
           SolrException.ErrorCode.BAD_REQUEST, "Collection: " + name + " not found");
     }
-    if (requestedShards == null || requestedShards.isEmpty()) {
-      return postProcessCollectionJSON(collection);
-    } else {
+    if (requestedShards != null && !requestedShards.isEmpty()) {
       Map<String, Object> shards = (Map<String, Object>) collection.get("shards");
       Map<String, Object> selected = new HashMap<>();
       for (String selectedShard : requestedShards) {
@@ -260,8 +258,8 @@ public class ClusterStatus {
         selected.put(selectedShard, shards.get(selectedShard));
         collection.put("shards", selected);
       }
-      return postProcessCollectionJSON(collection);
     }
+    return postProcessCollectionJSON(collection);
   }
 
   /**

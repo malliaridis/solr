@@ -343,7 +343,6 @@ public class ContainerPluginsRegistry implements ClusterPropertiesListener, MapW
           SolrPackageLoader.SolrPackage p = coreContainer.getPackageLoader().getPackage(pkg);
           if (p == null) {
             errs.add("Invalid package " + klassInfo.pkg);
-            return;
           } else {
             errs.add(
                 "No such package version:"
@@ -352,8 +351,8 @@ public class ContainerPluginsRegistry implements ClusterPropertiesListener, MapW
                     + info.version
                     + " . available versions :"
                     + p.allVersions());
-            return;
           }
+          return;
         }
         this.pkgVersion = ver.get();
         try {

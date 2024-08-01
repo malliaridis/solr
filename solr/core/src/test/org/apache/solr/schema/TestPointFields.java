@@ -5711,12 +5711,11 @@ public class TestPointFields extends SolrTestCaseJ4 {
     long millis1 = random().nextLong() % MAX_DATE_EPOCH_MILLIS;
     long millis2;
     DateGapCeiling gap;
-    for (; ; ) {
-      millis2 = random().nextLong() % MAX_DATE_EPOCH_MILLIS;
-      gap = new DateGapCeiling(millis2 - millis1);
-      millis2 = gap.addTo(millis1); // adjust millis2 to the closest +/-UNIT gap
-      break;
-    }
+
+    millis2 = random().nextLong() % MAX_DATE_EPOCH_MILLIS;
+    gap = new DateGapCeiling(millis2 - millis1);
+    millis2 = gap.addTo(millis1); // adjust millis2 to the closest +/-UNIT gap
+
     String date1 = Instant.ofEpochMilli(millis1).toString();
     String date2 = Instant.ofEpochMilli(millis2).toString();
     assertU(adoc(sdoc("id", "1", field, date1)));

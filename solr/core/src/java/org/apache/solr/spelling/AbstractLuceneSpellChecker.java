@@ -198,16 +198,16 @@ public abstract class AbstractLuceneSpellChecker extends SolrSpellChecker {
           result.add(token, suggList);
         }
       } else {
+        List<String> suggList;
         if (suggestions.length > 0) {
-          List<String> suggList = Arrays.asList(suggestions);
+          suggList = Arrays.asList(suggestions);
           if (suggestions.length > options.count) {
             suggList = suggList.subList(0, options.count);
           }
-          result.add(token, suggList);
         } else {
-          List<String> suggList = Collections.emptyList();
-          result.add(token, suggList);
+          suggList = Collections.emptyList();
         }
+        result.add(token, suggList);
       }
     }
     return result;

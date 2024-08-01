@@ -293,11 +293,9 @@ public class PivotFacetFieldValueCollection implements Iterable<PivotFacetValue>
 
           @Override
           public PivotFacetValue next() {
-            while (valuesIterator.hasNext()) {
+            if (valuesIterator.hasNext()) {
               return (PivotFacetValue) valuesIterator.next();
-            }
-            // else
-            if (shouldGiveMissingValue) {
+            } else if (shouldGiveMissingValue) {
               shouldGiveMissingValue = false;
               return missingValue;
             }

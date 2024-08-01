@@ -440,8 +440,8 @@ public class IndexSizeEstimator {
             values -> {
               try {
                 TermsEnum termsEnum = ((SortedDocValues) values).termsEnum();
-                BytesRef term;
-                while ((term = termsEnum.next()) != null) {
+                BytesRef term = termsEnum.next();
+                if (term != null) {
                   return term.length;
                 }
               } catch (IOException e) {
@@ -463,8 +463,8 @@ public class IndexSizeEstimator {
             values -> {
               try {
                 TermsEnum termsEnum = ((SortedSetDocValues) values).termsEnum();
-                BytesRef term;
-                while ((term = termsEnum.next()) != null) {
+                BytesRef term = termsEnum.next();
+                if (term != null) {
                   return term.length;
                 }
               } catch (IOException e) {

@@ -301,13 +301,11 @@ public class Assign {
       DistribStateManager zk, Collection<String> liveNodes) {
     try {
       List<String> noData = ClusterAPI.getNodesByRole(NodeRoles.Role.DATA, NodeRoles.MODE_OFF, zk);
-      if (noData.isEmpty()) {
-        return liveNodes;
-      } else {
+      if (!noData.isEmpty()) {
         liveNodes = new HashSet<>(liveNodes);
         liveNodes.removeAll(noData);
-        return liveNodes;
       }
+      return liveNodes;
     } catch (Exception e) {
       throw new SolrException(
           SolrException.ErrorCode.SERVER_ERROR, "Error fetching roles from Zookeeper", e);

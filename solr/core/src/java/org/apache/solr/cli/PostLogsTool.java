@@ -192,46 +192,43 @@ public class PostLogsTool extends ToolBase {
     }
 
     public SolrInputDocument readRecord() throws IOException {
-      while (true) {
-        String line = null;
+      if (finished) {
+        return null;
+      }
 
-        if (finished) {
-          return null;
+      String line;
+      if (pushedBack != null) {
+        line = pushedBack;
+        pushedBack = null;
+      } else {
+        line = bufferedReader.readLine();
+      }
+
+      if (line != null) {
+        SolrInputDocument lineDoc = new SolrInputDocument();
+        String date = parseDate(line);
+        String minute = parseMinute(line);
+        String tenSecond = parseTenSecond(line);
+        lineDoc.setField("date_dt", date);
+        lineDoc.setField("time_minute_s", minute);
+        lineDoc.setField("time_ten_second_s", tenSecond);
+        lineDoc.setField("line_t", line);
+        lineDoc.setField("type_s", "other"); // Overridden by known types below
+
+        if (line.contains("Registered new searcher")) {
+          parseNewSearch(lineDoc, line);
+        } else if (line.contains("path=/update")) {
+          parseUpdate(lineDoc, line);
+        } else if (line.contains(" ERROR ")) {
+          this.cause = null;
+          parseError(lineDoc, line, readTrace());
+        } else if (line.contains("QTime=")) {
+          parseQueryRecord(lineDoc, line);
         }
 
-        if (pushedBack != null) {
-          line = pushedBack;
-          pushedBack = null;
-        } else {
-          line = bufferedReader.readLine();
-        }
-
-        if (line != null) {
-          SolrInputDocument lineDoc = new SolrInputDocument();
-          String date = parseDate(line);
-          String minute = parseMinute(line);
-          String tenSecond = parseTenSecond(line);
-          lineDoc.setField("date_dt", date);
-          lineDoc.setField("time_minute_s", minute);
-          lineDoc.setField("time_ten_second_s", tenSecond);
-          lineDoc.setField("line_t", line);
-          lineDoc.setField("type_s", "other"); // Overridden by known types below
-
-          if (line.contains("Registered new searcher")) {
-            parseNewSearch(lineDoc, line);
-          } else if (line.contains("path=/update")) {
-            parseUpdate(lineDoc, line);
-          } else if (line.contains(" ERROR ")) {
-            this.cause = null;
-            parseError(lineDoc, line, readTrace());
-          } else if (line.contains("QTime=")) {
-            parseQueryRecord(lineDoc, line);
-          }
-
-          return lineDoc;
-        } else {
-          return null;
-        }
+        return lineDoc;
+      } else {
+        return null;
       }
     }
 
