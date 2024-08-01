@@ -308,9 +308,9 @@ public class BlockPoolSlice {
     final File targetBlockFile = new File(blockDir, blockFile.getName());
     final File targetMetaFile = new File(blockDir, metaFile.getName());
     fileIoProvider.moveFile(volume, blockFile, targetBlockFile);
-    FsDatasetImpl.LOG.info("Moved " + blockFile + " to " + targetBlockFile);
+    FsDatasetImpl.LOG.info("Moved {} to {}", blockFile, targetBlockFile);
     fileIoProvider.moveFile(volume, metaFile, targetMetaFile);
-    FsDatasetImpl.LOG.info("Moved " + metaFile + " to " + targetMetaFile);
+    FsDatasetImpl.LOG.info("Moved {} to {}", metaFile, targetMetaFile);
 
     ReplicaInfo newReplicaInfo =
         new ReplicaBuilder(ReplicaState.FINALIZED)
@@ -338,8 +338,7 @@ public class BlockPoolSlice {
     // when we scan the finalized directory.
     if (lazypersistDir.exists()) {
       int numRecovered = moveLazyPersistReplicasToFinalized(lazypersistDir);
-      FsDatasetImpl.LOG.info(
-          "Recovered " + numRecovered + " replicas from " + lazypersistDir);
+      FsDatasetImpl.LOG.info("Recovered {} replicas from {}", numRecovered, lazypersistDir);
     }
 
     boolean  success = readReplicasFromCache(volumeMap, lazyWriteReplicaMap);
@@ -517,8 +516,7 @@ public class BlockPoolSlice {
         }
         sc.close();
         if (!fileIoProvider.delete(volume, restartMeta)) {
-          FsDatasetImpl.LOG.warn("Failed to delete restart meta file: " +
-              restartMeta.getPath());
+          FsDatasetImpl.LOG.warn("Failed to delete restart meta file: {}", restartMeta.getPath());
         }
       } catch (FileNotFoundException fnfe) {
         // nothing to do hereFile dir =

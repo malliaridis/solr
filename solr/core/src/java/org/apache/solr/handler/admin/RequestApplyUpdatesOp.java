@@ -31,7 +31,7 @@ class RequestApplyUpdatesOp implements CoreAdminHandler.CoreAdminOp {
   public void execute(CoreAdminHandler.CallInfo it) throws Exception {
     SolrParams params = it.req.getParams();
     String cname = params.required().get(CoreAdminParams.NAME);
-    CoreAdminOperation.log().info("Applying buffered updates on core: " + cname);
+    CoreAdminOperation.log().info("Applying buffered updates on core: {}", cname);
     CoreContainer coreContainer = it.handler.coreContainer;
     try (SolrCore core = coreContainer.getCore(cname)) {
       if (core == null)
@@ -44,7 +44,7 @@ class RequestApplyUpdatesOp implements CoreAdminHandler.CoreAdminOp {
       }
       Future<UpdateLog.RecoveryInfo> future = updateLog.applyBufferedUpdates();
       if (future == null) {
-        CoreAdminOperation.log().info("No buffered updates available. core=" + cname);
+        CoreAdminOperation.log().info("No buffered updates available. core={}", cname);
         it.rsp.add("core", cname);
         it.rsp.add("status", "EMPTY_BUFFER");
         return;

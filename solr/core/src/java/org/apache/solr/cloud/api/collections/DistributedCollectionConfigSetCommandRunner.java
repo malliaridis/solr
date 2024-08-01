@@ -207,7 +207,7 @@ public class DistributedCollectionConfigSetCommandRunner {
             action, (String) result.get(ConfigSetCmds.BASE_CONFIGSET));
 
     if (log.isInfoEnabled()) {
-      log.info("Running Config Set API locally for " + action + " " + configSetName); // nowarn
+      log.info("Running Config Set API locally for {} {}", action, configSetName); // nowarn
     }
 
     ConfigSetCommandRunner commandRunner =
@@ -270,7 +270,7 @@ public class DistributedCollectionConfigSetCommandRunner {
 
     if (log.isInfoEnabled()) {
       log.info(
-          "Running Collection API locally for " + action.name() + " asyncId=" + asyncId); // nowarn
+          "Running Collection API locally for {} asyncId={}", action.name(), asyncId); // nowarn
     }
 
     // Following the call below returning true, we must eventually cancel or complete the task.
@@ -446,7 +446,7 @@ public class DistributedCollectionConfigSetCommandRunner {
             lock.release();
           } catch (SolrException se) {
             log.error(
-                "Error when releasing collection locks for operation " + action, se); // nowarn
+                "Error when releasing collection locks for operation {}", action, se); // nowarn
           }
         }
       } catch (Exception e) {

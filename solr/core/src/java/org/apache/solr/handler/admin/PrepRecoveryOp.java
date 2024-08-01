@@ -148,34 +148,21 @@ class PrepRecoveryOp implements CoreAdminHandler.CoreAdminOp {
                             && localState != Replica.State.ACTIVE;
                     if (log.isInfoEnabled()) {
                       log.info(
-                          "In WaitForState("
-                              + waitForState
-                              + "): collection="
-                              + collectionName
-                              + ", shard="
-                              + slice.getName()
-                              + ", thisCore="
-                              + cname
-                              + ", leaderDoesNotNeedRecovery="
-                              + leaderDoesNotNeedRecovery
-                              + ", isLeader? "
-                              + cloudDescriptor.isLeader()
-                              + ", live="
-                              + live
-                              + ", checkLive="
-                              + checkLive
-                              + ", currentState="
-                              + state
-                              + ", localState="
-                              + localState
-                              + ", nodeName="
-                              + nodeName
-                              + ", coreNodeName="
-                              + coreNodeName
-                              + ", onlyIfActiveCheckResult="
-                              + onlyIfActiveCheckResult
-                              + ", nodeProps: "
-                              + replica); // nowarn
+                          "In WaitForState({}): collection={}, shard={}, thisCore={}, leaderDoesNotNeedRecovery={}, isLeader? {}, live={}, checkLive={}, currentState={}, localState={}, nodeName={}, coreNodeName={}, onlyIfActiveCheckResult={}, nodeProps: {}",
+                          waitForState,
+                          collectionName,
+                          slice.getName(),
+                          cname,
+                          leaderDoesNotNeedRecovery,
+                          cloudDescriptor.isLeader(),
+                          live,
+                          checkLive,
+                          state,
+                          localState,
+                          nodeName,
+                          coreNodeName,
+                          onlyIfActiveCheckResult,
+                          replica); // nowarn
                     }
                     if (!onlyIfActiveCheckResult
                         && replica != null

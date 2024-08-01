@@ -122,7 +122,7 @@ public class Checksum extends DefaultTask {
               if (fileChange.getFileType() == FileType.DIRECTORY) {
                 getProject()
                     .getLogger()
-                    .warn("Checksums can't be applied to directories: " + fileChange.getFile());
+                    .warn("Checksums can't be applied to directories: {}", fileChange.getFile());
                 return;
               }
 

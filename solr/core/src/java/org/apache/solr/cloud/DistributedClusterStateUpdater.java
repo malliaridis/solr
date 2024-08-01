@@ -94,11 +94,9 @@ public class DistributedClusterStateUpdater {
     this.useDistributedStateUpdate = useDistributedStateUpdate;
     if (log.isInfoEnabled()) {
       log.info(
-          "Creating DistributedClusterStateUpdater with useDistributedStateUpdate="
-              + useDistributedStateUpdate
-              + ". Solr will be using "
-              + (useDistributedStateUpdate ? "distributed" : "Overseer based")
-              + " cluster state updates."); // nowarn
+          "Creating DistributedClusterStateUpdater with useDistributedStateUpdate={}. Solr will be using {} cluster state updates.",
+          useDistributedStateUpdate,
+          useDistributedStateUpdate ? "distributed" : "Overseer based"); // nowarn
     }
   }
 
@@ -863,13 +861,10 @@ public class DistributedClusterStateUpdater {
         throws KeeperException, InterruptedException {
       if (log.isDebugEnabled()) {
         log.debug(
-            "Executing updates for collection "
-                + collectionName
-                + ", is creation="
-                + isCollectionCreation
-                + ", "
-                + mutations.size()
-                + " recorded mutations.",
+            "Executing updates for collection {}, is creation={}, {} recorded mutations.",
+            collectionName,
+            isCollectionCreation,
+            mutations.size(),
             new Exception("StackTraceOnly")); // nowarn
       }
       if (mutations.isEmpty()) {
@@ -982,9 +977,8 @@ public class DistributedClusterStateUpdater {
         // This is possible but should be rare. Logging warn in case it is seen often and likely a
         // sign of another issue
         log.warn(
-            "Processing DOWNNODE, collection "
-                + collectionName
-                + " disappeared during iteration"); // nowarn
+            "Processing DOWNNODE, collection {} disappeared during iteration",
+            collectionName); // nowarn
       }
 
       if (result.isPresent()) {

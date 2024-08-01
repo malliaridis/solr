@@ -191,7 +191,7 @@ public enum CoreAdminOperation implements CoreAdminOp {
       it -> {
         final SolrParams params = it.req.getParams();
         final String cname = params.required().get(CoreAdminParams.CORE);
-        log().info("It has been requested that we recover: core=" + cname);
+        log().info("It has been requested that we recover: core={}", cname);
 
         try (SolrCore core = it.handler.coreContainer.getCore(cname)) {
           if (core != null) {
@@ -211,7 +211,7 @@ public enum CoreAdminOperation implements CoreAdminOp {
       it -> {
         SolrParams params = it.req.getParams();
         String cname = params.required().get(CoreAdminParams.NAME);
-        log().info("Starting to buffer updates on core:" + cname);
+        log().info("Starting to buffer updates on core:{}", cname);
 
         try (SolrCore core = it.handler.coreContainer.getCore(cname)) {
           if (core == null)
@@ -239,7 +239,7 @@ public enum CoreAdminOperation implements CoreAdminOp {
       it -> {
         final var params = it.req.getParams();
         final String requestId = params.required().get(CoreAdminParams.REQUESTID);
-        log().info("Checking request status for : " + requestId);
+        log().info("Checking request status for : {}", requestId);
 
         final var requestCoreCommandStatusApi =
             new GetNodeCommandStatus(

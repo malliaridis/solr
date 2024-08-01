@@ -130,7 +130,7 @@ public class ErrorReportingTestListener implements TestOutputListener, TestListe
             try {
                handler.close();
             } catch (IOException e) {
-               LOGGER.error("Failed to close output handler for: " + key, e);
+              LOGGER.error("Failed to close output handler for: {}", key, e);
             }
          }
       }
