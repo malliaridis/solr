@@ -262,18 +262,18 @@ public class SolrPluginUtils {
   public static Set<String> getDebugInterests(String[] params, ResponseBuilder rb) {
     Set<String> debugInterests = new HashSet<>();
     if (params != null) {
-      for (int i = 0; i < params.length; i++) {
-        if (params[i].equalsIgnoreCase("all") || params[i].equalsIgnoreCase("true")) {
+      for (String param : params) {
+        if (param.equalsIgnoreCase("all") || param.equalsIgnoreCase("true")) {
           rb.setDebug(true);
           break;
           // still might add others
-        } else if (params[i].equals(CommonParams.TIMING)) {
+        } else if (param.equals(CommonParams.TIMING)) {
           rb.setDebugTimings(true);
-        } else if (params[i].equals(CommonParams.QUERY)) {
+        } else if (param.equals(CommonParams.QUERY)) {
           rb.setDebugQuery(true);
-        } else if (params[i].equals(CommonParams.RESULTS)) {
+        } else if (param.equals(CommonParams.RESULTS)) {
           rb.setDebugResults(true);
-        } else if (params[i].equals(CommonParams.TRACK)) {
+        } else if (param.equals(CommonParams.TRACK)) {
           rb.setDebugTrack(true);
         }
       }
@@ -785,8 +785,7 @@ public class SolrPluginUtils {
    * @return Returns The {@code dest} input object
    */
   public static <T> NamedList<T> removeNulls(Map.Entry<String, T>[] entries, NamedList<T> dest) {
-    for (int i = 0; i < entries.length; i++) {
-      Map.Entry<String, T> entry = entries[i];
+    for (Map.Entry<String, T> entry : entries) {
       if (entry != null) {
         String key = entry.getKey();
         if (key != null) {

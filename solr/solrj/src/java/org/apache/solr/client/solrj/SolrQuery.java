@@ -1250,12 +1250,12 @@ public class SolrQuery extends ModifiableSolrParams {
 
   private String join(String[] vals, String sep, String removeVal) {
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < vals.length; i++) {
-      if (!vals[i].equals(removeVal)) {
+    for (String value : vals) {
+      if (!value.equals(removeVal)) {
         if (sb.length() > 0) {
           sb.append(sep);
         }
-        sb.append(vals[i]);
+        sb.append(value);
       }
     }
     return sb.toString().trim();

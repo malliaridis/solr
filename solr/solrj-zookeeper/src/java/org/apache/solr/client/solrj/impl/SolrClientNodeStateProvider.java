@@ -130,9 +130,8 @@ public class SolrClientNodeStateProvider implements NodeStateProvider, MapWriter
         (coll, shardVsReplicas) ->
             shardVsReplicas.forEach(
                 (shard, replicaInfos) -> {
-                  for (int i = 0; i < replicaInfos.size(); i++) {
-                    Replica r = replicaInfos.get(i);
-                    consumer.accept(r);
+                  for (Replica replicaInfo : replicaInfos) {
+                    consumer.accept(replicaInfo);
                   }
                 }));
   }

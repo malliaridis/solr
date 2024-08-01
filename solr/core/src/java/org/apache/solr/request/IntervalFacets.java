@@ -289,8 +289,7 @@ public class IntervalFacets implements Iterable<FacetInterval> {
 
   private void getCountString() throws IOException {
     List<LeafReaderContext> leaves = searcher.getTopReaderContext().leaves();
-    for (int subIndex = 0; subIndex < leaves.size(); subIndex++) {
-      LeafReaderContext leaf = leaves.get(subIndex);
+    for (LeafReaderContext leaf : leaves) {
       // solr docsets already exclude any deleted docs
       final DocIdSetIterator disi = docs.iterator(leaf);
       if (disi != null) {
@@ -426,8 +425,7 @@ public class IntervalFacets implements Iterable<FacetInterval> {
   }
 
   private void accumIntervalWithValue(long value) {
-    for (int i = 0; i < intervals.length; i++) {
-      FacetInterval interval = intervals[i];
+    for (FacetInterval interval : intervals) {
       IntervalCompareResult result = interval.includes(value);
       if (result == IntervalCompareResult.INCLUDED) {
         interval.incCount();

@@ -476,12 +476,12 @@ public class HttpClientUtil {
       Header ceheader = entity.getContentEncoding();
       if (ceheader != null) {
         HeaderElement[] codecs = ceheader.getElements();
-        for (int i = 0; i < codecs.length; i++) {
-          if (codecs[i].getName().equalsIgnoreCase("gzip")) {
+        for (HeaderElement codec : codecs) {
+          if (codec.getName().equalsIgnoreCase("gzip")) {
             response.setEntity(new GzipDecompressingEntity(response.getEntity()));
             return;
           }
-          if (codecs[i].getName().equalsIgnoreCase("deflate")) {
+          if (codec.getName().equalsIgnoreCase("deflate")) {
             response.setEntity(new DeflateDecompressingEntity(response.getEntity()));
             return;
           }

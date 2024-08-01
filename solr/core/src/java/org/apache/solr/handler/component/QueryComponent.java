@@ -1426,20 +1426,17 @@ public class QueryComponent extends SearchComponent {
     int[] luceneIds = new int[idArr.size()];
     int docs = 0;
     if (idField.getType().isPointField()) {
-      for (int i = 0; i < idArr.size(); i++) {
+      for (String s : idArr) {
         int id =
-            searcher.search(idField.getType().getFieldQuery(null, idField, idArr.get(i)), 1)
-                .scoreDocs[0]
-                .doc;
+            searcher.search(idField.getType().getFieldQuery(null, idField, s), 1).scoreDocs[0].doc;
         if (id >= 0) {
           luceneIds[docs++] = id;
         }
       }
     } else {
-      for (int i = 0; i < idArr.size(); i++) {
+      for (String s : idArr) {
         int id =
-            searcher.getFirstMatch(
-                new Term(idField.getName(), idField.getType().toInternal(idArr.get(i))));
+            searcher.getFirstMatch(new Term(idField.getName(), idField.getType().toInternal(s)));
         if (id >= 0) luceneIds[docs++] = id;
       }
     }

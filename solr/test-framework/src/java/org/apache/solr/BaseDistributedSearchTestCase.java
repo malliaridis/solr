@@ -866,8 +866,8 @@ public abstract class BaseDistributedSearchTestCase extends SolrTestCaseJ4 {
         // no id field to correlate... must compare ordered
         docb = b.get(i);
       } else {
-        for (int j = 0; j < b.size(); j++) {
-          docb = b.get(j);
+        for (SolrDocument entries : b) {
+          docb = entries;
           if (key.equals(docb.getFirstValue("id"))) break;
         }
       }

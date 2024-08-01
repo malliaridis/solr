@@ -952,8 +952,8 @@ public class FacetStream extends TupleStream implements Expressible, ParallelMet
       return;
     }
     List<?> allBuckets = (List<?>) nl.get("buckets");
-    for (int b = 0; b < allBuckets.size(); b++) {
-      NamedList<?> bucket = (NamedList<?>) allBuckets.get(b);
+    for (Object b : allBuckets) {
+      NamedList<?> bucket = (NamedList<?>) b;
       Object val = bucket.get("val");
       if (val instanceof Integer) {
         val = ((Integer) val).longValue(); // calcite currently expects Long values here

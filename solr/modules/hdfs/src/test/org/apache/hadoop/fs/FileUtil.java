@@ -270,9 +270,9 @@ public class FileUtil {
     boolean deletionSucceeded = true;
     final File[] contents = dir.listFiles();
     if (contents != null) {
-      for (int i = 0; i < contents.length; i++) {
-        if (contents[i].isFile()) {
-          if (!deleteImpl(contents[i], true)) {// normal file or symlink to another file
+      for (File content : contents) {
+        if (content.isFile()) {
+          if (!deleteImpl(content, true)) {// normal file or symlink to another file
             deletionSucceeded = false;
             continue; // continue deletion of other files/dirs under dir
           }
@@ -280,14 +280,14 @@ public class FileUtil {
           // Either directory or symlink to another directory.
           // Try deleting the directory as this might be a symlink
           boolean b = false;
-          b = deleteImpl(contents[i], false);
-          if (b){
+          b = deleteImpl(content, false);
+          if (b) {
             //this was indeed a symlink or an empty directory
             continue;
           }
           // if not an empty directory or symlink let
           // fullydelete handle it.
-          if (!fullyDelete(contents[i], tryGrantPermissions)) {
+          if (!fullyDelete(content, tryGrantPermissions)) {
             deletionSucceeded = false;
             // continue deletion of other files/dirs under dir
           }
@@ -406,9 +406,9 @@ public class FileUtil {
         return false;
       }
       FileStatus contents[] = srcFS.listStatus(src);
-      for (int i = 0; i < contents.length; i++) {
-        copy(srcFS, contents[i], dstFS,
-            new Path(dst, contents[i].getPath().getName()),
+      for (FileStatus content : contents) {
+        copy(srcFS, content, dstFS,
+            new Path(dst, content.getPath().getName()),
             deleteSource, overwrite, conf);
       }
     } else {
@@ -444,8 +444,8 @@ public class FileUtil {
         return false;
       }
       File contents[] = listFiles(src);
-      for (int i = 0; i < contents.length; i++) {
-        copy(contents[i], dstFS, new Path(dst, contents[i].getName()),
+      for (File content : contents) {
+        copy(content, dstFS, new Path(dst, content.getName()),
             deleteSource, conf);
       }
     } else if (src.isFile()) {
@@ -493,9 +493,9 @@ public class FileUtil {
         return false;
       }
       FileStatus contents[] = srcFS.listStatus(src);
-      for (int i = 0; i < contents.length; i++) {
-        copy(srcFS, contents[i],
-            new File(dst, contents[i].getPath().getName()),
+      for (FileStatus content : contents) {
+        copy(srcFS, content,
+            new File(dst, content.getPath().getName()),
             deleteSource, conf);
       }
     } else {

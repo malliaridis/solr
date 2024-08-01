@@ -785,8 +785,8 @@ public class JavaBinCodec implements PushWriter {
 
   public void writeArray(List<?> l) throws IOException {
     writeTag(ARR, l.size());
-    for (int i = 0; i < l.size(); i++) {
-      writeVal(l.get(i));
+    for (Object o : l) {
+      writeVal(o);
     }
   }
 
@@ -799,8 +799,7 @@ public class JavaBinCodec implements PushWriter {
 
   public void writeArray(Object[] arr) throws IOException {
     writeTag(ARR, arr.length);
-    for (int i = 0; i < arr.length; i++) {
-      Object o = arr[i];
+    for (Object o : arr) {
       writeVal(o);
     }
   }

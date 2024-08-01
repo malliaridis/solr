@@ -487,8 +487,7 @@ public class SplitShardCmd implements CollApiCmds.CollectionApiCommand {
       params.set(CoreAdminParams.ACTION, CoreAdminParams.CoreAdminAction.SPLIT.toString());
       params.set(CommonAdminParams.SPLIT_METHOD, splitMethod.toLower());
       params.set(CoreAdminParams.CORE, parentShardLeader.getStr("core"));
-      for (int i = 0; i < subShardNames.size(); i++) {
-        String subShardName = subShardNames.get(i);
+      for (String subShardName : subShardNames) {
         params.add(CoreAdminParams.TARGET_CORE, subShardName);
       }
       params.set(CoreAdminParams.RANGES, rangesStr);
@@ -515,9 +514,7 @@ public class SplitShardCmd implements CollApiCmds.CollectionApiCommand {
         final ShardRequestTracker shardRequestTracker =
             CollectionHandlingUtils.asyncRequestTracker(asyncId, ccc);
 
-        for (int i = 0; i < subShardNames.size(); i++) {
-          String subShardName = subShardNames.get(i);
-
+        for (String subShardName : subShardNames) {
           log.debug("Applying buffered updates on : {}", subShardName);
 
           params = new ModifiableSolrParams();

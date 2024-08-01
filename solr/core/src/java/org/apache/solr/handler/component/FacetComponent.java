@@ -1138,8 +1138,8 @@ public class FacetComponent extends SearchComponent {
         int lim = dff.limit >= 0 ? dff.limit : Integer.MAX_VALUE;
 
         // index order...
-        for (int i = 0; i < counts.length; i++) {
-          long count = counts[i].count;
+        for (ShardFacetCount shardFacetCount : counts) {
+          long count = shardFacetCount.count;
           if (count < dff.minCount) continue;
           if (off > 0) {
             off--;
@@ -1149,7 +1149,7 @@ public class FacetComponent extends SearchComponent {
             break;
           }
           lim--;
-          fieldCounts.add(counts[i].name, num(count));
+          fieldCounts.add(shardFacetCount.name, num(count));
         }
       }
 

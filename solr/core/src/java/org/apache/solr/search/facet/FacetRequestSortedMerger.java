@@ -120,8 +120,7 @@ abstract class FacetRequestSortedMerger<FacetRequestT extends FacetRequestSorted
        */
       List<SortVal> lst = new ArrayList<>(buckets.size());
       List<FacetBucket> nulls = new ArrayList<>(buckets.size() >> 1);
-      for (int i = 0; i < sortedBuckets.size(); i++) {
-        FacetBucket bucket = sortedBuckets.get(i);
+      for (FacetBucket bucket : sortedBuckets) {
         FacetMerger merger = bucket.getExistingMerger(key);
         if (merger == null) {
           nulls.add(bucket);

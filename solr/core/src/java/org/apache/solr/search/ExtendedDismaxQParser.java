@@ -1228,15 +1228,15 @@ public class ExtendedDismaxQParser extends QParser {
             for (int c = 0; c < firstBooleanQuery.clauses().size(); ++c) {
               subs.clear();
               // Make a dismax query for each clause position in the boolean per-field queries.
-              for (int n = 0; n < lst.size(); ++n) {
-                if (lst.get(n) instanceof BoostQuery) {
-                  BoostQuery boostQuery = (BoostQuery) lst.get(n);
+              for (Query value : lst) {
+                if (value instanceof BoostQuery) {
+                  BoostQuery boostQuery = (BoostQuery) value;
                   BooleanQuery booleanQuery = (BooleanQuery) boostQuery.getQuery();
                   subs.add(
                       new BoostQuery(
                           booleanQuery.clauses().get(c).getQuery(), boostQuery.getBoost()));
                 } else {
-                  subs.add(((BooleanQuery) lst.get(n)).clauses().get(c).getQuery());
+                  subs.add(((BooleanQuery) value).clauses().get(c).getQuery());
                 }
               }
               q.add(

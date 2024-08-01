@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -487,10 +486,7 @@ public class SuggestComponent extends SearchComponent
     // for each token
     for (Map.Entry<String, SimpleOrderedMap<NamedList<Object>>> entry : suggestionsMap) {
       String suggesterName = entry.getKey();
-      for (Iterator<Map.Entry<String, NamedList<Object>>> suggestionsIter =
-              entry.getValue().iterator();
-          suggestionsIter.hasNext(); ) {
-        Map.Entry<String, NamedList<Object>> suggestions = suggestionsIter.next();
+      for (Map.Entry<String, NamedList<Object>> suggestions : entry.getValue()) {
         String tokenString = suggestions.getKey();
         List<LookupResult> lookupResults = new ArrayList<>();
         NamedList<Object> suggestion = suggestions.getValue();

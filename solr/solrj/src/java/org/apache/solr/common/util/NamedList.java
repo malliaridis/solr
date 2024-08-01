@@ -335,8 +335,7 @@ public class NamedList<T>
   public Object findRecursive(String... args) {
     NamedList<?> currentList = null;
     Object value = null;
-    for (int i = 0; i < args.length; i++) {
-      String key = args[i];
+    for (String key : args) {
       /*
        * The first time through the loop, the current list is null, so we assign
        * it to this list. Then we retrieve the first key from this list and

@@ -168,8 +168,8 @@ public class TestSelectiveWeightCreation extends TestRerankBase {
 
     assertEquals(features.size(), modelWeight.getModelFeatureValuesNormalized().length);
     int validFeatures = 0;
-    for (int i = 0; i < featuresInfo.length; ++i) {
-      if (featuresInfo[i] != null && featuresInfo[i].isUsed()) {
+    for (LTRScoringQuery.FeatureInfo featureInfo : featuresInfo) {
+      if (featureInfo != null && featureInfo.isUsed()) {
         validFeatures += 1;
       }
     }
@@ -195,8 +195,8 @@ public class TestSelectiveWeightCreation extends TestRerankBase {
     assertEquals(allFeatures.size(), modelWeight.getExtractedFeatureWeights().length);
 
     validFeatures = 0;
-    for (int i = 0; i < featuresInfo.length; ++i) {
-      if (featuresInfo[i] != null && featuresInfo[i].isUsed()) {
+    for (LTRScoringQuery.FeatureInfo featureInfo : featuresInfo) {
+      if (featureInfo != null && featureInfo.isUsed()) {
         validFeatures += 1;
       }
     }

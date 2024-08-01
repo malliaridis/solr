@@ -223,8 +223,8 @@ public class GatherNodesStream extends TupleStream implements Expressible {
     List<StreamExpression> metricExpressions =
         factory.getExpressionOperandsRepresentingTypes(expression, Expressible.class, Metric.class);
     List<Metric> metrics = new ArrayList<>();
-    for (int idx = 0; idx < metricExpressions.size(); ++idx) {
-      metrics.add(factory.constructMetric(metricExpressions.get(idx)));
+    for (StreamExpression metricExpression : metricExpressions) {
+      metrics.add(factory.constructMetric(metricExpression));
     }
 
     boolean trackTraversal = false;

@@ -74,8 +74,8 @@ public class TestNeuralNetworkModel extends TestRerankBase {
     }
 
     final ArrayList<Double> biasList = new ArrayList<Double>();
-    for (int i = 0; i < bias.length; i++) {
-      biasList.add(bias[i]);
+    for (double b : bias) {
+      biasList.add(b);
     }
 
     final Map<String, Object> layer = new HashMap<String, Object>();
@@ -344,8 +344,8 @@ public class TestNeuralNetworkModel extends TestRerankBase {
     final float[] featureValues = {1.2f, 3.4f, 5.6f, 7.8f};
 
     final List<Explanation> explanations = new ArrayList<Explanation>();
-    for (int ii = 0; ii < featureValues.length; ++ii) {
-      explanations.add(Explanation.match(featureValues[ii], ""));
+    for (float featureValue : featureValues) {
+      explanations.add(Explanation.match(featureValue, ""));
     }
 
     final float finalScore = model.score(featureValues);
@@ -417,8 +417,8 @@ public class TestNeuralNetworkModel extends TestRerankBase {
     assertEquals(expectedScore, actualScore, 0.001);
 
     final List<Explanation> explanations = new ArrayList<Explanation>();
-    for (int ii = 0; ii < featureValues.length; ++ii) {
-      explanations.add(Explanation.match(featureValues[ii], ""));
+    for (float featureValue : featureValues) {
+      explanations.add(Explanation.match(featureValue, ""));
     }
     final Explanation explanation = model.explain(null, 0, actualScore, explanations);
     assertEquals(

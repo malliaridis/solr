@@ -75,8 +75,8 @@ public class StreamExpressionParser {
     working = working.substring(firstOpenParen + 1, working.length() - 1).trim();
     List<String> parts = splitOn(working, ',');
 
-    for (int idx = 0; idx < parts.size(); ++idx) {
-      String part = parts.get(idx).trim();
+    for (String s : parts) {
+      String part = s.trim();
       if (isExpressionClause(part)) {
         StreamExpressionParameter parameter = generateStreamExpression(part);
         if (null != parameter) {

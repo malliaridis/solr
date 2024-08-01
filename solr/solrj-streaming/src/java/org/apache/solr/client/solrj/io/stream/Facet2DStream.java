@@ -463,9 +463,9 @@ public class Facet2DStream extends TupleStream implements Expressible {
     NamedList<?> allXBuckets = (NamedList<?>) facets.get("x");
     for (int b = 0; b < allXBuckets.size(); b++) {
       List<?> buckets = (List<?>) allXBuckets.get("buckets");
-      for (int s = 0; s < buckets.size(); s++) {
+      for (Object o : buckets) {
 
-        NamedList<?> bucket = (NamedList<?>) buckets.get(s);
+        NamedList<?> bucket = (NamedList<?>) o;
         Object val = bucket.get("val");
         if (val instanceof Integer) {
           val = ((Integer) val).longValue();
@@ -476,8 +476,8 @@ public class Facet2DStream extends TupleStream implements Expressible {
         NamedList<?> allYBuckets = (NamedList<?>) bucket.get("y");
         List<?> ybuckets = (List<?>) allYBuckets.get("buckets");
 
-        for (int d = 0; d < ybuckets.size(); d++) {
-          NamedList<?> bucketY = (NamedList<?>) ybuckets.get(d);
+        for (Object ybucket : ybuckets) {
+          NamedList<?> bucketY = (NamedList<?>) ybucket;
           Object valY = bucketY.get("val");
           if (valY instanceof Integer) {
             valY = ((Integer) valY).longValue();

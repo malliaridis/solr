@@ -670,9 +670,9 @@ public class ExportWriter implements SolrCore.RawWriter, Closeable {
     public MergeIterator(SegmentIterator[] segmentIterators, SortDoc proto) throws IOException {
       outDoc = proto.copy();
       this.segmentIterators = segmentIterators;
-      for (int i = 0; i < segmentIterators.length; i++) {
+      for (SegmentIterator segmentIterator : segmentIterators) {
         try {
-          SortDoc sortDoc = segmentIterators[i].next();
+          SortDoc sortDoc = segmentIterator.next();
           if (sortDoc != null) {
             set.add(sortDoc);
           }

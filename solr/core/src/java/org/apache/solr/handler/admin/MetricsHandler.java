@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -285,9 +284,7 @@ public class MetricsHandler extends RequestHandlerBase implements PermissionName
             result.add(registryName, perRegistryTemp);
           } else {
             // merge if needed
-            for (Iterator<Map.Entry<String, Object>> it = perRegistryTemp.iterator();
-                it.hasNext(); ) {
-              Map.Entry<String, Object> entry = it.next();
+            for (Map.Entry<String, Object> entry : perRegistryTemp) {
               Object existing = perRegistryResult.get(entry.getKey());
               if (existing == null) {
                 perRegistryResult.add(entry.getKey(), entry.getValue());

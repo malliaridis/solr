@@ -50,9 +50,9 @@ public enum FieldFlag {
   public static FieldFlag getFlag(char abbrev) {
     FieldFlag result = null;
     FieldFlag[] vals = FieldFlag.values();
-    for (int i = 0; i < vals.length; i++) {
-      if (vals[i].getAbbreviation() == abbrev) {
-        result = vals[i];
+    for (FieldFlag flag : vals) {
+      if (flag.getAbbreviation() == abbrev) {
+        result = flag;
         break;
       }
     }

@@ -262,8 +262,7 @@ public abstract class AnalysisRequestHandlerBase extends RequestHandlerBase {
           }
         });
 
-    for (int i = 0; i < tokens.length; i++) {
-      AttributeSource token = tokens[i];
+    for (AttributeSource token : tokens) {
       final NamedList<Object> tokenNamedList = new SimpleOrderedMap<>();
       final BytesRef rawBytes;
       if (token.hasAttribute(BytesTermAttribute.class)) {
