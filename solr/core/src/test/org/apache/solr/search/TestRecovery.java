@@ -1489,7 +1489,8 @@ public class TestRecovery extends SolrTestCaseJ4 {
       addDocs(
           1,
           numIndexed,
-          new LinkedList<>()); // don't add this to the versions list because we are going to lose it...
+          new LinkedList<>()); // don't add this to the versions list because we are going to lose
+      // it...
       h.close();
       files = ulog.getLogList(logDir);
       Arrays.sort(files);

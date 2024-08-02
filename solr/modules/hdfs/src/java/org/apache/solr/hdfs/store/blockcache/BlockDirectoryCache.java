@@ -47,9 +47,7 @@ public class BlockDirectoryCache implements Cache {
     names = Caffeine.newBuilder().maximumSize(50000).build();
 
     if (releaseBlocks) {
-      keysToRelease =
-          Collections.newSetFromMap(
-              new ConcurrentHashMap<>(1024, 0.75f, 512));
+      keysToRelease = Collections.newSetFromMap(new ConcurrentHashMap<>(1024, 0.75f, 512));
       blockCache.setOnRelease(
           new OnRelease() {
 

@@ -284,8 +284,7 @@ public class TestFieldCacheSortRandom extends SolrTestCase {
     private final long seed;
     private float density;
     private final List<BytesRef> docValues;
-    public final List<BytesRef> matchValues =
-        Collections.synchronizedList(new ArrayList<>());
+    public final List<BytesRef> matchValues = Collections.synchronizedList(new ArrayList<>());
 
     // density should be 0.0 ... 1.0
     public RandomQuery(long seed, float density, List<BytesRef> docValues) {

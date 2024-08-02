@@ -703,8 +703,7 @@ public class TestTolerantUpdateProcessorCloud extends SolrCloudTestCase {
       // verify that the Exceptions' metadata can tell us what failed.
       NamedList<String> remoteErrMetadata = e.getMetadata();
       assertNotNull("no metadata in: " + e, remoteErrMetadata);
-      Set<ToleratedUpdateError> actualKnownErrs =
-          new LinkedHashSet<>(remoteErrMetadata.size());
+      Set<ToleratedUpdateError> actualKnownErrs = new LinkedHashSet<>(remoteErrMetadata.size());
       int actualKnownErrsCount = 0;
       for (int i = 0; i < remoteErrMetadata.size(); i++) {
         ToleratedUpdateError err =
@@ -804,8 +803,7 @@ public class TestTolerantUpdateProcessorCloud extends SolrCloudTestCase {
       // verify that the Exceptions' metadata can tell us what failed.
       NamedList<String> remoteErrMetadata = e.getMetadata();
       assertNotNull("no metadata in: " + e, remoteErrMetadata);
-      Set<ToleratedUpdateError> actualKnownErrs =
-          new LinkedHashSet<>(remoteErrMetadata.size());
+      Set<ToleratedUpdateError> actualKnownErrs = new LinkedHashSet<>(remoteErrMetadata.size());
       int actualKnownErrsCount = 0;
       for (int i = 0; i < remoteErrMetadata.size(); i++) {
         ToleratedUpdateError err =
@@ -1103,8 +1101,7 @@ public class TestTolerantUpdateProcessorCloud extends SolrCloudTestCase {
       // verify that the Exceptions' metadata can tell us what failed.
       NamedList<String> remoteErrMetadata = e.getMetadata();
       assertNotNull("no metadata in: " + e, remoteErrMetadata);
-      Set<ToleratedUpdateError> actualKnownErrs =
-          new LinkedHashSet<>(remoteErrMetadata.size());
+      Set<ToleratedUpdateError> actualKnownErrs = new LinkedHashSet<>(remoteErrMetadata.size());
       int actualKnownErrsCount = 0;
       for (int i = 0; i < remoteErrMetadata.size(); i++) {
         ToleratedUpdateError err =

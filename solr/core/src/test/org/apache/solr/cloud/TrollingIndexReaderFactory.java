@@ -43,8 +43,7 @@ public class TrollingIndexReaderFactory extends StandardIndexReaderFactory {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static volatile Trap trap;
-  private static final BlockingQueue<List<Object>> lastStacktraces =
-      new LinkedBlockingQueue<>();
+  private static final BlockingQueue<List<Object>> lastStacktraces = new LinkedBlockingQueue<>();
   private static final long startTime = ManagementFactory.getRuntimeMXBean().getStartTime();
   private static final int keepStackTraceLines = 20;
   protected static final int maxTraces = 4;

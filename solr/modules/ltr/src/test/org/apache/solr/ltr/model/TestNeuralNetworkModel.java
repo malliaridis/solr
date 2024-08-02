@@ -144,8 +144,7 @@ public class TestNeuralNetworkModel extends TestRerankBase {
     assertEquals(4, featuresInModel.size()); // the test model uses four features
 
     final List<Normalizer> norms =
-        new ArrayList<>(
-            Collections.nCopies(featuresInModel.size(), IdentityNormalizer.INSTANCE));
+        new ArrayList<>(Collections.nCopies(featuresInModel.size(), IdentityNormalizer.INSTANCE));
     final LTRScoringModel ltrScoringModel =
         createNeuralNetworkModel(
             "test_score", featuresInModel, norms, "test_score", allFeaturesInStore, params);
