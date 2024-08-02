@@ -210,7 +210,7 @@ class XLSXWriter extends TabularResponseWriter {
 
       Integer niceWidth = colWidthsMap.get(xlField.name);
       if (niceWidth != null) {
-        colWidth = niceWidth.intValue();
+        colWidth = niceWidth;
       }
 
       writeStr(xlField.name, printName, false);

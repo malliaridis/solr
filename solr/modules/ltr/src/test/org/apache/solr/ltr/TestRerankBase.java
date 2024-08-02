@@ -432,16 +432,16 @@ public class TestRerankBase extends RestTestBase {
         defaultValue = "1.2";
         break;
       case 2:
-        defaultValue = Double.valueOf(3.4d);
+        defaultValue = 3.4d;
         break;
       case 3:
-        defaultValue = Float.valueOf(0.5f);
+        defaultValue = 0.5f;
         break;
       case 4:
-        defaultValue = Integer.valueOf(67);
+        defaultValue = 67;
         break;
       case 5:
-        defaultValue = Long.valueOf(89);
+        defaultValue = 89L;
         break;
       default:
         defaultValue = null;

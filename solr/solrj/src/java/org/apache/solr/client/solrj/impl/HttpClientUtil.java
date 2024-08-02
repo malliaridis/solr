@@ -588,7 +588,7 @@ public class HttpClientUtil {
     if (bool == null) {
       return valueIfNull;
     }
-    return bool.booleanValue() ? true : false;
+    return bool;
   }
 
   /**

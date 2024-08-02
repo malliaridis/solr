@@ -2064,15 +2064,15 @@ public abstract class AbstractFullDistribZkTestBase extends AbstractDistribZkTes
                   ZkStateReader.REPLICATION_FACTOR);
     }
     if (numNrtReplicas == null) {
-      numNrtReplicas = Integer.valueOf(0);
+      numNrtReplicas = 0;
     }
     Integer numTlogReplicas = (Integer) collectionProps.get(ZkStateReader.TLOG_REPLICAS);
     if (numTlogReplicas == null) {
-      numTlogReplicas = Integer.valueOf(0);
+      numTlogReplicas = 0;
     }
     Integer numPullReplicas = (Integer) collectionProps.get(ZkStateReader.PULL_REPLICAS);
     if (numPullReplicas == null) {
-      numPullReplicas = Integer.valueOf(0);
+      numPullReplicas = 0;
     }
     if (confSetName != null) {
       params.set("collection.configName", confSetName);

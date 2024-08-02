@@ -133,7 +133,7 @@ public class DeleteCollectionBackupAPITest extends SolrTestCaseJ4 {
     assertEquals("deletebackup", remoteMessage.get(QUEUE_OPERATION));
     assertEquals("someBackupName", remoteMessage.get(NAME));
     assertEquals("someBackupId", remoteMessage.get(BACKUP_ID));
-    assertEquals(Integer.valueOf(123), remoteMessage.get(MAX_NUM_BACKUP_POINTS));
+    assertEquals(123, remoteMessage.get(MAX_NUM_BACKUP_POINTS));
     assertEquals(Boolean.TRUE, remoteMessage.get(BACKUP_PURGE_UNUSED));
     assertEquals("someLocation", remoteMessage.get(BACKUP_LOCATION));
     assertEquals("someRepository", remoteMessage.get(BACKUP_REPOSITORY));

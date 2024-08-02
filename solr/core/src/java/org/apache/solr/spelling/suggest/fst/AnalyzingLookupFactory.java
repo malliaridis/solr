@@ -88,14 +88,12 @@ public class AnalyzingLookupFactory extends LookupFactory {
     // optional parameters
 
     boolean exactMatchFirst =
-        params.get(EXACT_MATCH_FIRST) != null
-            ? Boolean.valueOf(params.get(EXACT_MATCH_FIRST).toString())
-            : true;
+        params.get(EXACT_MATCH_FIRST) == null
+            || Boolean.parseBoolean(params.get(EXACT_MATCH_FIRST).toString());
 
     boolean preserveSep =
-        params.get(PRESERVE_SEP) != null
-            ? Boolean.valueOf(params.get(PRESERVE_SEP).toString())
-            : true;
+        params.get(PRESERVE_SEP) == null
+            || Boolean.parseBoolean(params.get(PRESERVE_SEP).toString());
 
     int flags = 0;
     if (exactMatchFirst) {
@@ -117,8 +115,7 @@ public class AnalyzingLookupFactory extends LookupFactory {
 
     boolean preservePositionIncrements =
         params.get(PRESERVE_POSITION_INCREMENTS) != null
-            ? Boolean.valueOf(params.get(PRESERVE_POSITION_INCREMENTS).toString())
-            : false;
+            && Boolean.parseBoolean(params.get(PRESERVE_POSITION_INCREMENTS).toString());
 
     return new AnalyzingSuggester(
         getTempDir(),

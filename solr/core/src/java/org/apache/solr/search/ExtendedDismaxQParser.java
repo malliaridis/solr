@@ -556,7 +556,7 @@ public class ExtendedDismaxQParser extends QParser {
         for (Map.Entry<String, Float> entry : ff.entrySet()) {
           Query fq = subQuery(entry.getKey(), FunctionQParserPlugin.NAME).getQuery();
           Float b = entry.getValue();
-          if (null != b && b.floatValue() != 1f) {
+          if (null != b && b != 1f) {
             fq = new BoostQuery(fq, b);
           }
           boostFunctions.add(fq);
@@ -1386,7 +1386,7 @@ public class ExtendedDismaxQParser extends QParser {
         Query sub = getAliasedQuery();
         if (sub != null) {
           Float boost = a.fields.get(f);
-          if (boost != null && boost.floatValue() != 1f) {
+          if (boost != null && boost != 1f) {
             sub = new BoostQuery(sub, boost);
           }
           lst.add(sub);
@@ -1405,7 +1405,7 @@ public class ExtendedDismaxQParser extends QParser {
         Query sub = getAliasedMultiTermQuery();
         if (sub != null) {
           Float boost = a.fields.get(f);
-          if (boost != null && boost.floatValue() != 1f) {
+          if (boost != null && boost != 1f) {
             sub = new BoostQuery(sub, boost);
           }
           lst.add(sub);

@@ -960,7 +960,7 @@ public class FieldCacheImpl implements FieldCache {
 
       Terms terms = reader.terms(key.field);
 
-      final float acceptableOverheadRatio = ((Float) key.custom).floatValue();
+      final float acceptableOverheadRatio = (Float) key.custom;
 
       final PagedBytes bytes = new PagedBytes(15);
 
@@ -1176,7 +1176,7 @@ public class FieldCacheImpl implements FieldCache {
       final int maxDoc = reader.maxDoc();
       Terms terms = reader.terms(key.field);
 
-      final float acceptableOverheadRatio = ((Float) key.custom).floatValue();
+      final float acceptableOverheadRatio = (Float) key.custom;
 
       final int termCountHardLimit = maxDoc;
 

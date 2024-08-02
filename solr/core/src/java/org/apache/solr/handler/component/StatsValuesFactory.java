@@ -607,7 +607,7 @@ public class StatsValuesFactory {
 
     @Override
     public long hash(EnumFieldValue v) {
-      return hasher.hashInt(v.toInt().intValue()).asLong();
+      return hasher.hashInt(v.toInt()).asLong();
     }
 
     @Override

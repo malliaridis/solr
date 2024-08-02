@@ -237,7 +237,7 @@ public class JaspellTernarySearchTrie implements Accountable {
           Float occur2 = null;
           if (node != null) occur2 = ((Float) (node.data));
           if (occur2 != null) {
-            occur += occur2.floatValue();
+            occur += occur2;
           }
           currentNode = getOrCreateNode(word.trim().toLowerCase(locale));
           currentNode.data = occur;

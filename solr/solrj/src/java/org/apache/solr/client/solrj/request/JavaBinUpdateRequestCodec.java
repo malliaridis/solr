@@ -245,7 +245,7 @@ public class JavaBinUpdateRequestCodec {
         NamedList<?> nl = namedList.get(i);
         if (i == 0) {
           Float boost = (Float) nl.getVal(0);
-          if (boost != null && boost.floatValue() != 1f) {
+          if (boost != null && boost != 1f) {
             String message =
                 "Ignoring document boost: "
                     + boost
@@ -258,7 +258,7 @@ public class JavaBinUpdateRequestCodec {
           }
         } else {
           Float boost = (Float) nl.getVal(2);
-          if (boost != null && boost.floatValue() != 1f) {
+          if (boost != null && boost != 1f) {
             String message =
                 "Ignoring field boost: "
                     + boost

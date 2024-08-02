@@ -120,14 +120,14 @@ public class ObjectBuilder {
   }
 
   public Object getLong() throws IOException {
-    return Long.valueOf(parser.getLong());
+    return parser.getLong();
   }
 
   public Object getNumber() throws IOException {
     CharArr num = parser.getNumberChars();
     String numstr = num.toString();
     double d = Double.parseDouble(numstr);
-    if (!Double.isInfinite(d)) return Double.valueOf(d);
+    if (!Double.isInfinite(d)) return d;
     // TODO: use more efficient constructor in Java5
     return new BigDecimal(num.buf, num.start, num.size());
   }

@@ -235,7 +235,7 @@ public class SolrIndexConfigTest extends SolrTestCaseJ4 {
     ++mSizeExpected;
     assertTrue(m.get("infoStreamEnabled") instanceof Boolean);
     {
-      assertFalse(Boolean.valueOf(m.get("infoStreamEnabled").toString()));
+      assertFalse(Boolean.parseBoolean(m.get("infoStreamEnabled").toString()));
     }
 
     ++mSizeExpected;

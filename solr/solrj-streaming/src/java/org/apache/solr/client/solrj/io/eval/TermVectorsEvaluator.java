@@ -124,7 +124,7 @@ public class TermVectorsEvaluator extends RecursiveObjectEvaluator implements Ma
           if (!docTerms.contains(term)) {
             docTerms.add(term);
             if (docFreqs.containsKey(term)) {
-              int count = docFreqs.get(term).intValue();
+              int count = docFreqs.get(term);
               docFreqs.put(term, ++count);
             } else {
               docFreqs.put(term, 1);
@@ -142,7 +142,7 @@ public class TermVectorsEvaluator extends RecursiveObjectEvaluator implements Ma
       Iterator<Map.Entry<String, Integer>> it = entries.iterator();
       while (it.hasNext()) {
         Map.Entry<String, Integer> entry = it.next();
-        int count = entry.getValue().intValue();
+        int count = entry.getValue();
 
         if (count < min || count > max) {
           it.remove();
@@ -161,7 +161,7 @@ public class TermVectorsEvaluator extends RecursiveObjectEvaluator implements Ma
         for (String term : terms) {
           if (docFreqs.containsKey(term)) {
             if (termFreq.containsKey(term)) {
-              int count = termFreq.get(term).intValue();
+              int count = termFreq.get(term);
               termFreq.put(term, ++count);
             } else {
               termFreq.put(term, 1);

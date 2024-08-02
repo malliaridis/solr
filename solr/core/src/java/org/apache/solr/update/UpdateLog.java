@@ -1849,7 +1849,7 @@ public class UpdateLog implements PluginInfoInitialized, SolrMetricProducer {
       long maxRecentVersion = 0L;
       if (updates != null) {
         for (Long key : updates.keySet())
-          maxRecentVersion = Math.max(maxRecentVersion, Math.abs(key.longValue()));
+          maxRecentVersion = Math.max(maxRecentVersion, Math.abs(key));
       }
       return maxRecentVersion;
     }

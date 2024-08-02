@@ -122,7 +122,7 @@ public class RestoreCollectionAPITest extends SolrTestCaseJ4 {
     assertEquals("restore", remoteMessage.get(QUEUE_OPERATION));
     assertEquals("someCollectionName", remoteMessage.get(COLLECTION));
     assertEquals("/some/location/path", remoteMessage.get(BACKUP_LOCATION));
-    assertEquals(Integer.valueOf(123), remoteMessage.get(BACKUP_ID));
+    assertEquals(123, remoteMessage.get(BACKUP_ID));
     assertEquals("someRepositoryName", remoteMessage.get(BACKUP_REPOSITORY));
     assertEquals("someAsyncId", remoteMessage.get(ASYNC));
     assertEquals("someBackupName", remoteMessage.get(NAME));
@@ -152,15 +152,15 @@ public class RestoreCollectionAPITest extends SolrTestCaseJ4 {
     assertEquals("restore", remoteMessage.get(QUEUE_OPERATION));
     assertEquals("someCollectionName", remoteMessage.get(COLLECTION));
     assertEquals("/some/location/path", remoteMessage.get(BACKUP_LOCATION));
-    assertEquals(Integer.valueOf(123), remoteMessage.get(BACKUP_ID));
+    assertEquals(123, remoteMessage.get(BACKUP_ID));
     assertEquals("someRepositoryName", remoteMessage.get(BACKUP_REPOSITORY));
     assertEquals("someAsyncId", remoteMessage.get(ASYNC));
     assertEquals("someBackupName", remoteMessage.get(NAME));
     assertEquals("someConfig", remoteMessage.get(COLL_CONF));
-    assertEquals(Integer.valueOf(123), remoteMessage.get(NRT_REPLICAS));
-    assertEquals(Integer.valueOf(123), remoteMessage.get(REPLICATION_FACTOR));
-    assertEquals(Integer.valueOf(456), remoteMessage.get(TLOG_REPLICAS));
-    assertEquals(Integer.valueOf(789), remoteMessage.get(PULL_REPLICAS));
+    assertEquals(123, remoteMessage.get(NRT_REPLICAS));
+    assertEquals(123, remoteMessage.get(REPLICATION_FACTOR));
+    assertEquals(456, remoteMessage.get(TLOG_REPLICAS));
+    assertEquals(789, remoteMessage.get(PULL_REPLICAS));
     assertEquals("node1,node2", remoteMessage.get(CREATE_NODE_SET_PARAM));
     assertEquals("bar", remoteMessage.get("property.foo"));
   }

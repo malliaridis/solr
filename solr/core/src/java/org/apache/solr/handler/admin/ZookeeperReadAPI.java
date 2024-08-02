@@ -123,7 +123,7 @@ public class ZookeeperReadAPI extends AdminAPIBase {
     try {
       Stat stat = coreContainer.getZkController().getZkClient().exists(zkPath, null, true);
       listResponse.stat = new AnnotatedStat(stat);
-      if (includeChildren != null && !includeChildren.booleanValue()) {
+      if (includeChildren != null && !includeChildren) {
         return listResponse;
       }
       List<String> l =

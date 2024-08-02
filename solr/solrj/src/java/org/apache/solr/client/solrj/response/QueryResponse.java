@@ -436,7 +436,7 @@ public class QueryResponse extends SolrResponseBase {
       assert "value".equals(nl.getName(1));
       Object v = nl.getVal(1);
       assert "count".equals(nl.getName(2));
-      int cnt = ((Integer) nl.getVal(2)).intValue();
+      int cnt = (Integer) nl.getVal(2);
 
       List<PivotField> subPivots = null;
       Map<String, FieldStatsInfo> fieldStatsInfos = null;

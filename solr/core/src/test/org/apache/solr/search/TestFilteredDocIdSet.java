@@ -101,7 +101,7 @@ public class TestFilteredDocIdSet extends SolrTestCase {
     int[] docs = new int[list.size()];
     int c = 0;
     for (Integer integer : list) {
-      docs[c++] = integer.intValue();
+      docs[c++] = integer;
     }
     int[] answer = new int[] {4, 6, 8};
     boolean same = Arrays.equals(answer, docs);

@@ -599,8 +599,7 @@ public abstract class CloudSolrClient extends SolrClient {
     for (int i = 0; i < response.size(); i++) {
       NamedList<?> shardResponse = (NamedList<?>) response.getVal(i);
       NamedList<?> header = (NamedList<?>) shardResponse.get("responseHeader");
-      Integer shardStatus = (Integer) header.get("status");
-      int s = shardStatus.intValue();
+      int s = (int) header.get("status");
       if (s > 0) {
         status = s;
       }
@@ -622,7 +621,7 @@ public abstract class CloudSolrClient extends SolrClient {
         maxToleratedErrors =
             Math.min(
                 maxToleratedErrors,
-                ToleratedUpdateError.getEffectiveMaxErrors(shardMaxToleratedErrors.intValue()));
+                ToleratedUpdateError.getEffectiveMaxErrors(shardMaxToleratedErrors));
 
         if (null == toleratedErrors) {
           toleratedErrors = new ArrayList<SimpleOrderedMap<String>>(shardTolerantErrors.size());
@@ -1254,7 +1253,7 @@ public abstract class CloudSolrClient extends SolrClient {
     // it's probably already on the top-level header set by condense
     NamedList<?> header = (NamedList<?>) resp.get("responseHeader");
     Integer achRf = (Integer) header.get(UpdateRequest.REPFACT);
-    if (achRf != null) return achRf.intValue();
+    if (achRf != null) return achRf;
 
     // not on the top-level header, walk the shard route tree
     Map<String, Integer> shardRf = getShardReplicationFactor(collection, resp);
@@ -1263,7 +1262,7 @@ public abstract class CloudSolrClient extends SolrClient {
         achRf = rf;
       }
     }
-    return (achRf != null) ? achRf.intValue() : -1;
+    return (achRf != null) ? achRf : -1;
   }
 
   /**

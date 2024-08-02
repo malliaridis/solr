@@ -1216,7 +1216,7 @@ public class FacetComponent extends SearchComponent {
    *     else a {@link java.lang.Long}
    */
   static Number num(Long val) {
-    if (val.longValue() < Integer.MAX_VALUE) return val.intValue();
+    if (val < Integer.MAX_VALUE) return val.intValue();
     else return val;
   }
 

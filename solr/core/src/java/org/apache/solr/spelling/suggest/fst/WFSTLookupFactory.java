@@ -40,9 +40,8 @@ public class WFSTLookupFactory extends LookupFactory {
   @Override
   public Lookup create(NamedList<?> params, SolrCore core) {
     boolean exactMatchFirst =
-        params.get(EXACT_MATCH_FIRST) != null
-            ? Boolean.valueOf(params.get(EXACT_MATCH_FIRST).toString())
-            : true;
+        params.get(EXACT_MATCH_FIRST) == null
+            || Boolean.parseBoolean(params.get(EXACT_MATCH_FIRST).toString());
 
     return new WFSTCompletionLookup(getTempDir(), "suggester", exactMatchFirst);
   }

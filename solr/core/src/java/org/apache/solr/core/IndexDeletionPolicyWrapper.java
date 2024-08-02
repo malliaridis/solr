@@ -338,7 +338,7 @@ public final class IndexDeletionPolicyWrapper extends IndexDeletionPolicy {
         if ((System.nanoTime() < reserves.getOrDefault(gen, 0L))
             || savedCommits.containsKey(gen)
             || snapshotMgr.isSnapshotted(gen)
-            || (null != latestCommit && gen.longValue() == latestCommit.getGeneration())) {
+            || (null != latestCommit && gen == latestCommit.getGeneration())) {
           return; // skip deletion
         }
         log.debug("Deleting generation={}", gen);

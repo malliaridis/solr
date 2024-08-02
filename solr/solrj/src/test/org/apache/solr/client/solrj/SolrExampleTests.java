@@ -1110,8 +1110,8 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
     FieldStatsInfo stats = rsp.getFieldStatsInfo().get(f);
     assertNotNull(stats);
 
-    assertEquals(23.0, ((Double) stats.getMin()).doubleValue(), 0);
-    assertEquals(94.0, ((Double) stats.getMax()).doubleValue(), 0);
+    assertEquals(23.0, (Double) stats.getMin(), 0);
+    assertEquals(94.0, (Double) stats.getMax(), 0);
     assertEquals(Long.valueOf(nums.length), stats.getCount());
     assertEquals(Long.valueOf(0), stats.getMissing());
     assertEquals("26.4", stats.getStddev().toString().substring(0, 4));
@@ -1136,8 +1136,8 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
     stats = rsp.getFieldStatsInfo().get(f);
     assertNotNull(stats);
 
-    assertEquals(5.0, ((Double) stats.getMin()).doubleValue(), 0);
-    assertEquals(20.0, ((Double) stats.getMax()).doubleValue(), 0);
+    assertEquals(5.0, (Double) stats.getMin(), 0);
+    assertEquals(20.0, (Double) stats.getMax(), 0);
     assertEquals(Long.valueOf(nums.length), stats.getCount());
     assertEquals(Long.valueOf(0), stats.getMissing());
 
@@ -1182,8 +1182,7 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
     assertEquals(stats.getCount().longValue(), inStockF.getCount() + inStockT.getCount());
 
     assertTrue(
-        "check that min max faceted ok",
-        ((Double) inStockF.getMin()).doubleValue() < ((Double) inStockF.getMax()).doubleValue());
+        "check that min max faceted ok", (Double) inStockF.getMin() < (Double) inStockF.getMax());
     assertEquals("they have the same distribution", inStockF.getStddev(), inStockT.getStddev());
   }
 

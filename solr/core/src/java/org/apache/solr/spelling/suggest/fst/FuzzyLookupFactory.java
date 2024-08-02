@@ -89,14 +89,13 @@ public class FuzzyLookupFactory extends LookupFactory {
 
     // optional parameters
     boolean exactMatchFirst =
-        (params.get(AnalyzingLookupFactory.EXACT_MATCH_FIRST) != null)
-            ? Boolean.valueOf(params.get(AnalyzingLookupFactory.EXACT_MATCH_FIRST).toString())
-            : true;
+        params.get(AnalyzingLookupFactory.EXACT_MATCH_FIRST) == null
+            || Boolean.parseBoolean(
+                params.get(AnalyzingLookupFactory.EXACT_MATCH_FIRST).toString());
 
     boolean preserveSep =
-        (params.get(AnalyzingLookupFactory.PRESERVE_SEP) != null)
-            ? Boolean.valueOf(params.get(AnalyzingLookupFactory.PRESERVE_SEP).toString())
-            : true;
+        params.get(AnalyzingLookupFactory.PRESERVE_SEP) == null
+            || Boolean.parseBoolean(params.get(AnalyzingLookupFactory.PRESERVE_SEP).toString());
 
     int options = 0;
     if (exactMatchFirst) {
@@ -118,9 +117,8 @@ public class FuzzyLookupFactory extends LookupFactory {
 
     boolean preservePositionIncrements =
         params.get(AnalyzingLookupFactory.PRESERVE_POSITION_INCREMENTS) != null
-            ? Boolean.valueOf(
-                params.get(AnalyzingLookupFactory.PRESERVE_POSITION_INCREMENTS).toString())
-            : false;
+            && Boolean.parseBoolean(
+                params.get(AnalyzingLookupFactory.PRESERVE_POSITION_INCREMENTS).toString());
 
     int maxEdits =
         (params.get(MAX_EDITS) != null)
@@ -144,7 +142,7 @@ public class FuzzyLookupFactory extends LookupFactory {
 
     boolean unicodeAware =
         (params.get(UNICODE_AWARE) != null)
-            ? Boolean.valueOf(params.get(UNICODE_AWARE).toString())
+            ? Boolean.parseBoolean(params.get(UNICODE_AWARE).toString())
             : FuzzySuggester.DEFAULT_UNICODE_AWARE;
 
     return new FuzzySuggester(

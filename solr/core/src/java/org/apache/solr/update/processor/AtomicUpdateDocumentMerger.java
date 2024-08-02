@@ -593,14 +593,14 @@ public class AtomicUpdateDocumentMerger {
       }
       Number result = (Number) resObj;
       if (oldVal instanceof Long) {
-        result = ((Long) oldVal).longValue() + result.longValue();
+        result = (Long) oldVal + result.longValue();
       } else if (oldVal instanceof Float) {
-        result = ((Float) oldVal).floatValue() + result.floatValue();
+        result = (Float) oldVal + result.floatValue();
       } else if (oldVal instanceof Double) {
-        result = ((Double) oldVal).doubleValue() + result.doubleValue();
+        result = (Double) oldVal + result.doubleValue();
       } else {
         // int, short, byte
-        result = ((Integer) oldVal).intValue() + result.intValue();
+        result = (Integer) oldVal + result.intValue();
       }
       toDoc.setField(sif.getName(), result);
     } else {

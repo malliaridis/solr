@@ -197,7 +197,7 @@ public class MultipleAdditiveTreesModel extends LTRScoringModel {
         sb.append(value);
       } else {
         sb.append("(feature=").append(feature);
-        sb.append(",threshold=").append(threshold.floatValue() - NODE_SPLIT_SLACK);
+        sb.append(",threshold=").append(threshold - NODE_SPLIT_SLACK);
         if (missing != null) {
           sb.append(",missing=").append(missing);
         }
@@ -231,9 +231,9 @@ public class MultipleAdditiveTreesModel extends LTRScoringModel {
 
     public float score(float[] featureVector) {
       if (isNullSameAsZero) {
-        return weight.floatValue() * scoreNode(featureVector, root);
+        return weight * scoreNode(featureVector, root);
       } else {
-        return weight.floatValue() * scoreNodeWithNullSupport(featureVector, root);
+        return weight * scoreNodeWithNullSupport(featureVector, root);
       }
     }
 

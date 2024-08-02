@@ -712,7 +712,7 @@ public class TermsComponent extends SearchComponent {
 
   private static void collectStats(SolrIndexSearcher searcher, NamedList<Number> stats) {
     int numDocs = searcher.getTopReaderContext().reader().numDocs();
-    stats.add("numDocs", Long.valueOf(numDocs));
+    stats.add("numDocs", (long) numDocs);
   }
 
   @Override

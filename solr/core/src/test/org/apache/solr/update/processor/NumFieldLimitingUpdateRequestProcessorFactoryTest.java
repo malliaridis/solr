@@ -59,7 +59,7 @@ public class NumFieldLimitingUpdateRequestProcessorFactoryTest extends SolrTestC
         Matchers.containsString("maxFields must be configured as a non-null <int>"));
 
     initArgs.clear();
-    initArgs.add("maxFields", Integer.valueOf(-5));
+    initArgs.add("maxFields", -5);
     thrown =
         expectThrows(
             IllegalArgumentException.class,

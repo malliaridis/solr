@@ -665,7 +665,7 @@ public abstract class LBSolrClient extends SolrClient {
     Exception ex = null;
     EndpointWrapper[] serverList = aliveServerList;
 
-    final int maxTries = (numServersToTry == null ? serverList.length : numServersToTry.intValue());
+    final int maxTries = (numServersToTry == null ? serverList.length : numServersToTry);
     int numServersTried = 0;
     Map<String, EndpointWrapper> justFailed = null;
     if (ClientUtils.shouldApplyDefaultCollection(collection, request))
@@ -745,13 +745,13 @@ public abstract class LBSolrClient extends SolrClient {
     if (timeAllowedExceeded) {
       solrServerExceptionMessage = "Time allowed to handle this request exceeded";
     } else {
-      if (numServersToTry != null && numServersTried > numServersToTry.intValue()) {
+      if (numServersToTry != null && numServersTried > numServersToTry) {
         solrServerExceptionMessage =
             "No live SolrServers available to handle this request:"
                 + " numServersTried="
                 + numServersTried
                 + " numServersToTry="
-                + numServersToTry.intValue();
+                + numServersToTry;
       } else {
         solrServerExceptionMessage = "No live SolrServers available to handle this request";
       }

@@ -255,7 +255,7 @@ public class ExportWriter implements SolrCore.RawWriter, Closeable {
     // probably OK.
     // This came to light in the very artifical case of indexing a single doc to Cloud.
     if (req.getContext().get("totalHits") != null) {
-      totalHits = ((Integer) req.getContext().get("totalHits")).intValue();
+      totalHits = (int) req.getContext().get("totalHits");
       sets = (FixedBitSet[]) req.getContext().get("export");
       if (sets == null) {
         writeException(

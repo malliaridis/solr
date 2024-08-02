@@ -1414,14 +1414,16 @@ public class TestExportWriter extends SolrTestCaseJ4 {
                 || field.equals("booleandv")) { // use string comparator
               assertTrue(fieldVal1.compareTo(fieldVal2) < 0);
             } else if (field.equals("doubledv")) {
-              assertTrue(Double.compare(Double.valueOf(fieldVal1), Double.valueOf(fieldVal2)) <= 0);
-            } else if (field.equals("floatdv")) {
-              assertTrue(Float.compare(Float.valueOf(fieldVal1), Float.valueOf(fieldVal2)) <= 0);
-            } else if (field.equals("intdv") || "field2_i_p".equals(field)) {
               assertTrue(
-                  Integer.compare(Integer.valueOf(fieldVal1), Integer.valueOf(fieldVal2)) <= 0);
+                  Double.compare(Double.parseDouble(fieldVal1), Double.parseDouble(fieldVal2))
+                      <= 0);
+            } else if (field.equals("floatdv")) {
+              assertTrue(
+                  Float.compare(Float.parseFloat(fieldVal1), Float.parseFloat(fieldVal2)) <= 0);
+            } else if (field.equals("intdv") || "field2_i_p".equals(field)) {
+              assertTrue(Integer.parseInt(fieldVal1) <= Integer.parseInt(fieldVal2));
             } else if (field.equals("longdv") || field.equals("field3_l_p")) {
-              assertTrue(Long.compare(Integer.valueOf(fieldVal1), Long.valueOf(fieldVal2)) <= 0);
+              assertTrue(Integer.parseInt(fieldVal1) <= Long.parseLong(fieldVal2));
             }
           } else {
             if (field.equals("stringdv")
@@ -1430,14 +1432,16 @@ public class TestExportWriter extends SolrTestCaseJ4 {
                 || field.equals("booleandv")) { // use string comparator
               assertTrue(fieldVal1.compareTo(fieldVal2) > 0);
             } else if (field.equals("doubledv")) {
-              assertTrue(Double.compare(Double.valueOf(fieldVal1), Double.valueOf(fieldVal2)) >= 0);
-            } else if (field.equals("floatdv")) {
-              assertTrue(Float.compare(Float.valueOf(fieldVal1), Float.valueOf(fieldVal2)) >= 0);
-            } else if (field.equals("intdv") || "field2_i_p".equals(field)) {
               assertTrue(
-                  Integer.compare(Integer.valueOf(fieldVal1), Integer.valueOf(fieldVal2)) >= 0);
+                  Double.compare(Double.parseDouble(fieldVal1), Double.parseDouble(fieldVal2))
+                      >= 0);
+            } else if (field.equals("floatdv")) {
+              assertTrue(
+                  Float.compare(Float.parseFloat(fieldVal1), Float.parseFloat(fieldVal2)) >= 0);
+            } else if (field.equals("intdv") || "field2_i_p".equals(field)) {
+              assertTrue(Integer.parseInt(fieldVal1) >= Integer.parseInt(fieldVal2));
             } else if (field.equals("longdv") || field.equals("field3_l_p")) {
-              assertTrue(Long.compare(Integer.valueOf(fieldVal1), Long.valueOf(fieldVal2)) >= 0);
+              assertTrue(Integer.parseInt(fieldVal1) >= Long.parseLong(fieldVal2));
             }
           }
           break;

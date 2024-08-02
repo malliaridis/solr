@@ -443,7 +443,7 @@ public class QueryElevationComponent extends SearchComponent implements SolrCore
         String id = DOMUtil.getAttr(child, "id", "missing 'id'");
         String e = DOMUtil.getAttr(child, EXCLUDE, null);
         if (e != null) {
-          if (Boolean.valueOf(e)) {
+          if (Boolean.parseBoolean(e)) {
             elevationBuilder.addExcludedIds(Collections.singleton(id));
             continue;
           }

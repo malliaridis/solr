@@ -254,7 +254,7 @@ public class CreateAliasAPITest extends SolrTestCaseJ4 {
     assertEquals("someField", remoteMessage.get("router.field"));
     assertEquals("NOW", remoteMessage.get("router.start"));
     assertEquals("+1MONTH", remoteMessage.get("router.interval"));
-    assertEquals(Long.valueOf(123456L), remoteMessage.get("router.maxFutureMs"));
+    assertEquals(123456L, remoteMessage.get("router.maxFutureMs"));
     assertEquals(3, remoteMessage.get("create-collection.numShards"));
     assertEquals("someConfig", remoteMessage.get("create-collection.collection.configName"));
   }
@@ -286,7 +286,7 @@ public class CreateAliasAPITest extends SolrTestCaseJ4 {
     assertEquals("someField", remoteMessage.get("router.0.field"));
     assertEquals("NOW", remoteMessage.get("router.0.start"));
     assertEquals("+1MONTH", remoteMessage.get("router.0.interval"));
-    assertEquals(Long.valueOf(123456L), remoteMessage.get("router.0.maxFutureMs"));
+    assertEquals(123456L, remoteMessage.get("router.0.maxFutureMs"));
     assertEquals("category", remoteMessage.get("router.1.name"));
     assertEquals("someField", remoteMessage.get("router.1.field"));
     assertEquals(3, remoteMessage.get("create-collection.numShards"));

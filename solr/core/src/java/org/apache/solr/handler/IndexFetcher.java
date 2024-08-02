@@ -690,7 +690,7 @@ public class IndexFetcher {
                   latestGeneration);
           final long timeTakenSeconds = getReplicationTimeElapsed();
           final Long bytesDownloadedPerSecond =
-              (timeTakenSeconds != 0 ? Long.valueOf(bytesDownloaded / timeTakenSeconds) : null);
+              (timeTakenSeconds != 0 ? bytesDownloaded / timeTakenSeconds : null);
           log.info(
               "Total time taken for download (fullCopy={},bytesDownloaded={}) : {} secs ({} bytes/sec) to {}",
               isFullCopyNeeded,

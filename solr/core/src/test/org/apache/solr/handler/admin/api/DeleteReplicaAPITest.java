@@ -101,7 +101,7 @@ public class DeleteReplicaAPITest extends SolrTestCaseJ4 {
     assertEquals("someCollName", remoteMessage.get(COLLECTION));
     assertEquals("someShardName", remoteMessage.get(SHARD_ID_PROP));
     assertEquals("someReplicaName", remoteMessage.get(REPLICA));
-    assertEquals(Integer.valueOf(123), remoteMessage.get(COUNT_PROP));
+    assertEquals(123, remoteMessage.get(COUNT_PROP));
     assertEquals(Boolean.TRUE, remoteMessage.get(FOLLOW_ALIASES));
     assertEquals(Boolean.FALSE, remoteMessage.get(DELETE_INSTANCE_DIR));
     assertEquals(Boolean.TRUE, remoteMessage.get(DELETE_DATA_DIR));

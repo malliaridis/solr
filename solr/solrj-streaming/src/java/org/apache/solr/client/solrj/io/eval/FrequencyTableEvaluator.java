@@ -77,7 +77,7 @@ public class FrequencyTableEvaluator extends RecursiveNumericEvaluator implement
     while (iterator.hasNext()) {
       Long value = (Long) iterator.next();
       Tuple tuple = new Tuple();
-      tuple.put("value", value.longValue());
+      tuple.put("value", value);
       tuple.put("count", frequency.getCount(value));
       tuple.put("cumFreq", frequency.getCumFreq(value));
       tuple.put("cumPct", frequency.getCumPct(value));

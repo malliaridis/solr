@@ -445,7 +445,7 @@ public class ScriptUpdateProcessorFactory extends UpdateRequestProcessorFactory
         try {
           Object result = engine.getEngine().invokeFunction(name, cmd);
           if (null != result && result instanceof Boolean) {
-            if (!((Boolean) result).booleanValue()) {
+            if (!(Boolean) result) {
               return false;
             }
           }
