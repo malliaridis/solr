@@ -125,8 +125,7 @@ public class TestJsonFacetRefinement extends SolrTestCaseHS {
   }
 
   void doTestRefine(String facet, String... responsesAndTests) throws Exception {
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       int nShards = responsesAndTests.length / 2;
       Object jsonFacet = Utils.fromJSONString(facet);
       FacetParser<FacetQuery> parser = new FacetParser.FacetTopParser(req);
@@ -149,9 +148,6 @@ public class TestJsonFacetRefinement extends SolrTestCaseHS {
         String tests = responsesAndTests[nShards + i];
         match(refinement, 1e-5, tests);
       }
-
-    } finally {
-      req.close();
     }
   }
 

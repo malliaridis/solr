@@ -455,18 +455,10 @@ public abstract class ManagedResourceStorage {
     public void store(String resourceId, Object toStore) throws IOException {
       String json = toJSONString(toStore, indentSize);
       String storedResourceId = getStoredResourceId(resourceId);
-      OutputStreamWriter writer = null;
-      try {
-        writer = new OutputStreamWriter(storageIO.openOutputStream(storedResourceId), UTF_8);
+      try (OutputStreamWriter writer =
+          new OutputStreamWriter(storageIO.openOutputStream(storedResourceId), UTF_8)) {
         writer.write(json);
         writer.flush();
-      } finally {
-        if (writer != null) {
-          try {
-            writer.close();
-          } catch (Exception ignore) {
-          }
-        }
       }
       if (log.isInfoEnabled()) {
         log.info("Saved JSON object to path {} using {}", storedResourceId, storageIO.getInfo());

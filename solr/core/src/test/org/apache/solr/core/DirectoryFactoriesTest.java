@@ -54,9 +54,7 @@ public class DirectoryFactoriesTest extends SolrTestCaseJ4 {
 
   private void testExistsBehavior(Class<? extends DirectoryFactory> clazz) throws Exception {
     final String path = createTempDir().toString() + "/" + clazz + "_somedir";
-    DirectoryFactory dirFac = null;
-    try {
-      dirFac = clazz.getConstructor().newInstance();
+    try (DirectoryFactory dirFac = clazz.getConstructor().newInstance()) {
       dirFac.initCoreContainer(null); // grey box testing directly against path
       dirFac.init(new NamedList<>());
 
@@ -91,10 +89,6 @@ public class DirectoryFactoriesTest extends SolrTestCaseJ4 {
 
     } catch (AssertionError ae) {
       throw new AssertionError("Failed with " + clazz.getName(), ae);
-    } finally {
-      if (null != dirFac) {
-        dirFac.close();
-      }
     }
   }
 }

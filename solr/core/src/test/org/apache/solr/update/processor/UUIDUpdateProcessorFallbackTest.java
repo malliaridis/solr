@@ -182,8 +182,7 @@ public class UUIDUpdateProcessorFallbackTest extends SolrTestCaseJ4 {
 
     SolrQueryResponse rsp = new SolrQueryResponse();
 
-    SolrQueryRequest req = new LocalSolrQueryRequest(core, params);
-    try {
+    try (SolrQueryRequest req = new LocalSolrQueryRequest(core, params)) {
       SolrRequestInfo.setRequestInfo(new SolrRequestInfo(req, rsp));
       AddUpdateCommand cmd = new AddUpdateCommand(req);
       cmd.solrDoc = docIn;
@@ -194,7 +193,6 @@ public class UUIDUpdateProcessorFallbackTest extends SolrTestCaseJ4 {
       return cmd.solrDoc;
     } finally {
       SolrRequestInfo.clearRequestInfo();
-      req.close();
     }
   }
 }

@@ -68,14 +68,8 @@ public class JavabinLoader extends ContentStreamLoader {
       ContentStream stream,
       UpdateRequestProcessor processor)
       throws Exception {
-    InputStream is = null;
-    try {
-      is = stream.getStream();
+    try (InputStream is = stream.getStream()) {
       parseAndLoadDocs(req, rsp, is, processor);
-    } finally {
-      if (is != null) {
-        is.close();
-      }
     }
   }
 

@@ -58,8 +58,7 @@ public class UpdateProcessorTestBase extends SolrTestCaseJ4 {
 
     SolrQueryResponse rsp = new SolrQueryResponse();
 
-    SolrQueryRequest req = new LocalSolrQueryRequest(core, requestParams);
-    try {
+    try (SolrQueryRequest req = new LocalSolrQueryRequest(core, requestParams)) {
       SolrRequestInfo.setRequestInfo(new SolrRequestInfo(req, rsp));
       AddUpdateCommand cmd = new AddUpdateCommand(req);
       cmd.solrDoc = docIn;
@@ -73,7 +72,6 @@ public class UpdateProcessorTestBase extends SolrTestCaseJ4 {
       return cmd.solrDoc;
     } finally {
       SolrRequestInfo.clearRequestInfo();
-      req.close();
     }
   }
 
@@ -86,12 +84,10 @@ public class UpdateProcessorTestBase extends SolrTestCaseJ4 {
 
     SolrQueryRequest req = new LocalSolrQueryRequest(core, new ModifiableSolrParams());
 
-    CommitUpdateCommand cmd = new CommitUpdateCommand(req, false);
-    UpdateRequestProcessor processor = pc.createProcessor(req, rsp);
-    try {
+    try (req) {
+      CommitUpdateCommand cmd = new CommitUpdateCommand(req, false);
+      UpdateRequestProcessor processor = pc.createProcessor(req, rsp);
       processor.processCommit(cmd);
-    } finally {
-      req.close();
     }
   }
 
@@ -123,11 +119,10 @@ public class UpdateProcessorTestBase extends SolrTestCaseJ4 {
     SolrQueryRequest req = new LocalSolrQueryRequest(core, new ModifiableSolrParams());
 
     UpdateRequestProcessor processor = pc.createProcessor(req, rsp);
-    try {
+    try (req) {
       processor.finish();
     } finally {
       IOUtils.closeQuietly(processor);
-      req.close();
     }
   }
 

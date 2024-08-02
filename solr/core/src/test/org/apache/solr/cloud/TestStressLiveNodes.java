@@ -90,14 +90,11 @@ public class TestStressLiveNodes extends SolrCloudTestCase {
 
   /** returns the true set of live nodes (currently in zk) as a sorted list */
   private static List<String> getTrueLiveNodesFromZk() throws Exception {
-    SolrZkClient client = newSolrZkClient();
-    try {
+    try (SolrZkClient client = newSolrZkClient()) {
       ArrayList<String> result =
           new ArrayList<>(client.getChildren(ZkStateReader.LIVE_NODES_ZKNODE, null, true));
       Collections.sort(result);
       return result;
-    } finally {
-      client.close();
     }
   }
 

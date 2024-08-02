@@ -141,14 +141,11 @@ public class TestTlogReplica extends SolrCloudTestCase {
   private void assertUlogPresence(DocCollection collection) {
     for (Slice s : collection.getSlices()) {
       for (Replica r : s.getReplicas()) {
-        SolrCore core = null;
-        try {
-          core = cluster.getReplicaJetty(r).getCoreContainer().getCore(r.getCoreName());
+        try (SolrCore core =
+            cluster.getReplicaJetty(r).getCoreContainer().getCore(r.getCoreName())) {
           assertNotNull(core);
           File tlogDir = getHypotheticalTlogDir(core);
           assertTrue("Update log should exist for replicas of type Append", tlogDir.exists());
-        } finally {
-          core.close();
         }
       }
     }

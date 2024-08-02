@@ -521,21 +521,18 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
 
   public void testUploadLegacyManagedSchemaFile() throws Exception {
     String configSetName = "legacy-managed-schema";
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClient.Builder()
             .withUrl(cluster.getZkServer().getZkAddress())
             .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .withConnTimeOut(45000, TimeUnit.MILLISECONDS)
-            .build();
-    try {
+            .build()) {
       long statusCode = uploadConfigSet(configSetName, "", null, zkClient, true);
       assertEquals(0l, statusCode);
 
       assertTrue(
           "managed-schema file should have been uploaded",
           zkClient.exists("/configs/" + configSetName + "/managed-schema", true));
-    } finally {
-      zkClient.close();
     }
 
     // try to create a collection with the uploaded configset
@@ -1783,8 +1780,7 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
     Deque<File> queue = new ArrayDeque<>();
     queue.push(directory);
     OutputStream out = new FileOutputStream(zipfile);
-    ZipOutputStream zout = new ZipOutputStream(out);
-    try {
+    try (ZipOutputStream zout = new ZipOutputStream(out)) {
       while (!queue.isEmpty()) {
         directory = queue.pop();
         for (File kid : directory.listFiles()) {
@@ -1796,8 +1792,7 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
           } else {
             zout.putNextEntry(new ZipEntry(name));
 
-            InputStream in = new FileInputStream(kid);
-            try {
+            try (InputStream in = new FileInputStream(kid)) {
               byte[] buffer = new byte[1024];
               while (true) {
                 int readCount = in.read(buffer);
@@ -1806,16 +1801,12 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
                 }
                 zout.write(buffer, 0, readCount);
               }
-            } finally {
-              in.close();
             }
 
             zout.closeEntry();
           }
         }
       }
-    } finally {
-      zout.close();
     }
   }
 
@@ -1970,7 +1961,7 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
             .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .withConnTimeOut(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .build();
-    try {
+    try (zkClient) {
       assertEquals(assertExists, getConfigSetService().checkConfigExists(configSet));
 
       Delete delete = new Delete();
@@ -1978,8 +1969,6 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
       ConfigSetAdminResponse response = delete.process(solrClient);
       assertNotNull(response.getResponse());
       assertFalse(getConfigSetService().checkConfigExists(configSet));
-    } finally {
-      zkClient.close();
     }
   }
 
@@ -1994,7 +1983,7 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
             .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .withConnTimeOut(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .build();
-    try {
+    try (zkClient) {
       // test empty
       ConfigSetAdminRequest.List list = new ConfigSetAdminRequest.List();
       ConfigSetAdminResponse.List response = list.process(solrClient);
@@ -2012,8 +2001,6 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
       actualConfigSets = response.getConfigSets();
       assertEquals(configSets.size() + 1, actualConfigSets.size());
       assertTrue(actualConfigSets.containsAll(configSets));
-    } finally {
-      zkClient.close();
     }
 
     solrClient.close();

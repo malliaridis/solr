@@ -91,15 +91,12 @@ public class ZkSolrClientTest extends SolrTestCaseJ4 {
   @SuppressWarnings({"try"})
   public void testMakeRootNode() throws Exception {
     try (ZkConnection conn = new ZkConnection()) {
-      final SolrZkClient zkClient =
+      try (SolrZkClient zkClient =
           new SolrZkClient.Builder()
               .withUrl(conn.getServer().getZkHost())
               .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
-              .build();
-      try {
+              .build()) {
         assertTrue(zkClient.exists("/solr", true));
-      } finally {
-        zkClient.close();
       }
     }
   }

@@ -130,25 +130,19 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testQueryPrefix() throws Exception {
-    SolrQueryRequest req = req("myField", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("myField", "foo_s")) {
       assertQueryEquals("prefix", req, "{!prefix f=$myField}asdf", "{!prefix f=foo_s}asdf");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryBoost() throws Exception {
-    SolrQueryRequest req = req("df", "foo_s", "myBoost", "sum(3,foo_i)");
-    try {
+    try (SolrQueryRequest req = req("df", "foo_s", "myBoost", "sum(3,foo_i)")) {
       assertQueryEquals(
           "boost",
           req,
           "{!boost b=$myBoost}asdf",
           "{!boost b=$myBoost v=asdf}",
           "{!boost b=sum(3,foo_i)}foo_s:asdf");
-    } finally {
-      req.close();
     }
   }
 
@@ -232,25 +226,19 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testExportQuery() throws Exception {
-    SolrQueryRequest req = req("q", "*:*");
-    try {
+    try (SolrQueryRequest req = req("q", "*:*")) {
       assertQueryEquals("xport", req, "{!xport}");
-    } finally {
-      req.close();
     }
   }
 
   public void testGraphTermsQuery() throws Exception {
-    SolrQueryRequest req = req("q", "*:*");
-    try {
+    try (SolrQueryRequest req = req("q", "*:*")) {
       assertQueryEquals("graphTerms", req, "{!graphTerms f=field1_s maxDocFreq=1000}term1,term2");
-    } finally {
-      req.close();
     }
   }
 
   public void testTlogitQuery() throws Exception {
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "q",
             "*:*",
@@ -267,41 +255,31 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
             "outcome",
             "a",
             "positiveLabel",
-            "1");
-    try {
+            "1")) {
       assertQueryEquals("tlogit", req, "{!tlogit}");
-    } finally {
-      req.close();
     }
   }
 
   public void testIGainQuery() throws Exception {
-    SolrQueryRequest req =
-        req("q", "*:*", "outcome", "b", "positiveLabel", "1", "field", "x", "numTerms", "200");
-    try {
+    try (SolrQueryRequest req =
+        req("q", "*:*", "outcome", "b", "positiveLabel", "1", "field", "x", "numTerms", "200")) {
       assertQueryEquals("igain", req, "{!igain}");
-    } finally {
-      req.close();
     }
   }
 
   public void testSignificantTermsQuery() throws Exception {
-    SolrQueryRequest req = req("q", "*:*");
-    try {
+    try (SolrQueryRequest req = req("q", "*:*")) {
       assertQueryEquals(
           SignificantTermsQParserPlugin.NAME, req, "{!" + SignificantTermsQParserPlugin.NAME + "}");
-    } finally {
-      req.close();
     }
   }
 
   public void testQuerySwitch() throws Exception {
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "myXXX", "XXX",
             "myField", "foo_s",
-            "myQ", "{!prefix f=$myField}asdf");
-    try {
+            "myQ", "{!prefix f=$myField}asdf")) {
       assertQueryEquals(
           "switch",
           req,
@@ -318,8 +296,6 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
 
       assertQueryEquals(
           "switch", req, "{!switch case.foo=$myQ case.bar=zzz case.yak=qqq}foo", "{!query v=$myQ}");
-    } finally {
-      req.close();
     }
   }
 
@@ -341,51 +317,41 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testField() throws Exception {
-    SolrQueryRequest req = req("myField", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("myField", "foo_s")) {
       assertQueryEquals(
           "field",
           req,
           "{!field f=$myField}asdf",
           "{!field f=$myField v=asdf}",
           "{!field f=foo_s}asdf");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryRaw() throws Exception {
-    SolrQueryRequest req = req("myField", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("myField", "foo_s")) {
       assertQueryEquals(
           "raw", req, "{!raw f=$myField}asdf", "{!raw f=$myField v=asdf}", "{!raw f=foo_s}asdf");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryTerm() throws Exception {
-    SolrQueryRequest req = req("myField", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("myField", "foo_s")) {
       assertQueryEquals(
           "term",
           req,
           "{!term f=$myField}asdf",
           "{!term f=$myField v=asdf}",
           "{!term f=foo_s}asdf");
-    } finally {
-      req.close();
     }
   }
 
   @SuppressWarnings({"unchecked"})
   public void testQueryCollapse() throws Exception {
-    SolrQueryRequest req =
+
+    try (SolrQueryRequest req =
         req(
             "myField", "foo_s1",
-            "g_sort", "foo_s1 asc, foo_i desc");
-
-    try {
+            "g_sort", "foo_s1 asc, foo_i desc")) {
       assertQueryEquals("collapse", req, "{!collapse field=$myField}");
 
       assertQueryEquals("collapse", req, "{!collapse field=$myField max=a}");
@@ -419,53 +385,40 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           req,
           "{!collapse field=$myField min=a}",
           "{!collapse field=$myField min=a nullPolicy=ignore}");
-
-    } finally {
-      req.close();
     }
   }
 
   public void testHash() throws Exception {
-    SolrQueryRequest req = req("partitionKeys", "foo_s");
 
-    try {
+    try (SolrQueryRequest req = req("partitionKeys", "foo_s")) {
       assertQueryEquals("hash", req, "{!hash workers=3 worker=0}");
-
-    } finally {
-      req.close();
     }
   }
 
   public void testMinHash() throws Exception {
-    SolrQueryRequest req = req("q", "apache lucene is a search library", "df", "min_hash_analyzed");
 
-    try {
+    try (SolrQueryRequest req =
+        req("q", "apache lucene is a search library", "df", "min_hash_analyzed")) {
       assertQueryEquals(
           "min_hash",
           req,
           "{!min_hash field=\"min_hash_analysed\"}apache lucene is a search library");
-    } finally {
-      req.close();
     }
   }
 
   public void testRankQuery() throws Exception {
-    SolrQueryRequest req = req("df", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("df", "foo_s")) {
       assertQueryEquals(
           "rank",
           req,
           "{!rank f='rank_1'}",
           "{!rank f='rank_1' function='satu'}",
           "{!rank f='rank_1' function='satu' weight=1}");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryNested() throws Exception {
-    SolrQueryRequest req = req("df", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("df", "foo_s")) {
       assertQueryEquals(
           "query",
           req,
@@ -473,19 +426,16 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "{!query v='foo_s:asdf'}",
           "{!query}foo_s:asdf",
           "{!query}asdf");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryFunc() throws Exception {
     // more involved tests of specific functions in other methods
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "myVar", "5",
             "myField", "foo_i",
-            "myInner", "product(4,foo_i)");
-    try {
+            "myInner", "product(4,foo_i)")) {
       assertQueryEquals("func", req, "{!func}sum(4,5)", "{!func}sum(4,$myVar)", "sum(4,5)");
       assertQueryEquals(
           "func", req, "{!func}sum(1,2,3,4,5)", "{!func}sum(1,2,3,4,$myVar)", "sum(1,2,3,4,5)");
@@ -496,20 +446,17 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "{!func}sum(4,product(4,foo_i))",
           "{!func}sum(4,product(4,$myField))",
           "{!func}sum(4,product(4,field(foo_i)))");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryFrange() throws Exception {
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "myVar", "5",
             "low", "0.2",
             "high", "20.4",
             "myField", "foo_i",
-            "myInner", "product(4,foo_i)");
-    try {
+            "myInner", "product(4,foo_i)")) {
       // NOTE: unlike most queries, frange defaults to cost==100
       assertQueryEquals(
           "frange",
@@ -517,8 +464,6 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "{!frange l=0.2 h=20.4}sum(4,5)",
           "{!frange l=0.2 h=20.4 cost=100}sum(4,5)",
           "{!frange l=$low h=$high}sum(4,$myVar)");
-    } finally {
-      req.close();
     }
   }
 
@@ -531,31 +476,27 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testLocalParamsWithRepeatingParam() throws Exception {
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "q", "foo",
             "bq", "111",
-            "bq", "222");
-    try {
+            "bq", "222")) {
       assertQueryEquals(
           "dismax",
           req,
           "{!dismax}foo",
           "{!dismax bq=111 bq=222}foo",
           "{!dismax bq=222 bq=111}foo");
-    } finally {
-      req.close();
     }
   }
 
   private void checkQuerySpatial(final String type) throws Exception {
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "myVar", "5",
             "d", "109",
             "pt", "10.312,-20.556",
-            "sfield", "store");
-    try {
+            "sfield", "store")) {
       assertQueryEquals(
           type,
           req,
@@ -573,44 +514,36 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "{!" + type + " sfield=xy d=109}",
           "{!" + type + " sfield=xy d=$d pt=$pt}",
           "{!" + type + " sfield=xy d=$d pt=10.312,-20.556}");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryJoin() throws Exception {
-    SolrQueryRequest req =
+
+    try (SolrQueryRequest req =
         req(
             "myVar", "5",
             "df", "text",
             "ff", "foo_s",
-            "tt", "bar_s");
-
-    try {
+            "tt", "bar_s")) {
       assertQueryEquals(
           "join",
           req,
           "{!join from=foo_s to=bar_s}asdf",
           "{!join from=$ff to=$tt}asdf",
           "{!join from=$ff to='bar_s'}text:asdf");
-    } finally {
-      req.close();
     }
   }
 
   public void testQueryScoreJoin() throws Exception {
-    SolrQueryRequest req =
-        req("myVar", "5", "df", "text", "ff", "foo_s", "tt", "bar_s", "scoreavg", "avg");
 
-    try {
+    try (SolrQueryRequest req =
+        req("myVar", "5", "df", "text", "ff", "foo_s", "tt", "bar_s", "scoreavg", "avg")) {
       assertQueryEquals(
           "join",
           req,
           "{!join from=foo_s to=bar_s score=avg}asdf",
           "{!join from=$ff to=$tt score=Avg}asdf",
           "{!join from=$ff to='bar_s' score=$scoreavg}text:asdf");
-    } finally {
-      req.close();
     }
   }
 
@@ -708,7 +641,7 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFilters() throws Exception {
-    final SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "fq",
             "bar_s:baz",
@@ -717,8 +650,7 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
             "ffq",
             "{!tag=ffqbaz}bar_s:baz",
             "ffq",
-            "{!tag=ffqban}bar_s:ban");
-    try {
+            "{!tag=ffqban}bar_s:ban")) {
       assertQueryEquals(
           "filters",
           req,
@@ -739,8 +671,6 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
       QueryUtils.checkUnequal(
           QParser.getParser("{!filters param=$fq}foo_s:bar", req).getQuery(),
           QParser.getParser("{!filters param=$fq excludeTags=fqban}foo_s:bar", req).getQuery());
-    } finally {
-      req.close();
     }
   }
 
@@ -820,11 +750,8 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFuncLiteral() throws Exception {
-    SolrQueryRequest req = req("someVar", "a string");
-    try {
+    try (SolrQueryRequest req = req("someVar", "a string")) {
       assertFuncEquals(req, "literal('a string')", "literal(\"a string\")", "literal($someVar)");
-    } finally {
-      req.close();
     }
   }
 
@@ -841,30 +768,21 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFuncLinear() throws Exception {
-    SolrQueryRequest req = req("someVar", "27");
-    try {
+    try (SolrQueryRequest req = req("someVar", "27")) {
       assertFuncEquals(req, "linear(foo_i,$someVar,42)", "linear(foo_i,   27,   42)");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncRecip() throws Exception {
-    SolrQueryRequest req = req("someVar", "27");
-    try {
+    try (SolrQueryRequest req = req("someVar", "27")) {
       assertFuncEquals(
           req, "recip(foo_i,$someVar,42,   27   )", "recip(foo_i,   27,   42,$someVar)");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncScale() throws Exception {
-    SolrQueryRequest req = req("someVar", "27");
-    try {
+    try (SolrQueryRequest req = req("someVar", "27")) {
       assertFuncEquals(req, "scale(field(foo_i),$someVar,42)", "scale(foo_i, 27, 42)");
-    } finally {
-      req.close();
     }
   }
 
@@ -997,20 +915,14 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFuncQuery() throws Exception {
-    SolrQueryRequest req = req("myQ", "asdf");
-    try {
+    try (SolrQueryRequest req = req("myQ", "asdf")) {
       assertFuncEquals(req, "query($myQ)", "query($myQ,0)", "query({!lucene v=$myQ},0)");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncBoost() throws Exception {
-    SolrQueryRequest req = req("myQ", "asdf");
-    try {
+    try (SolrQueryRequest req = req("myQ", "asdf")) {
       assertFuncEquals(req, "boost($myQ,sum(4,5))", "boost({!lucene v=$myQ},sum(4,5))");
-    } finally {
-      req.close();
     }
   }
 
@@ -1082,8 +994,7 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFuncTerms() throws Exception {
-    SolrQueryRequest req = req("myField", "field_t", "myTerm", "my term");
-    try {
+    try (SolrQueryRequest req = req("myField", "field_t", "myTerm", "my term")) {
       for (final String type :
           new String[] {
             "docfreq", "termfreq",
@@ -1106,9 +1017,6 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "ttf(field_t,'my term')",
           "ttf('field_t','my term')",
           "totaltermfreq(field_t,'my term')");
-
-    } finally {
-      req.close();
     }
   }
 
@@ -1133,18 +1041,14 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFuncBools() throws Exception {
-    SolrQueryRequest req = req("myTrue", "true", "myFalse", "false");
-    try {
+    try (SolrQueryRequest req = req("myTrue", "true", "myFalse", "false")) {
       assertFuncEquals(req, "true", "$myTrue");
       assertFuncEquals(req, "false", "$myFalse");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncExists() throws Exception {
-    SolrQueryRequest req = req("myField", "field_t", "myQ", "asdf");
-    try {
+    try (SolrQueryRequest req = req("myField", "field_t", "myQ", "asdf")) {
       assertFuncEquals(
           req,
           "exists(field_t)",
@@ -1152,24 +1056,18 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "exists(field('field_t'))",
           "exists(field($myField))");
       assertFuncEquals(req, "exists(query($myQ))", "exists(query({!lucene v=$myQ}))");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncIsnan() throws Exception {
-    SolrQueryRequest req = req("num", "12.3456", "zero", "0");
-    try {
+    try (SolrQueryRequest req = req("num", "12.3456", "zero", "0")) {
       assertFuncEquals(req, "isnan(12.3456)", "isnan(12.3456)", "isnan($num)");
       assertFuncEquals(req, "isnan(div(0,0))", "isnan(div($zero,$zero))");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncNot() throws Exception {
-    SolrQueryRequest req = req("myField", "field_b", "myTrue", "true");
-    try {
+    try (SolrQueryRequest req = req("myField", "field_b", "myTrue", "true")) {
       assertFuncEquals(req, "not(true)", "not($myTrue)");
       assertFuncEquals(req, "not(not(true))", "not(not($myTrue))");
       assertFuncEquals(
@@ -1180,15 +1078,11 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "not(exists($myField))",
           "not(exists(field('field_b')))",
           "not(exists(field($myField)))");
-
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncDoubleValueBools() throws Exception {
-    SolrQueryRequest req = req("myField", "field_b", "myTrue", "true");
-    try {
+    try (SolrQueryRequest req = req("myField", "field_b", "myTrue", "true")) {
       for (final String type : new String[] {"and", "or", "xor"}) {
         assertFuncEquals(
             req,
@@ -1198,18 +1092,15 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
             type + "(field($myField),$myTrue)",
             type + "($myField,$myTrue)");
       }
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncIf() throws Exception {
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "myBoolField", "foo_b",
             "myIntField", "bar_i",
-            "myTrue", "true");
-    try {
+            "myTrue", "true")) {
       assertFuncEquals(
           req,
           "if(foo_b,bar_i,25)",
@@ -1217,73 +1108,56 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "if(field('foo_b'),$myIntField,25)",
           "if(field($myBoolField),field('bar_i'),25)");
       assertFuncEquals(req, "if(true,37,field($myIntField))", "if($myTrue,37,$myIntField)");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncDef() throws Exception {
-    SolrQueryRequest req = req("myField", "bar_f");
 
-    try {
+    try (SolrQueryRequest req = req("myField", "bar_f")) {
       assertFuncEquals(req, "def(bar_f,25)", "def($myField,25)", "def(field('bar_f'),25)");
       assertFuncEquals(
           req, "def(ceil(bar_f),25)", "def(ceil($myField),25)", "def(ceil(field('bar_f')),25)");
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncConcat() throws Exception {
-    SolrQueryRequest req = req("myField", "bar_f", "myOtherField", "bar_t");
 
-    try {
+    try (SolrQueryRequest req = req("myField", "bar_f", "myOtherField", "bar_t")) {
       assertFuncEquals(
           req,
           "concat(bar_f,bar_t)",
           "concat($myField,bar_t)",
           "concat(bar_f,$myOtherField)",
           "concat($myField,$myOtherField)");
-
-    } finally {
-      req.close();
     }
   }
 
   public void testFuncSingleValueMathFuncs() throws Exception {
-    SolrQueryRequest req = req("myVal", "45", "myField", "foo_i");
     for (final String func :
         new String[] {
           "abs", "rad", "deg", "sqrt", "cbrt", "log", "ln", "exp", "sin", "cos", "tan", "asin",
           "acos", "atan", "sinh", "cosh", "tanh", "ceil", "floor", "rint"
         }) {
-      try {
+      try (SolrQueryRequest req = req("myVal", "45", "myField", "foo_i")) {
         assertFuncEquals(req, func + "(field(foo_i))", func + "(foo_i)", func + "($myField)");
         assertFuncEquals(req, func + "(45)", func + "($myVal)");
-      } finally {
-        req.close();
       }
     }
   }
 
   public void testFuncDoubleValueMathFuncs() throws Exception {
-    SolrQueryRequest req = req("myVal", "45", "myOtherVal", "27", "myField", "foo_i");
     for (final String func : new String[] {"pow", "hypot", "atan2"}) {
-      try {
+      try (SolrQueryRequest req = req("myVal", "45", "myOtherVal", "27", "myField", "foo_i")) {
         assertFuncEquals(
             req, func + "(field(foo_i),$myVal)", func + "(foo_i,$myVal)", func + "($myField,45)");
         assertFuncEquals(
             req, func + "(45,$myOtherVal)", func + "($myVal,27)", func + "($myVal,$myOtherVal)");
-
-      } finally {
-        req.close();
       }
     }
   }
 
   public void testFuncStrdist() throws Exception {
-    SolrQueryRequest req = req("myVal", "zot", "myOtherVal", "yak", "myField", "foo_s1");
-    try {
+    try (SolrQueryRequest req = req("myVal", "zot", "myOtherVal", "yak", "myField", "foo_s1")) {
       assertFuncEquals(
           req,
           "strdist(\"zot\",literal('yak'),edit)",
@@ -1296,8 +1170,6 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "strdist(field('foo_s1'),literal($myOtherVal),jw)",
           "strdist(field($myField),\"yak\",jw)",
           "strdist($myField,'yak', jw)");
-    } finally {
-      req.close();
     }
   }
 
@@ -1334,14 +1206,11 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testFuncRelatedness() throws Exception {
-    SolrQueryRequest req = req("fore", "foo_s:front", "back", "foo_s:back");
-    try {
+    try (SolrQueryRequest req = req("fore", "foo_s:front", "back", "foo_s:back")) {
       assertFuncEquals(
           req,
           "agg_relatedness({!query v='foo_s:front'}, {!query v='foo_s:back'})",
           "agg_relatedness($fore, $back)");
-    } finally {
-      req.close();
     }
   }
 
@@ -1368,16 +1237,13 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testQuerySimple() throws Exception {
-    SolrQueryRequest req = req("myField", "foo_s");
-    try {
+    try (SolrQueryRequest req = req("myField", "foo_s")) {
       assertQueryEquals(
           "simple",
           req,
           "{!simple f=$myField}asdf",
           "{!simple f=$myField v=asdf}",
           "{!simple f=foo_s}asdf");
-    } finally {
-      req.close();
     }
   }
 
@@ -1401,16 +1267,13 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
           "{!mlt_content qf=lowerfilt mindf=0 mintf=0}sample data",
           "{!mlt_content qf=lowerfilt mindf=0 mintf=0 v='sample data'}",
           "{!qf=lowerfilt mindf=0 mintf=0}sample data");
-      SolrQueryRequest req = req(new String[] {"df", "text"});
-      try {
+      try (SolrQueryRequest req = req(new String[] {"df", "text"})) {
         QueryUtils.checkUnequal(
             QParser.getParser("{!mlt_content qf=lowerfilt mindf=0 mintf=0}sample data", req)
                 .getQuery(),
             QParser.getParser(
                     "{!mlt_content qf=lowerfilt qf=standardfilt mindf=0 mintf=0}sample data", req)
                 .getQuery());
-      } finally {
-        req.close();
       }
 
     } finally {
@@ -1573,11 +1436,8 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
    * @see #assertQueryEqualsAndReturn
    */
   protected void assertQueryEquals(final String defType, final String... inputs) throws Exception {
-    SolrQueryRequest req = req(new String[] {"df", "text"});
-    try {
+    try (SolrQueryRequest req = req(new String[] {"df", "text"})) {
       assertQueryEqualsAndReturn(defType, req, inputs);
-    } finally {
-      req.close();
     }
   }
 
@@ -1646,11 +1506,8 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
    * @see #testParserCoverage
    */
   protected void assertFuncEquals(final String... inputs) throws Exception {
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       assertFuncEquals(req, inputs);
-    } finally {
-      req.close();
     }
   }
 
@@ -1709,11 +1566,8 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testChildField() throws Exception {
-    final SolrQueryRequest req = req("q", "{!parent which=type_s1:parent}whatever_s1:foo");
-    try {
+    try (SolrQueryRequest req = req("q", "{!parent which=type_s1:parent}whatever_s1:foo")) {
       assertFuncEquals(req, "childfield(name_s1,$q)", "childfield(name_s1,$q)");
-    } finally {
-      req.close();
     }
   }
 
@@ -1743,12 +1597,9 @@ public class QueryEqualityTest extends SolrTestCaseJ4 {
   }
 
   public void testPayloadFunction() throws Exception {
-    SolrQueryRequest req = req("myField", "bar_f");
 
-    try {
+    try (SolrQueryRequest req = req("myField", "bar_f")) {
       assertFuncEquals(req, "payload(foo_dpf,some_term)", "payload(foo_dpf,some_term)");
-    } finally {
-      req.close();
     }
   }
 

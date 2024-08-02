@@ -51,11 +51,8 @@ public class PHPSerializedResponseWriter implements QueryResponseWriter {
 
   @Override
   public void write(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) throws IOException {
-    PHPSerializedWriter w = new PHPSerializedWriter(writer, req, rsp);
-    try {
+    try (PHPSerializedWriter w = new PHPSerializedWriter(writer, req, rsp)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 

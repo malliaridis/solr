@@ -405,9 +405,8 @@ public class TestSolrCLIRunExample extends SolrTestCaseJ4 {
           exampleSolrHomeDir.isDirectory());
 
       if ("techproducts".equals(exampleName)) {
-        SolrClient solrClient =
-            getHttpSolrClient("http://localhost:" + bindPort + "/solr", exampleName);
-        try {
+        try (SolrClient solrClient =
+            getHttpSolrClient("http://localhost:" + bindPort + "/solr", exampleName)) {
           SolrQuery query = new SolrQuery("*:*");
           QueryResponse qr = solrClient.query(query);
           long numFound = qr.getResults().getNumFound();
@@ -431,8 +430,6 @@ public class TestSolrCLIRunExample extends SolrTestCaseJ4 {
                   + toolOutput,
               32,
               numFound);
-        } finally {
-          solrClient.close();
         }
       }
 

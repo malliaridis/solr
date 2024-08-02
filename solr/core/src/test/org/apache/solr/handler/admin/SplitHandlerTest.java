@@ -242,8 +242,7 @@ public class SplitHandlerTest extends SolrTestCaseJ4 {
     CompositeIdRouter router = new CompositeIdRouter();
 
     for (int i = 0; i < 100; i++) {
-      SolrQueryRequest req = req("myquery");
-      try {
+      try (SolrQueryRequest req = req("myquery")) {
         // the first time through the loop we do this before adding docs to test an empty index
         Collection<SplitOp.RangeCount> counts1 =
             SplitOp.getHashHistogram(req.getSearcher(), prefixField, router, null);
@@ -267,9 +266,6 @@ public class SplitHandlerTest extends SolrTestCaseJ4 {
         }
 
         assertU(commit());
-
-      } finally {
-        req.close();
       }
     }
   }

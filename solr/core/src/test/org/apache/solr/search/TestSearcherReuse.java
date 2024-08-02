@@ -101,8 +101,7 @@ public class TestSearcherReuse extends SolrTestCaseJ4 {
     // seed a single query into the cache
     assertQ(req("*:*"), "//*[@numFound='" + numDocs + "']");
 
-    final SolrQueryRequest baseReq = req("q", "foo");
-    try {
+    try (SolrQueryRequest baseReq = req("q", "foo")) {
       // we make no index changes in this block, so the searcher should always be the same
       // NOTE: we *have* to call getSearcher() in advance, it's a delayed binding
       final SolrIndexSearcher expectedSearcher = getMainSearcher(baseReq);
@@ -126,9 +125,6 @@ public class TestSearcherReuse extends SolrTestCaseJ4 {
       assertU(delI("0")); // no doc has this id, yet
       assertU(commit("softCommit", "true", "openSearcher", "true"));
       assertSearcherHasNotChanged(expectedSearcher);
-
-    } finally {
-      baseReq.close();
     }
 
     // now do a variety of things that *should* always guarantee a new searcher
@@ -194,12 +190,9 @@ public class TestSearcherReuse extends SolrTestCaseJ4 {
       assertSearcherHasChanged(before);
 
       // sanity that opening the new searcher was useful to get new schema...
-      SolrQueryRequest afterReq = req("q", "foo");
-      try {
+      try (SolrQueryRequest afterReq = req("q", "foo")) {
         assertSame(newSchema, afterReq.getSchema());
         assertSame(newSchema, getMainSearcher(afterReq).getSchema());
-      } finally {
-        afterReq.close();
       }
 
     } finally {
@@ -229,12 +222,9 @@ public class TestSearcherReuse extends SolrTestCaseJ4 {
    * either way.
    */
   public static void assertSearcherHasChanged(SolrIndexSearcher previous) {
-    SolrQueryRequest req = req("*:*");
-    try {
+    try (SolrQueryRequest req = req("*:*")) {
       SolrIndexSearcher newSearcher = getMainSearcher(req);
       assertNotSame(previous, newSearcher);
-    } finally {
-      req.close();
     }
   }
 
@@ -243,12 +233,9 @@ public class TestSearcherReuse extends SolrTestCaseJ4 {
    * request is the same as the expected searcher -- cleaning closes the new SolrRequest either way.
    */
   public static void assertSearcherHasNotChanged(SolrIndexSearcher expected) {
-    SolrQueryRequest req = req("*:*");
-    try {
+    try (SolrQueryRequest req = req("*:*")) {
       SolrIndexSearcher newSearcher = getMainSearcher(req);
       assertSame(expected, newSearcher);
-    } finally {
-      req.close();
     }
   }
 }

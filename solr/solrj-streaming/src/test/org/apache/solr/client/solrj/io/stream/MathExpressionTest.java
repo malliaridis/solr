@@ -102,7 +102,7 @@ public class MathExpressionTest extends SolrCloudTestCase {
     updateRequest.commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     SolrClientCache cache = new SolrClientCache();
-    try {
+    try (cache) {
 
       String expr =
           "cartesianProduct(search("
@@ -228,8 +228,6 @@ public class MathExpressionTest extends SolrCloudTestCase {
       assertEquals("c", l.get(2));
       assertEquals("d", l.get(3));
       assertEquals("c", l.get(4));
-    } finally {
-      cache.close();
     }
   }
 

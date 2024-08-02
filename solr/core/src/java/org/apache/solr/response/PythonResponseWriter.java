@@ -25,11 +25,8 @@ public class PythonResponseWriter implements QueryResponseWriter {
 
   @Override
   public void write(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) throws IOException {
-    PythonWriter w = new PythonWriter(writer, req, rsp);
-    try {
+    try (PythonWriter w = new PythonWriter(writer, req, rsp)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 

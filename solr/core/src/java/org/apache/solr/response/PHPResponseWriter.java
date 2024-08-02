@@ -37,11 +37,8 @@ public class PHPResponseWriter implements QueryResponseWriter {
 
   @Override
   public void write(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) throws IOException {
-    PHPWriter w = new PHPWriter(writer, req, rsp);
-    try {
+    try (PHPWriter w = new PHPWriter(writer, req, rsp)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 

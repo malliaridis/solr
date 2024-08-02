@@ -495,8 +495,7 @@ public class TestIntervalFaceting extends SolrTestCaseJ4 {
               + interval[1]
               + close.replace(')', '}'));
     }
-    SolrQueryRequest req = req(params);
-    try {
+    try (SolrQueryRequest req = req(params)) {
       SolrQueryResponse rsp = h.queryAndResponse("", req);
       NamedList<Object> facetQueries =
           (NamedList<Object>)
@@ -534,8 +533,6 @@ public class TestIntervalFaceting extends SolrTestCaseJ4 {
                 .toString(),
             facetIntervals.getVal(i).toString());
       }
-    } finally {
-      req.close();
     }
   }
 

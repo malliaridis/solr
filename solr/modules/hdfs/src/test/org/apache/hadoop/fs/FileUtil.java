@@ -665,16 +665,14 @@ public class FileUtil {
    */
   public static void unZip(File inFile, File unzipDir) throws IOException {
     Enumeration<? extends ZipEntry> entries;
-    ZipFile zipFile = new ZipFile(inFile);
 
-    try {
+    try (ZipFile zipFile = new ZipFile(inFile)) {
       entries = zipFile.entries();
       String targetDirPath = unzipDir.getCanonicalPath() + File.separator;
       while (entries.hasMoreElements()) {
         ZipEntry entry = entries.nextElement();
         if (!entry.isDirectory()) {
-          InputStream in = zipFile.getInputStream(entry);
-          try {
+          try (InputStream in = zipFile.getInputStream(entry)) {
             File file = new File(unzipDir, entry.getName());
             if (!file.getCanonicalPath().startsWith(targetDirPath)) {
               throw new IOException("expanding " + entry.getName()
@@ -686,23 +684,16 @@ public class FileUtil {
                     file.getParentFile().toString());
               }
             }
-            OutputStream out = Files.newOutputStream(file.toPath());
-            try {
+            try (OutputStream out = Files.newOutputStream(file.toPath())) {
               byte[] buffer = new byte[8192];
               int i;
               while ((i = in.read(buffer)) != -1) {
                 out.write(buffer, 0, i);
               }
-            } finally {
-              out.close();
             }
-          } finally {
-            in.close();
           }
         }
       }
-    } finally {
-      zipFile.close();
     }
   }
 

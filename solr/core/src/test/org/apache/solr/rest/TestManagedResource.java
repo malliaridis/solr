@@ -132,20 +132,11 @@ public class TestManagedResource extends SolrTestCaseJ4 {
         return null;
       }
       Object serialized = null;
-      ObjectInputStream ois = null;
-      try {
-        ois = new ObjectInputStream(inputStream);
+      try (ObjectInputStream ois = new ObjectInputStream(inputStream)) {
         serialized = ois.readObject();
       } catch (ClassNotFoundException e) {
         // unlikely
         throw new IOException(e);
-      } finally {
-        if (ois != null) {
-          try {
-            ois.close();
-          } catch (Exception ignore) {
-          }
-        }
       }
       return serialized;
     }
@@ -158,18 +149,9 @@ public class TestManagedResource extends SolrTestCaseJ4 {
             "Instance of " + toStore.getClass().getName() + " is not Serializable!");
 
       String storedId = getStoredResourceId(resourceId);
-      ObjectOutputStream oos = null;
-      try {
-        oos = new ObjectOutputStream(storageIO.openOutputStream(storedId));
+      try (ObjectOutputStream oos = new ObjectOutputStream(storageIO.openOutputStream(storedId))) {
         oos.writeObject(toStore);
         oos.flush();
-      } finally {
-        if (oos != null) {
-          try {
-            oos.close();
-          } catch (Exception ignore) {
-          }
-        }
       }
     }
 
@@ -307,18 +289,9 @@ public class TestManagedResource extends SolrTestCaseJ4 {
   @SuppressForbidden(reason = "XXX: security hole")
   private BytesRef ser2bytes(Serializable ser) throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    ObjectOutputStream oos = null;
-    try {
-      oos = new ObjectOutputStream(out);
+    try (ObjectOutputStream oos = new ObjectOutputStream(out)) {
       oos.writeObject(ser);
       oos.flush();
-    } finally {
-      if (oos != null) {
-        try {
-          oos.close();
-        } catch (Exception ignore) {
-        }
-      }
     }
     return new BytesRef(out.toByteArray());
   }

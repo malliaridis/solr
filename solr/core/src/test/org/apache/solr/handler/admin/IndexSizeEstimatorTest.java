@@ -91,7 +91,7 @@ public class IndexSizeEstimatorTest extends SolrCloudTestCase {
     String randomCoreName = jetty.getCoreContainer().getAllCoreNames().iterator().next();
     SolrCore core = jetty.getCoreContainer().getCore(randomCoreName);
     RefCounted<SolrIndexSearcher> searcherRef = core.getSearcher();
-    try {
+    try (core) {
       SolrIndexSearcher searcher = searcherRef.get();
       // limit the max length
       IndexSizeEstimator estimator =
@@ -154,7 +154,6 @@ public class IndexSizeEstimatorTest extends SolrCloudTestCase {
       }
     } finally {
       searcherRef.decref();
-      core.close();
     }
   }
 

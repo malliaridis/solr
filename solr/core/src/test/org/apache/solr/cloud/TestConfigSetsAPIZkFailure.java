@@ -122,7 +122,7 @@ public class TestConfigSetsAPIZkFailure extends SolrTestCaseJ4 {
             .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .withConnTimeOut(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
             .build();
-    try {
+    try (zkClient) {
 
       assertFalse(configSetService.checkConfigExists(CONFIGSET_NAME));
 
@@ -133,8 +133,6 @@ public class TestConfigSetsAPIZkFailure extends SolrTestCaseJ4 {
       // partial creation should have been cleaned up
       assertFalse(configSetService.checkConfigExists(CONFIGSET_NAME));
       assertEquals(SolrException.ErrorCode.SERVER_ERROR.code, se.code());
-    } finally {
-      zkClient.close();
     }
 
     solrClient.close();

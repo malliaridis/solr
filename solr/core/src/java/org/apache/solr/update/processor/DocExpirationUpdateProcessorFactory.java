@@ -365,9 +365,8 @@ public final class DocExpirationUpdateProcessorFactory extends UpdateRequestProc
     public void run() {
       // setup the request context early so the logging (including any from
       // shouldWeDoPeriodicDelete() ) includes the core context info
-      final LocalSolrQueryRequest req =
-          new LocalSolrQueryRequest(factory.core, Collections.<String, String[]>emptyMap());
-      try {
+      try (LocalSolrQueryRequest req =
+          new LocalSolrQueryRequest(factory.core, Collections.emptyMap())) {
         // HACK: to indicate to PKI that this is a server initiated request for the purposes
         // of distributed requet/credential forwarding...
         req.setUserPrincipalName(PKIAuthenticationPlugin.NODE_IS_USER);
@@ -430,8 +429,6 @@ public final class DocExpirationUpdateProcessorFactory extends UpdateRequestProc
         } finally {
           SolrRequestInfo.clearRequestInfo();
         }
-      } finally {
-        req.close();
       }
     }
   }

@@ -147,8 +147,7 @@ public class TestSchemalessBufferedUpdates extends SolrTestCaseJ4 {
         new UpdateRequestProcessorChain(factoriesUpToDUP, h.getCore());
     assertNotNull("URP chain '" + UPDATE_CHAIN + "'", chainUpToDUP);
     SolrQueryResponse rsp = new SolrQueryResponse();
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       SolrRequestInfo.setRequestInfo(new SolrRequestInfo(req, rsp));
       AddUpdateCommand cmd = new AddUpdateCommand(req);
       cmd.solrDoc = docIn;
@@ -167,7 +166,6 @@ public class TestSchemalessBufferedUpdates extends SolrTestCaseJ4 {
       return cmd.solrDoc;
     } finally {
       SolrRequestInfo.clearRequestInfo();
-      req.close();
     }
   }
 }

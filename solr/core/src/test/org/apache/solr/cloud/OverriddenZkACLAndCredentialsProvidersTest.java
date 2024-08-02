@@ -141,58 +141,46 @@ public class OverriddenZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
 
   @Test
   public void testNoCredentialsSolrZkClientFactoryUsingCompletelyNewProviders() throws Exception {
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientFactoryUsingCompletelyNewProviders(null, null, null, null)
-            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT);
-    try {
+            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT)) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, false, false, false, false, false, false, false, false, false, false);
-    } finally {
-      zkClient.close();
     }
   }
 
   @Test
   public void testWrongCredentialsSolrZkClientFactoryUsingCompletelyNewProviders()
       throws Exception {
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientFactoryUsingCompletelyNewProviders(
                 "connectAndAllACLUsername", "connectAndAllACLPasswordWrong", null, null)
-            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT);
-    try {
+            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT)) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, false, false, false, false, false, false, false, false, false, false);
-    } finally {
-      zkClient.close();
     }
   }
 
   @Test
   public void testAllCredentialsSolrZkClientFactoryUsingCompletelyNewProviders() throws Exception {
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientFactoryUsingCompletelyNewProviders(
                 "connectAndAllACLUsername", "connectAndAllACLPassword", null, null)
-            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT);
-    try {
+            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT)) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, true, true, true, true, true, true, true, true, true, true);
-    } finally {
-      zkClient.close();
     }
   }
 
   @Test
   public void testReadonlyCredentialsSolrZkClientFactoryUsingCompletelyNewProviders()
       throws Exception {
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientFactoryUsingCompletelyNewProviders(
                 "readonlyACLUsername", "readonlyACLPassword", null, null)
-            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT);
-    try {
+            .getSolrZkClient(zkServer.getZkAddress(), AbstractZkTestCase.TIMEOUT)) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, true, true, false, false, false, false, false, false, false, false);
-    } finally {
-      zkClient.close();
     }
   }
 
@@ -202,16 +190,13 @@ public class OverriddenZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
           throws Exception {
     useNoCredentials();
 
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientUsingVMParamsProvidersButWithDifferentVMParamsNames(
             new SolrZkClient.Builder()
                 .withUrl(zkServer.getZkAddress())
-                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS));
-    try {
+                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS))) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, false, false, false, false, false, false, false, false, false, false);
-    } finally {
-      zkClient.close();
     }
   }
 
@@ -221,16 +206,13 @@ public class OverriddenZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
           throws Exception {
     useWrongCredentials();
 
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientUsingVMParamsProvidersButWithDifferentVMParamsNames(
             new SolrZkClient.Builder()
                 .withUrl(zkServer.getZkAddress())
-                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS));
-    try {
+                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS))) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, false, false, false, false, false, false, false, false, false, false);
-    } finally {
-      zkClient.close();
     }
   }
 
@@ -240,16 +222,13 @@ public class OverriddenZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
           throws Exception {
     useAllCredentials();
 
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientUsingVMParamsProvidersButWithDifferentVMParamsNames(
             new SolrZkClient.Builder()
                 .withUrl(zkServer.getZkAddress())
-                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS));
-    try {
+                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS))) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, true, true, true, true, true, true, true, true, true, true);
-    } finally {
-      zkClient.close();
     }
   }
 
@@ -259,16 +238,13 @@ public class OverriddenZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
           throws Exception {
     useReadonlyCredentials();
 
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClientUsingVMParamsProvidersButWithDifferentVMParamsNames(
             new SolrZkClient.Builder()
                 .withUrl(zkServer.getZkAddress())
-                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS));
-    try {
+                .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS))) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, true, true, false, false, false, false, false, false, false, false);
-    } finally {
-      zkClient.close();
     }
   }
 

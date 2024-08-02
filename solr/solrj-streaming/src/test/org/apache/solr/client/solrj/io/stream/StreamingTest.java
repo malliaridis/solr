@@ -175,9 +175,8 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParams = params("q", "*:*", "fl", "id,a_s,a_i,a_f", "sort", "a_f asc,a_i asc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
       UniqueStream ustream = new UniqueStream(stream, new FieldEqualitor("a_f"));
@@ -185,8 +184,6 @@ public class StreamingTest extends SolrCloudTestCase {
       List<Tuple> tuples = getTuples(ustream);
       assertEquals(4, tuples.size());
       assertOrder(tuples, 0, 1, 3, 4);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -210,8 +207,8 @@ public class StreamingTest extends SolrCloudTestCase {
     helloDocsUpdateRequest.commit(cluster.getSolrClient(), COLLECTIONORALIAS);
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
 
       SolrParams sParamsA =
           params(
@@ -233,8 +230,6 @@ public class StreamingTest extends SolrCloudTestCase {
       List<Tuple> tuples = getTuples(pstream);
 
       assertEquals(tuples.size(), (10 * numWorkers)); // Each tuple will be double counted.
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -255,9 +250,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
 
       SolrParams sParams =
           params(
@@ -285,8 +280,6 @@ public class StreamingTest extends SolrCloudTestCase {
 
       Map<String, Tuple> eofTuples = pstream.getEofTuples();
       assertEquals(numWorkers, eofTuples.size()); // There should be an EOF tuple for each worker.
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -309,9 +302,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       ModifiableSolrParams params =
           new ModifiableSolrParams(
               params(
@@ -330,8 +323,6 @@ public class StreamingTest extends SolrCloudTestCase {
       List<Tuple> tuples = getTuples(stream);
       assertEquals("Multiple fq clauses should have been honored", 1, tuples.size());
       assertEquals("should only have gotten back document 0", "0", tuples.get(0).getString("id"));
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -348,8 +339,8 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParams = params("q", "*:*", "fl", "id,a_s,a_i", "sort", "a_i asc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
       RankStream rstream =
@@ -358,8 +349,6 @@ public class StreamingTest extends SolrCloudTestCase {
       List<Tuple> tuples = getTuples(rstream);
       assertEquals(3, tuples.size());
       assertOrder(tuples, 4, 3, 2);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -381,8 +370,8 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParams =
           params(
               "q",
@@ -406,8 +395,6 @@ public class StreamingTest extends SolrCloudTestCase {
 
       assertEquals(10, tuples.size());
       assertOrder(tuples, 10, 9, 8, 7, 6, 5, 4, 3, 2, 0);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -418,9 +405,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test with spaces in the parameter lists.
       SolrParams sParamsA =
           params("q", "*:*", "fl", "id,a_s, a_i,a_f", "sort", "a_s asc,a_f   asc");
@@ -432,8 +419,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertEquals(COLLECTIONORALIAS, tuples.get(1).get("_COLLECTION_"));
       assertEquals(COLLECTIONORALIAS, tuples.get(2).get("_COLLECTION_"));
       assertEquals(COLLECTIONORALIAS, tuples.get(3).get("_COLLECTION_"));
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -444,9 +429,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test with spaces in the parameter lists.
       SolrParams sParamsA =
           params("q", "*:*", "fl", "id,a_s, a_i,  a_f", "sort", "a_s asc  ,  a_f   asc");
@@ -498,8 +483,6 @@ public class StreamingTest extends SolrCloudTestCase {
       t2 = tuples.get(2);
       maps2 = t2.getMaps("group");
       assertMaps(maps2, 6, 4);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -511,9 +494,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test with spaces in the parameter lists.
       SolrParams sParamsA =
           params("q", "blah", "fl", "id,a_s, a_i,  a_f", "sort", "a_s asc  ,  a_f   asc");
@@ -527,8 +510,6 @@ public class StreamingTest extends SolrCloudTestCase {
       List<Tuple> tuples = getTuples(rstream);
 
       assertEquals(0, tuples.size());
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -539,9 +520,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParamsA =
           params(
               "q",
@@ -620,8 +601,6 @@ public class StreamingTest extends SolrCloudTestCase {
       t2 = tuples.get(2);
       maps2 = t2.getMaps("group");
       assertMaps(maps2, 0, 2, 1);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -632,8 +611,8 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test an error that originates from the /select handler
       SolrParams sParamsA = params("q", "*:*", "fl", "a_s,a_i,a_f,blah", "sort", "blah asc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParamsA);
@@ -683,8 +662,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertTrue(t.EOF);
       assertTrue(t.EXCEPTION);
       assertTrue(t.getException().contains("sort param field can't be found: blah"));
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -773,9 +750,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParamsA = params("q", "*:*");
 
       Metric[] metrics = {
@@ -819,8 +796,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertEquals(7.0, avgi, .01);
       assertEquals(5.5, avgf, .001);
       assertEquals(10, count, .01);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -831,9 +806,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParamsA = params("q", "*:*", "fl", "a_s,a_i,a_f", "sort", "a_s asc");
 
       Bucket[] buckets = {new Bucket("a_s")};
@@ -1181,9 +1156,6 @@ public class StreamingTest extends SolrCloudTestCase {
       tuples = getTuples(facetStream);
 
       assertEquals(3, tuples.size());
-
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -1272,10 +1244,9 @@ public class StreamingTest extends SolrCloudTestCase {
             "sort",
             field + " " + sortDir + ",id asc");
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try (CloudSolrStream solrStream =
-        new CloudSolrStream(zkHost, COLLECTIONORALIAS, exportParams)) {
+    try (SolrClientCache solrClientCache = new SolrClientCache();
+        CloudSolrStream solrStream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, exportParams)) {
+      streamContext.setSolrClientCache(solrClientCache);
       solrStream.setStreamContext(streamContext);
       List<Tuple> tuples = getTuples(solrStream);
       assertEquals("There should be exactly 32 responses returned", 32, tuples.size());
@@ -1300,8 +1271,6 @@ public class StreamingTest extends SolrCloudTestCase {
             tuples.get(idx).getString("id"),
             (field.startsWith("b_") ? selectOrderBool.get(idx) : selectOrder.get(idx)));
       }
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -1322,10 +1291,10 @@ public class StreamingTest extends SolrCloudTestCase {
     SolrParams sParams = params("q", "*:*", "qt", "/export", "fl", fl.toString(), "sort", "id asc");
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try (CloudSolrStream solrStream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams)) {
+    try (SolrClientCache solrClientCache = new SolrClientCache();
+        CloudSolrStream solrStream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams)) {
+      streamContext.setSolrClientCache(solrClientCache);
       solrStream.setStreamContext(streamContext);
       List<Tuple> tuples = getTuples(solrStream);
       assertEquals("There should be exactly 32 responses returned", 32, tuples.size());
@@ -1343,8 +1312,6 @@ public class StreamingTest extends SolrCloudTestCase {
           }
         }
       }
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -1472,10 +1439,9 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
 
       SolrParams sParamsA = params("q", "*:*", "fl", "a_i,a_f");
 
@@ -1633,8 +1599,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertEquals("a", bucket2);
       assertEquals(2, sumi.longValue());
       assertEquals(2, count, 0.1);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -1643,10 +1607,9 @@ public class StreamingTest extends SolrCloudTestCase {
 
     helloDocsUpdateRequest.commit(cluster.getSolrClient(), COLLECTIONORALIAS);
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParamsA = params("q", "*:*", "fl", "a_s,a_i,a_f", "sort", "a_s asc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParamsA);
 
@@ -1807,8 +1770,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertEquals(14, avgi, 0.01);
       assertEquals(10, avgf, 0.01);
       assertEquals(1, count, 0.01);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -1817,10 +1778,9 @@ public class StreamingTest extends SolrCloudTestCase {
     Assume.assumeTrue(!useAlias);
 
     StreamContext context = new StreamContext();
-    SolrClientCache cache = new SolrClientCache();
-    context.setSolrClientCache(cache);
 
-    try {
+    try (SolrClientCache cache = new SolrClientCache()) {
+      context.setSolrClientCache(cache);
       SolrParams sParams = params("q", "a_s:hello0", "rows", "500", "fl", "id");
 
       TopicStream topicStream =
@@ -1850,8 +1810,6 @@ public class StreamingTest extends SolrCloudTestCase {
       daemonStream.open();
       CheckDaemonStream(context, daemonStream);
       daemonStream.close();
-    } finally {
-      cache.close();
     }
   }
 
@@ -1910,10 +1868,9 @@ public class StreamingTest extends SolrCloudTestCase {
     helloDocsUpdateRequest.commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Intentionally adding partitionKeys to trigger SOLR-12674
       SolrParams sParamsA =
           params(
@@ -1963,8 +1920,6 @@ public class StreamingTest extends SolrCloudTestCase {
       solrStream.setStreamContext(streamContext);
       tuples = getTuples(solrStream);
       assertEquals(3, tuples.size());
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -1974,10 +1929,9 @@ public class StreamingTest extends SolrCloudTestCase {
     helloDocsUpdateRequest.commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParamsA =
           params(
               "q",
@@ -2085,8 +2039,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertEquals(7.5, avgi, 0.001);
       assertEquals(5.5, avgf, 0.001);
       assertEquals(2, count, 0.001);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2096,9 +2048,8 @@ public class StreamingTest extends SolrCloudTestCase {
     helloDocsUpdateRequest.commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParamsA =
           params(
               "q",
@@ -2123,8 +2074,6 @@ public class StreamingTest extends SolrCloudTestCase {
       pstream.setStreamContext(streamContext);
       List<Tuple> tuples = getTuples(pstream);
       assertEquals(0, tuples.size());
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2138,10 +2087,9 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       SolrParams sParams =
           params("q", "*:*", "fl", "id,a_s,a_i,a_f,s_multi,i_multi,f_multi", "sort", "a_s asc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
@@ -2169,8 +2117,6 @@ public class StreamingTest extends SolrCloudTestCase {
       List<Double> doubleList = tuple.getDoubles("f_multi");
       assertEquals(1.2, doubleList.get(0), 0.001);
       assertEquals(1.3, doubleList.get(1), 0.001);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2186,10 +2132,9 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test ascending
       SolrParams sParamsA = params("q", "id:(4 1)", "fl", "id,a_s,a_i", "sort", "a_i asc");
       CloudSolrStream streamA = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParamsA);
@@ -2259,8 +2204,6 @@ public class StreamingTest extends SolrCloudTestCase {
 
       assertEquals(5, tuples.size());
       assertOrder(tuples, 2, 0, 1, 3, 4);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2281,10 +2224,9 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test ascending
       SolrParams sParamsA =
           params(
@@ -2363,8 +2305,6 @@ public class StreamingTest extends SolrCloudTestCase {
 
       assertEquals(8, tuples.size());
       assertOrder(tuples, 9, 8, 6, 4, 3, 2, 1, 0);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2385,10 +2325,9 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Test ascending
       SolrParams sParamsA =
           params(
@@ -2429,8 +2368,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertEquals(9, tuples.size());
       Map<String, Tuple> eofTuples = pstream.getEofTuples();
       assertEquals(numWorkers, eofTuples.size()); // There should be an EOF Tuple for each worker.
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2446,11 +2383,10 @@ public class StreamingTest extends SolrCloudTestCase {
         .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    // Basic CloudSolrStream Test with Descending Sort
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
+      // Basic CloudSolrStream Test with Descending Sort
       SolrParams sParams = params("q", "*:*", "fl", "id,a_s,a_i", "sort", "a_i desc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
       stream.setStreamContext(streamContext);
@@ -2484,8 +2420,6 @@ public class StreamingTest extends SolrCloudTestCase {
 
       assertEquals(5, tuples.size());
       assertOrder(tuples, 0, 2, 1, 3, 4);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2516,11 +2450,10 @@ public class StreamingTest extends SolrCloudTestCase {
     streamContext
         .getEntries()
         .put("core", replicas.get(random().nextInt(replicas.size())).getCoreName());
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    // Basic CloudSolrStream Test with Descending Sort
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
+      // Basic CloudSolrStream Test with Descending Sort
       SolrParams sParams = params("q", "*:*", "fl", "id,a_s,a_i", "sort", "a_i desc");
       CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
       stream.setStreamContext(streamContext);
@@ -2602,9 +2535,6 @@ public class StreamingTest extends SolrCloudTestCase {
         default: // nope, no way, no how, never good.
           fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
       }
-
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2629,11 +2559,10 @@ public class StreamingTest extends SolrCloudTestCase {
     SolrParams sParams =
         params("q", "*:*", "qt", which, "fl", "id,b_sing", "sort", "b_sing asc,id asc");
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
-    CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
 
-    try {
+    try (SolrClientCache solrClientCache = new SolrClientCache()) {
+      streamContext.setSolrClientCache(solrClientCache);
+      CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams);
       stream.setStreamContext(streamContext);
       List<Tuple> tuples = getTuples(stream);
 
@@ -2666,8 +2595,6 @@ public class StreamingTest extends SolrCloudTestCase {
 
       assertEquals(5, tuples.size());
       assertOrder(tuples, 3, 4, 1, 0, 2);
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2733,8 +2660,6 @@ public class StreamingTest extends SolrCloudTestCase {
   // test
   private void tryWithQt(String which) throws IOException {
     StreamContext streamContext = new StreamContext();
-    SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
     SolrParams sParams =
         params(
             "q",
@@ -2745,7 +2670,10 @@ public class StreamingTest extends SolrCloudTestCase {
             "id,i_sing,i_multi,l_sing,l_multi,f_sing,f_multi,d_sing,d_multi,dt_sing,dt_multi,s_sing,s_multi,b_sing,b_multi",
             "sort",
             "i_sing asc");
-    try (CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams)) {
+
+    try (SolrClientCache solrClientCache = new SolrClientCache();
+        CloudSolrStream stream = new CloudSolrStream(zkHost, COLLECTIONORALIAS, sParams)) {
+      streamContext.setSolrClientCache(solrClientCache);
 
       stream.setStreamContext(streamContext);
       Tuple tuple = getTuple(stream);
@@ -2811,8 +2739,6 @@ public class StreamingTest extends SolrCloudTestCase {
       assertTrue("Booleans should be returned", tuple.getBool("b_sing"));
       assertFalse("MV boolean should be returned for b_multi", tuple.getBools("b_multi").get(0));
       assertTrue("MV boolean should be returned for b_multi", tuple.getBools("b_multi").get(1));
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -2955,15 +2881,16 @@ public class StreamingTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    solrClientCache.getCloudSolrClient(zkHost);
-    streamContext.setSolrClientCache(solrClientCache);
-
     String expr =
         "search("
             + MULTI_REPLICA_COLLECTIONORALIAS
             + ",q=*:*,fl=\"a_i\", qt=\"/export\", sort=\"a_i asc\")";
-    try (CloudSolrStream stream =
-        new CloudSolrStream(StreamExpressionParser.parse(expr), streamFactory)) {
+    try (solrClientCache;
+        CloudSolrStream stream =
+            new CloudSolrStream(StreamExpressionParser.parse(expr), streamFactory)) {
+      solrClientCache.getCloudSolrClient(zkHost);
+      streamContext.setSolrClientCache(solrClientCache);
+
       stream.setStreamContext(streamContext);
       stream.open();
       Tuple t = stream.read();
@@ -3012,9 +2939,6 @@ public class StreamingTest extends SolrCloudTestCase {
         assertEquals(
             "core filter for " + rr.core + " not applied for " + coll, rr, replicas.get(0));
       }
-
-    } finally {
-      solrClientCache.close();
     }
   }
 }

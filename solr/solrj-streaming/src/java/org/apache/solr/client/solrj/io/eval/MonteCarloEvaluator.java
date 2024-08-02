@@ -116,8 +116,8 @@ public class MonteCarloEvaluator extends RecursiveEvaluator {
       if (o instanceof TupleStream) {
         List<Tuple> tuples = new ArrayList<>();
         TupleStream tStream = (TupleStream) o;
-        tStream.setStreamContext(streamContext);
-        try {
+        try (tStream) {
+          tStream.setStreamContext(streamContext);
           tStream.open();
           TUPLES:
           while (true) {
@@ -129,8 +129,6 @@ public class MonteCarloEvaluator extends RecursiveEvaluator {
             }
           }
           contextTuple.put(name, tuples);
-        } finally {
-          tStream.close();
         }
       } else {
         StreamEvaluator evaluator = (StreamEvaluator) o;

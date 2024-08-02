@@ -110,29 +110,25 @@ public class TestNestedDocsSort extends SolrTestCaseJ4 {
   }
 
   private SortField parse(String a) {
-    final SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "q",
             "{!parent which=type_s1:parent}whatever_s1:foo",
             "q2",
             "{!parent which=type_s1:parent}nomater_s1:what",
             "notbjq",
-            "foo_s1:bar");
-    try {
+            "foo_s1:bar")) {
       final SortSpec spec = SortSpecParsing.parseSortSpec(a, req);
       assertNull(spec.getSchemaFields().get(0));
       final Sort sort = spec.getSort();
       final SortField field = sort.getSort()[0];
       assertNotNull(field);
       return field;
-    } finally {
-      req.close();
     }
   }
 
   public void testCacheHits() {
-    final SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       @SuppressWarnings({"rawtypes"})
       final SolrCache cache = req.getSearcher().getCache("perSegFilter");
       assertNotNull(cache);
@@ -153,8 +149,6 @@ public class TestNestedDocsSort extends SolrTestCaseJ4 {
               + "hopefully for the purpose",
           3,
           after.intValue() - before.intValue());
-    } finally {
-      req.close();
     }
   }
 }

@@ -65,11 +65,8 @@ public class SignatureUpdateProcessorFactoryTest extends SolrTestCaseJ4 {
   }
 
   static void checkNumDocs(int n) {
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       assertEquals(n, req.getSearcher().getIndexReader().numDocs());
-    } finally {
-      req.close();
     }
   }
 
@@ -292,15 +289,12 @@ public class SignatureUpdateProcessorFactoryTest extends SolrTestCaseJ4 {
       ureq.add(doc);
     }
 
-    LocalSolrQueryRequest req = new LocalSolrQueryRequest(h.getCore(), mmparams);
-    try {
+    try (LocalSolrQueryRequest req = new LocalSolrQueryRequest(h.getCore(), mmparams)) {
       req.setContentStreams(
           Collections.singletonList(ContentStreamBase.create(new BinaryRequestWriter(), ureq)));
       UpdateRequestHandler h = new UpdateRequestHandler();
       h.init(new NamedList<>());
       h.handleRequestBody(req, new SolrQueryResponse());
-    } finally {
-      req.close();
     }
 
     addDoc(commit());

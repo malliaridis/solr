@@ -116,27 +116,23 @@ public class OutOfBoxZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
 
   @Test
   public void testOutOfBoxSolrZkClient() throws Exception {
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClient.Builder()
             .withUrl(zkServer.getZkAddress())
             .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
-            .build();
-    try {
+            .build()) {
       AbstractDigestZkACLAndCredentialsProvidersTestBase.doTest(
           zkClient, true, true, true, true, true, true, true, true, true, true);
-    } finally {
-      zkClient.close();
     }
   }
 
   @Test
   public void testOpenACLUnsafeAllover() throws Exception {
-    SolrZkClient zkClient =
+    try (SolrZkClient zkClient =
         new SolrZkClient.Builder()
             .withUrl(zkServer.getZkHost())
             .withTimeout(AbstractZkTestCase.TIMEOUT, TimeUnit.MILLISECONDS)
-            .build();
-    try {
+            .build()) {
       List<String> verifiedList = new ArrayList<>();
       assertOpenACLUnsafeAllover(zkClient, "/", verifiedList);
       assertTrue(verifiedList.contains("/solr"));
@@ -145,8 +141,6 @@ public class OutOfBoxZkACLAndCredentialsProvidersTest extends SolrTestCaseJ4 {
       assertTrue(verifiedList.contains("/solr/protectedMakePathNode"));
       assertTrue(verifiedList.contains("/solr/protectedCreateNode"));
       assertTrue(verifiedList.contains("/solr" + SecurityAwareZkACLProvider.SECURITY_ZNODE_PATH));
-    } finally {
-      zkClient.close();
     }
   }
 

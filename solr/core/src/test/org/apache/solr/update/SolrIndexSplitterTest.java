@@ -274,9 +274,7 @@ public class SolrIndexSplitterTest extends SolrTestCaseJ4 {
                   "split2",
                   Map.of("dataDir", indexDir2.getAbsolutePath(), "configSet", "cloud-minimal"));
 
-      LocalSolrQueryRequest request = null;
-      try {
-        request = lrf.makeRequest("q", "dummy");
+      try (LocalSolrQueryRequest request = lrf.makeRequest("q", "dummy")) {
         SolrQueryResponse rsp = new SolrQueryResponse();
         SplitIndexCommand command =
             new SplitIndexCommand(
@@ -290,8 +288,6 @@ public class SolrIndexSplitterTest extends SolrTestCaseJ4 {
                 null,
                 splitMethod);
         doSplit(command);
-      } finally {
-        if (request != null) request.close();
       }
       @SuppressWarnings("resource")
       final EmbeddedSolrServer server1 = new EmbeddedSolrServer(h.getCoreContainer(), "split1");
@@ -446,10 +442,8 @@ public class SolrIndexSplitterTest extends SolrTestCaseJ4 {
 
     DocRouter.Range splitKeyRange = r1.keyHashRange(splitKey);
 
-    LocalSolrQueryRequest request = null;
     Directory directory = null;
-    try {
-      request = lrf.makeRequest("q", "dummy");
+    try (LocalSolrQueryRequest request = lrf.makeRequest("q", "dummy")) {
       SolrQueryResponse rsp = new SolrQueryResponse();
       SplitIndexCommand command =
           new SplitIndexCommand(
@@ -476,9 +470,6 @@ public class SolrIndexSplitterTest extends SolrTestCaseJ4 {
       h.getCore().getDirectoryFactory().release(directory);
       directory = null;
     } finally {
-      if (request != null) {
-        request.close();
-      }
       if (directory != null) {
         h.getCore().getDirectoryFactory().release(directory);
       }

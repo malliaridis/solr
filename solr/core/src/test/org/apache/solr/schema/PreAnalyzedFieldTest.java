@@ -207,17 +207,11 @@ public class PreAnalyzedFieldTest extends SolrTestCaseJ4 {
     paf.init(h.getCore().getLatestSchema(), Collections.emptyMap());
     Analyzer preAnalyzer = paf.getIndexAnalyzer();
     for (String s : invalidJson) {
-      TokenStream stream = null;
-      try {
-        stream = preAnalyzer.tokenStream("dummy", s);
+      try (TokenStream stream = preAnalyzer.tokenStream("dummy", s)) {
         stream.reset(); // exception should be triggered here.
         fail("should fail: '" + s + "'");
       } catch (Exception e) {
         // expected
-      } finally {
-        if (stream != null) {
-          stream.close();
-        }
       }
     }
     // make sure the analyzer can now handle properly formatted input

@@ -25,11 +25,8 @@ import org.apache.solr.request.SolrQueryRequest;
 public class SchemaXmlResponseWriter implements QueryResponseWriter {
   @Override
   public void write(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) throws IOException {
-    SchemaXmlWriter w = new SchemaXmlWriter(writer, req, rsp);
-    try {
+    try (SchemaXmlWriter w = new SchemaXmlWriter(writer, req, rsp)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 

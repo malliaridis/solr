@@ -176,8 +176,8 @@ public class LetStream extends TupleStream implements Expressible {
       if (o instanceof TupleStream) {
         List<Tuple> tuples = new ArrayList<>();
         TupleStream tStream = (TupleStream) o;
-        tStream.setStreamContext(streamContext);
-        try {
+        try (tStream) {
+          tStream.setStreamContext(streamContext);
           tStream.open();
           TUPLES:
           while (true) {
@@ -189,8 +189,6 @@ public class LetStream extends TupleStream implements Expressible {
             }
           }
           lets.put(name, tuples);
-        } finally {
-          tStream.close();
         }
       } else if (o instanceof StreamEvaluator) {
         // Add the data from the StreamContext to a tuple.

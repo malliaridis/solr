@@ -320,7 +320,8 @@ public abstract class HttpSolrClientTestBase extends SolrJettyTestBase {
   protected void testCollectionParameters(
       HttpSolrClientBase baseUrlClient, HttpSolrClientBase collection1UrlClient)
       throws IOException, SolrServerException {
-    try {
+    try (baseUrlClient;
+        collection1UrlClient) {
       SolrInputDocument doc = new SolrInputDocument();
       doc.addField("id", "collection");
       baseUrlClient.add(COLLECTION_1, doc);
@@ -335,9 +336,6 @@ public abstract class HttpSolrClientTestBase extends SolrJettyTestBase {
 
       assertEquals(
           1, collection1UrlClient.query(new SolrQuery("id:collection")).getResults().getNumFound());
-    } finally {
-      baseUrlClient.close();
-      collection1UrlClient.close();
     }
   }
 

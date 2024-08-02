@@ -190,8 +190,7 @@ public class TestRandomDVFaceting extends SolrTestCaseJ4 {
   List<String> singleValuedMethods = Arrays.asList(new String[] {"enum", "fc", "fcs", "dv", "uif"});
 
   void doFacetTests(FldType ftype) throws Exception {
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       Random rand = random();
       boolean validate = validateResponses;
       ModifiableSolrParams params =
@@ -310,9 +309,6 @@ public class TestRandomDVFaceting extends SolrTestCaseJ4 {
           }
         }
       }
-
-    } finally {
-      req.close();
     }
   }
 }

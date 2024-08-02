@@ -104,8 +104,7 @@ public class TestCloudSolrClientConnections extends SolrTestCaseJ4 {
 
       checkAndCloseProvider(zkHost_provider);
 
-      final ZkStateReader reusedZkReader = new ZkStateReader(cluster.getZkClient());
-      try {
+      try (ZkStateReader reusedZkReader = new ZkStateReader(cluster.getZkClient())) {
         reusedZkReader.createClusterStateWatchersAndUpdate();
         final ZkClientClusterStateProvider reader_provider =
             new ZkClientClusterStateProvider(reusedZkReader);
@@ -114,9 +113,6 @@ public class TestCloudSolrClientConnections extends SolrTestCaseJ4 {
         // but in the case of a reused StateZkReader,
         // closing the provider must not have closed the ZkStateReader...
         assertFalse(reusedZkReader.isClosed());
-
-      } finally {
-        reusedZkReader.close();
       }
     } finally {
       cluster.shutdown();

@@ -251,8 +251,7 @@ class SplitOp implements CoreAdminHandler.CoreAdminOp {
     }
 
     RefCounted<SolrIndexSearcher> searcherHolder = parentCore.getRealtimeSearcher();
-
-    try {
+    try (parentCore) {
       if (!it.handler.coreContainer.isZooKeeperAware()) {
         throw new SolrException(
             SolrException.ErrorCode.BAD_REQUEST, "Shard splitByPrefix requires SolrCloud mode.");
@@ -305,7 +304,6 @@ class SplitOp implements CoreAdminHandler.CoreAdminOp {
       }
     } finally {
       if (searcherHolder != null) searcherHolder.decref();
-      if (parentCore != null) parentCore.close();
     }
   }
 

@@ -156,8 +156,7 @@ public class ResourceLoaderTest extends SolrTestCaseJ4 {
     SolrResourceLoader loader = new SolrResourceLoader(TEST_PATH().resolve("collection1"));
 
     // preliminary sanity check
-    InputStream bomStream = loader.openResource(fileWithBom);
-    try {
+    try (InputStream bomStream = loader.openResource(fileWithBom)) {
       final byte[] bomExpected = new byte[] {-17, -69, -65};
       final byte[] firstBytes = new byte[3];
 
@@ -170,12 +169,6 @@ public class ResourceLoaderTest extends SolrTestCaseJ4 {
               + " contains a BOM -- it appears someone removed it.",
           bomExpected,
           firstBytes);
-    } finally {
-      try {
-        bomStream.close();
-      } catch (Exception e) {
-        /* IGNORE */
-      }
     }
 
     // now make sure getLines skips the BOM...

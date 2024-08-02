@@ -274,22 +274,20 @@ public class JDBCStreamTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
     // Load Solr
-    new UpdateRequest()
-        .add(id, "0", "code_s", "GB", "name_s", "Great Britain")
-        .add(id, "1", "code_s", "CA", "name_s", "Canada")
-        .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
 
-    StreamFactory factory =
-        new StreamFactory()
-            .withCollectionZkHost(COLLECTIONORALIAS, cluster.getZkServer().getZkAddress())
-            .withFunctionName("search", CloudSolrStream.class);
-
-    List<Tuple> tuples;
-
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
+      new UpdateRequest()
+          .add(id, "0", "code_s", "GB", "name_s", "Great Britain")
+          .add(id, "1", "code_s", "CA", "name_s", "Canada")
+          .commit(cluster.getSolrClient(), COLLECTIONORALIAS);
+      StreamFactory factory =
+          new StreamFactory()
+              .withCollectionZkHost(COLLECTIONORALIAS, cluster.getZkServer().getZkAddress())
+              .withFunctionName("search", CloudSolrStream.class);
+      List<Tuple> tuples;
       // Simple 1
       TupleStream jdbcStream =
           new JDBCStream(
@@ -327,8 +325,6 @@ public class JDBCStreamTest extends SolrCloudTestCase {
           "Norway",
           "Nepal",
           "United States");
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -392,9 +388,9 @@ public class JDBCStreamTest extends SolrCloudTestCase {
     List<Tuple> tuples;
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Basic test
       expression =
           "innerJoin("
@@ -449,8 +445,6 @@ public class JDBCStreamTest extends SolrCloudTestCase {
           "Netherlands",
           "Netherlands",
           "United States");
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -514,9 +508,9 @@ public class JDBCStreamTest extends SolrCloudTestCase {
     List<Tuple> tuples;
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Basic test for no alias
       expression =
           "innerJoin("
@@ -622,8 +616,6 @@ public class JDBCStreamTest extends SolrCloudTestCase {
           "Netherlands",
           "Netherlands",
           "United States");
-    } finally {
-      solrClientCache.close();
     }
   }
 
@@ -693,9 +685,9 @@ public class JDBCStreamTest extends SolrCloudTestCase {
 
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
       // Basic test
       expression =
           "rollup("
@@ -741,8 +733,6 @@ public class JDBCStreamTest extends SolrCloudTestCase {
       assertEquals(3D, tuple.getDouble("min(rating)"), 0.0001);
       assertEquals(3.95D, tuple.getDouble("avg(rating)"), 0.0001);
       assertEquals(4D, tuple.getDouble("count(*)"), 0.0001);
-    } finally {
-      solrClientCache.close();
     }
   }
 

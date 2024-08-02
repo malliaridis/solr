@@ -647,8 +647,7 @@ public class TestJsonRequest extends SolrTestCaseHS {
 
   private static void testFilterCachingLocally(Client client) throws Exception {
     if (client.getClientProvider() == null) {
-      final SolrQueryRequest request = req();
-      try {
+      try (SolrQueryRequest request = req()) {
         final CaffeineCache<Query, DocSet> filterCache =
             (CaffeineCache<Query, DocSet>) request.getSearcher().getFilterCache();
         filterCache.clear();
@@ -683,9 +682,6 @@ public class TestJsonRequest extends SolrTestCaseHS {
           assertCatANot1(client, "filter", "{!lucene q.op=AND df=cat_s cache=true}A");
         }
         assertNotNull("got cached ", filterCache.get(catA));
-
-      } finally {
-        request.close();
       }
     }
   }

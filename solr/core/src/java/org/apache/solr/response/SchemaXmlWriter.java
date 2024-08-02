@@ -55,14 +55,8 @@ public class SchemaXmlWriter extends TextResponseWriter {
 
   public static void writeResponse(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp)
       throws IOException {
-    SchemaXmlWriter schemaXmlWriter = null;
-    try {
-      schemaXmlWriter = new SchemaXmlWriter(writer, req, rsp);
+    try (SchemaXmlWriter schemaXmlWriter = new SchemaXmlWriter(writer, req, rsp)) {
       schemaXmlWriter.writeResponse();
-    } finally {
-      if (null != schemaXmlWriter) {
-        schemaXmlWriter.close();
-      }
     }
   }
 

@@ -65,12 +65,8 @@ public class XMLWriter extends TextResponseWriter {
 
   public static void writeResponse(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp)
       throws IOException {
-    XMLWriter xmlWriter = null;
-    try {
-      xmlWriter = new XMLWriter(writer, req, rsp);
+    try (XMLWriter xmlWriter = new XMLWriter(writer, req, rsp)) {
       xmlWriter.writeResponse();
-    } finally {
-      xmlWriter.close();
     }
   }
 

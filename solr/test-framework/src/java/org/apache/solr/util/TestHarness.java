@@ -345,7 +345,8 @@ public class TestHarness extends BaseTestHarness {
    * @see LocalSolrQueryRequest
    */
   public String query(String handler, SolrQueryRequest req) throws Exception {
-    try (var mdcSnap = MDCSnapshot.create()) {
+    try (req;
+        var mdcSnap = MDCSnapshot.create()) {
       assert null != mdcSnap; // prevent compiler warning of unused var
       SolrCore core = req.getCore();
       SolrQueryResponse rsp = new SolrQueryResponse();
@@ -367,7 +368,6 @@ public class TestHarness extends BaseTestHarness {
       }
 
     } finally {
-      req.close();
       SolrRequestInfo.clearRequestInfo();
     }
   }

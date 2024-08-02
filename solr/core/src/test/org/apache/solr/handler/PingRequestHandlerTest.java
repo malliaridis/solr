@@ -217,10 +217,8 @@ public class PingRequestHandlerTest extends SolrTestCaseJ4 {
       throws Exception {
 
     SolrQueryResponse rsp = new SolrQueryResponse();
-    try {
+    try (req) {
       handler.handleRequestBody(req, rsp);
-    } finally {
-      req.close();
     }
     return rsp;
   }

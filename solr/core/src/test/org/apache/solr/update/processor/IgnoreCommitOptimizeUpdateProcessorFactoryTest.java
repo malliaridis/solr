@@ -74,12 +74,11 @@ public class IgnoreCommitOptimizeUpdateProcessorFactoryTest extends SolrTestCase
     SolrQueryResponse rsp = new SolrQueryResponse();
     SolrQueryRequest req = new LocalSolrQueryRequest(core, new ModifiableSolrParams());
 
-    if (commitEndPoint != null) {
-      ((ModifiableSolrParams) req.getParams())
-          .set(DistributedUpdateProcessor.COMMIT_END_POINT, commitEndPoint);
-    }
-
-    try {
+    try (req) {
+      if (commitEndPoint != null) {
+        ((ModifiableSolrParams) req.getParams())
+            .set(DistributedUpdateProcessor.COMMIT_END_POINT, commitEndPoint);
+      }
       SolrRequestInfo.setRequestInfo(new SolrRequestInfo(req, rsp));
       CommitUpdateCommand cmd = new CommitUpdateCommand(req, false);
       cmd.optimize = optimize;
@@ -87,7 +86,6 @@ public class IgnoreCommitOptimizeUpdateProcessorFactoryTest extends SolrTestCase
       processor.processCommit(cmd);
     } finally {
       SolrRequestInfo.clearRequestInfo();
-      req.close();
     }
     return rsp;
   }

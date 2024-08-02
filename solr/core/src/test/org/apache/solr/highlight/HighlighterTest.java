@@ -1392,9 +1392,8 @@ public class HighlighterTest extends SolrTestCaseJ4 {
 
     // invoke highlight component... the hard way
     final SearchComponent hlComp = h.getCore().getSearchComponent("highlight");
-    SolrQueryRequest req =
-        req("hl", "true", "hl.fl", FIELD_NAME, HighlightParams.USE_PHRASE_HIGHLIGHTER, "true");
-    try {
+    try (SolrQueryRequest req =
+        req("hl", "true", "hl.fl", FIELD_NAME, HighlightParams.USE_PHRASE_HIGHLIGHTER, "true")) {
       SolrQueryResponse resp = new SolrQueryResponse();
       ResponseBuilder rb = new ResponseBuilder(req, resp, Collections.singletonList(hlComp));
       rb.setHighlightQuery(query);
@@ -1406,8 +1405,6 @@ public class HighlighterTest extends SolrTestCaseJ4 {
       final String[] snippets =
           (String[]) resp.getValues().findRecursive("highlighting", "0", FIELD_NAME);
       assertEquals("<em>word|7</em> word|2", snippets[0]);
-    } finally {
-      req.close();
     }
   }
 

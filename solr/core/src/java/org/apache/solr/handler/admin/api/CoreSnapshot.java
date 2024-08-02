@@ -154,12 +154,12 @@ public class CoreSnapshot extends CoreAdminAPIBase implements CoreSnapshotApi {
         "deleteSnapshot",
         () -> {
           final SolrCore core = coreContainer.getCore(coreName);
-          if (core == null) {
-            throw new SolrException(
-                SolrException.ErrorCode.BAD_REQUEST, "Unable to locate core " + coreName);
-          }
 
-          try {
+          try (core) {
+            if (core == null) {
+              throw new SolrException(
+                  SolrException.ErrorCode.BAD_REQUEST, "Unable to locate core " + coreName);
+            }
             try {
               core.deleteNamedSnapshot(snapshotName);
             } catch (IOException e) {
@@ -170,8 +170,6 @@ public class CoreSnapshot extends CoreAdminAPIBase implements CoreSnapshotApi {
             // OverseerCollectionMessageHandler can not provide the coreName as part of the result.
             response.coreName = coreName;
             response.commitName = snapshotName;
-          } finally {
-            core.close();
           }
 
           return response;

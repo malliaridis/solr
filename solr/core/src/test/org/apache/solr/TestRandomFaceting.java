@@ -180,8 +180,7 @@ public class TestRandomFaceting extends SolrTestCaseJ4 {
   List<String> singleValuedMethods = Arrays.asList(new String[] {"enum", "fc", "fcs", null});
 
   void doFacetTests(FldType ftype) throws Exception {
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       Random rand = random();
       ModifiableSolrParams params =
           params("facet", "true", "wt", "json", "indent", "true", "omitHeader", "true");
@@ -314,8 +313,6 @@ public class TestRandomFaceting extends SolrTestCaseJ4 {
        * String strResponse = h.query(req(params)); Object realResponse =
        * ObjectBuilder.fromJSON(strResponse);
        */
-    } finally {
-      req.close();
     }
   }
 
@@ -419,12 +416,8 @@ public class TestRandomFaceting extends SolrTestCaseJ4 {
     params.set("facet.limit", -1);
     params.set("facet.offset", 0);
     final String query;
-    SolrQueryRequest req = null;
-    try {
-      req = req(params);
+    try (SolrQueryRequest req = req(params)) {
       query = h.query(req);
-    } finally {
-      req.close();
     }
     return query;
   }

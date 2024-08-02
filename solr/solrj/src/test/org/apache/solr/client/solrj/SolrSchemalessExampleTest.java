@@ -55,20 +55,11 @@ public class SolrSchemalessExampleTest extends SolrExampleTestsBase {
     FileUtils.copyDirectoryToDirectory(new File(ExternalPaths.DEFAULT_CONFIGSET), collection1Dir);
     Properties props = new Properties();
     props.setProperty("name", "collection1");
-    OutputStreamWriter writer = null;
-    try {
-      writer =
-          new OutputStreamWriter(
-              FileUtils.openOutputStream(new File(collection1Dir, "core.properties")),
-              StandardCharsets.UTF_8);
+    try (OutputStreamWriter writer =
+        new OutputStreamWriter(
+            FileUtils.openOutputStream(new File(collection1Dir, "core.properties")),
+            StandardCharsets.UTF_8)) {
       props.store(writer, null);
-    } finally {
-      if (writer != null) {
-        try {
-          writer.close();
-        } catch (Exception ignore) {
-        }
-      }
     }
     createAndStartJetty(tempSolrHome.getAbsolutePath());
   }

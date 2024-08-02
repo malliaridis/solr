@@ -162,14 +162,11 @@ public class HdfsTransactionLog extends TransactionLog {
     long pos = size - END_MESSAGE.length() - 4;
     if (pos < 0) return false;
 
-    FSDataFastInputStream dis = new FSDataFastInputStream(fs.open(tlogFile), pos);
-    try {
+    try (FSDataFastInputStream dis = new FSDataFastInputStream(fs.open(tlogFile), pos)) {
       dis.read(buf);
       for (int i = 0; i < buf.length; i++) {
         if (buf[i] != END_MESSAGE.charAt(i)) return false;
       }
-    } finally {
-      dis.close();
     }
     return true;
   }
@@ -248,14 +245,11 @@ public class HdfsTransactionLog extends TransactionLog {
       // make sure any unflushed buffer has been flushed
       ensureFlushed();
 
-      FSDataFastInputStream dis = new FSDataFastInputStream(fs.open(tlogFile), pos);
-      try {
+      try (FSDataFastInputStream dis = new FSDataFastInputStream(fs.open(tlogFile), pos)) {
         dis.seek(pos);
         try (LogCodec codec = new LogCodec(resolver)) {
           return codec.readVal(new FastInputStream(dis));
         }
-      } finally {
-        dis.close();
       }
     } catch (IOException e) {
       throw new SolrException(SolrException.ErrorCode.SERVER_ERROR, "pos=" + pos, e);

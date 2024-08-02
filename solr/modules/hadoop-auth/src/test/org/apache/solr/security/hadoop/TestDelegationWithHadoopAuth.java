@@ -375,14 +375,11 @@ public class TestDelegationWithHadoopAuth extends SolrCloudTestCase {
     SolrRequest<?> request = getAdminRequest(new ModifiableSolrParams());
 
     // test without token
-    HttpSolrClient ss =
+    try (HttpSolrClient ss =
         new HttpSolrClient.Builder(primarySolrClient.getBaseURL().toString())
             .withResponseParser(primarySolrClient.getParser())
-            .build();
-    try {
+            .build()) {
       doSolrRequest(ss, request, ErrorCode.UNAUTHORIZED.code);
-    } finally {
-      ss.close();
     }
 
     try (HttpSolrClient client =

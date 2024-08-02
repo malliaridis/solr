@@ -378,8 +378,7 @@ public class SolrSnapshotMetaDataManager {
         if (genLoaded == -1 || gen > genLoaded) {
           snapshotFiles.add(file);
           Map<String, SnapshotMetaData> snapshotMetaDataMapping = new HashMap<>();
-          IndexInput in = dir.openInput(file, IOContext.DEFAULT);
-          try {
+          try (IndexInput in = dir.openInput(file, IOContext.DEFAULT)) {
             CodecUtil.checkHeader(in, CODEC_NAME, VERSION_START, VERSION_START);
             int count = in.readVInt();
             for (int i = 0; i < count; i++) {
@@ -394,8 +393,6 @@ public class SolrSnapshotMetaDataManager {
             if (ioe == null) {
               ioe = ioe2;
             }
-          } finally {
-            in.close();
           }
 
           genLoaded = gen;

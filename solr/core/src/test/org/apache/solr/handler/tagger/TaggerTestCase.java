@@ -119,7 +119,7 @@ public abstract class TaggerTestCase extends SolrTestCaseJ4 {
 
   /** Asserts the tags. Will call req.close(). */
   protected void assertTags(SolrQueryRequest req, TestTag... eTags) throws Exception {
-    try {
+    try (req) {
       SolrQueryResponse rsp = h.queryAndResponse(req.getParams().get(CommonParams.QT), req);
       TestTag[] aTags = pullTagsFromResponse(req, rsp);
 
@@ -128,9 +128,6 @@ public abstract class TaggerTestCase extends SolrTestCaseJ4 {
       else message = Arrays.asList(aTags).toString();
       Arrays.sort(eTags);
       assertSortedArrayEquals(message, eTags, aTags);
-
-    } finally {
-      req.close();
     }
   }
 

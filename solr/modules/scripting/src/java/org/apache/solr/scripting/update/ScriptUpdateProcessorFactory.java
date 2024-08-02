@@ -227,15 +227,12 @@ public class ScriptUpdateProcessorFactory extends UpdateRequestProcessorFactory
     // test that our engines & scripts are valid
 
     SolrQueryResponse rsp = new SolrQueryResponse();
-    SolrQueryRequest req = new LocalSolrQueryRequest(core, new ModifiableSolrParams());
-    try {
+    try (SolrQueryRequest req = new LocalSolrQueryRequest(core, new ModifiableSolrParams())) {
       initEngines(req, rsp);
     } catch (Exception e) {
       String msg = "Unable to initialize scripts: " + e.getMessage();
       log.error(msg, e);
-      throw new SolrException(SolrException.ErrorCode.SERVER_ERROR, msg, e);
-    } finally {
-      req.close();
+      throw new SolrException(ErrorCode.SERVER_ERROR, msg, e);
     }
   }
 

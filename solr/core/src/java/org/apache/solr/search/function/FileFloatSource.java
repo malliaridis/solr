@@ -361,10 +361,8 @@ public class FileFloatSource extends ValueSource {
       try {
         RequestHandlerUtils.handleCommit(req, processor, req.getParams(), true);
       } finally {
-        try {
+        try (processor) {
           processor.finish();
-        } finally {
-          processor.close();
         }
       }
     }

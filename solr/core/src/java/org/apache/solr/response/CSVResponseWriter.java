@@ -42,11 +42,8 @@ public class CSVResponseWriter implements QueryResponseWriter {
 
   @Override
   public void write(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) throws IOException {
-    CSVWriter w = new CSVWriter(writer, req, rsp);
-    try {
+    try (CSVWriter w = new CSVWriter(writer, req, rsp)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 

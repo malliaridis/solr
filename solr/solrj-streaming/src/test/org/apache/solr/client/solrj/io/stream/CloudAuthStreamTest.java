@@ -937,7 +937,7 @@ public class CloudAuthStreamTest extends SolrCloudTestCase {
   /** Slurps a stream into a List */
   protected static List<Tuple> getTuples(final TupleStream tupleStream) throws IOException {
     List<Tuple> tuples = new ArrayList<>();
-    try {
+    try (tupleStream) {
       log.trace("TupleStream: {}", tupleStream);
       tupleStream.open();
       for (Tuple t = tupleStream.read(); !t.EOF; t = tupleStream.read()) {
@@ -946,8 +946,6 @@ public class CloudAuthStreamTest extends SolrCloudTestCase {
         }
         tuples.add(t);
       }
-    } finally {
-      tupleStream.close();
     }
     return tuples;
   }

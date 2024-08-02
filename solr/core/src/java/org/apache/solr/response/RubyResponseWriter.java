@@ -25,11 +25,8 @@ public class RubyResponseWriter implements QueryResponseWriter {
 
   @Override
   public void write(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) throws IOException {
-    RubyWriter w = new RubyWriter(writer, req, rsp);
-    try {
+    try (RubyWriter w = new RubyWriter(writer, req, rsp)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 

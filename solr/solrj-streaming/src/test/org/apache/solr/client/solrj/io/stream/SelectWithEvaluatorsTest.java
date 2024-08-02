@@ -101,17 +101,17 @@ public class SelectWithEvaluatorsTest extends SolrCloudTestCase {
     List<Tuple> tuples;
     StreamContext streamContext = new StreamContext();
     SolrClientCache solrClientCache = new SolrClientCache();
-    streamContext.setSolrClientCache(solrClientCache);
 
-    StreamFactory factory =
-        new StreamFactory()
-            .withCollectionZkHost("collection1", cluster.getZkServer().getZkAddress())
-            .withFunctionName("search", CloudSolrStream.class)
-            .withFunctionName("select", SelectStream.class)
-            .withFunctionName("add", AddEvaluator.class)
-            .withFunctionName("if", IfThenElseEvaluator.class)
-            .withFunctionName("gt", GreaterThanEvaluator.class);
-    try {
+    try (solrClientCache) {
+      streamContext.setSolrClientCache(solrClientCache);
+      StreamFactory factory =
+          new StreamFactory()
+              .withCollectionZkHost("collection1", cluster.getZkServer().getZkAddress())
+              .withFunctionName("search", CloudSolrStream.class)
+              .withFunctionName("select", SelectStream.class)
+              .withFunctionName("add", AddEvaluator.class)
+              .withFunctionName("if", IfThenElseEvaluator.class)
+              .withFunctionName("gt", GreaterThanEvaluator.class);
       // Basic test
       clause =
           "select("
@@ -127,8 +127,6 @@ public class SelectWithEvaluatorsTest extends SolrCloudTestCase {
       assertEquals(1, tuples.size());
       assertDouble(tuples.get(0), "result", 4.3);
       assertEquals(4.3, tuples.get(0).get("result"));
-    } finally {
-      solrClientCache.close();
     }
   }
 

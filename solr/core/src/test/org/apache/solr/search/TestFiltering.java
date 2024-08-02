@@ -71,8 +71,7 @@ public class TestFiltering extends SolrTestCaseJ4 {
       "val_s:[A TO z]"
     };
 
-    SolrQueryRequest req = req();
-    try {
+    try (SolrQueryRequest req = req()) {
       SolrIndexSearcher searcher = req.getSearcher();
 
       DocSet live = null;
@@ -101,9 +100,6 @@ public class TestFiltering extends SolrTestCaseJ4 {
         set = res.getDocSet();
         assertSame(set, live);
       }
-
-    } finally {
-      req.close();
     }
   }
 

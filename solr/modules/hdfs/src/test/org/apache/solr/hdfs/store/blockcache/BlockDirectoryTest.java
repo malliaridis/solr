@@ -150,16 +150,13 @@ public class BlockDirectoryTest extends SolrTestCaseJ4 {
   }
 
   private void testEof(String name, Directory directory, long length) throws IOException {
-    IndexInput input = directory.openInput(name, new IOContext());
-    try {
+    try (IndexInput input = directory.openInput(name, new IOContext())) {
       input.seek(length);
       try {
         input.readByte();
         fail("should throw eof");
       } catch (IOException e) {
       }
-    } finally {
-      input.close();
     }
   }
 

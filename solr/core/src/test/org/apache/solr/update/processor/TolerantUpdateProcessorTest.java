@@ -439,9 +439,8 @@ public class TolerantUpdateProcessorTest extends UpdateProcessorTestBase {
       requestParams = new ModifiableSolrParams();
     }
 
-    SolrQueryRequest req = new LocalSolrQueryRequest(core, requestParams);
     UpdateRequestProcessor processor = null;
-    try {
+    try (SolrQueryRequest req = new LocalSolrQueryRequest(core, requestParams)) {
       processor = pc.createProcessor(req, rsp);
       for (SolrInputDocument doc : docs) {
         AddUpdateCommand cmd = new AddUpdateCommand(req);
@@ -452,7 +451,6 @@ public class TolerantUpdateProcessorTest extends UpdateProcessorTestBase {
 
     } finally {
       IOUtils.closeQuietly(processor);
-      req.close();
     }
     return rsp;
   }

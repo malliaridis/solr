@@ -688,12 +688,10 @@ public class TermsComponentTest extends SolrTestCaseJ4 {
       val2 = vals[i];
     }
 
-    SolrQueryRequest req =
+    try (SolrQueryRequest req =
         req(
             "qt", "/terms",
-            "terms.fl", "foo_pi");
-    ;
-    try {
+            "terms.fl", "foo_pi")) {
       /* SchemaField sf = req.getSchema().getField("foo_pi");
        * LeafReader r = req.getSearcher().getIndexReader().leaves().get(0).reader(); PointValues pv
        * = r.getPointValues("foo_pi"); System.out.println("pv=" + pv); if (pv instanceof
@@ -792,7 +790,6 @@ public class TermsComponentTest extends SolrTestCaseJ4 {
           "//lst[@name='foo_pi']/int[2][@name='" + val2 + "']");
 
     } finally {
-      req.close();
       assertU(delQ("foo_pi:[* TO *]"));
       assertU(commit());
     }

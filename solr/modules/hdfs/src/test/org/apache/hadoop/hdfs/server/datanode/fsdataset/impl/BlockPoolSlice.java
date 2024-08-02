@@ -495,9 +495,7 @@ public class BlockPoolSlice {
       boolean loadRwr = true;
       File restartMeta = new File(file.getParent()  +
           File.pathSeparator + "." + file.getName() + ".restart");
-      Scanner sc = null;
-      try {
-        sc = new Scanner(restartMeta, StandardCharsets.UTF_8);
+      try (Scanner sc = new Scanner(restartMeta, StandardCharsets.UTF_8)) {
         // The restart meta file exists
         if (sc.hasNextLong() && (sc.nextLong() > timer.now())) {
           // It didn't expire. Load the replica as a RBW.
@@ -514,16 +512,11 @@ public class BlockPoolSlice {
               .build();
           loadRwr = false;
         }
-        sc.close();
         if (!fileIoProvider.delete(volume, restartMeta)) {
           FsDatasetImpl.LOG.warn("Failed to delete restart meta file: {}", restartMeta.getPath());
         }
       } catch (FileNotFoundException fnfe) {
         // nothing to do hereFile dir =
-      } finally {
-        if (sc != null) {
-          sc.close();
-        }
       }
       // Restart meta doesn't exist or expired.
       if (loadRwr) {

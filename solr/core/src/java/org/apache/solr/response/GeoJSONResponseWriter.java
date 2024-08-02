@@ -67,12 +67,8 @@ public class GeoJSONResponseWriter extends JSONResponseWriter {
       formats = ctx.getFormats();
     }
 
-    JSONWriter w = new GeoJSONWriter(writer, req, rsp, geofield, formats);
-
-    try {
+    try (JSONWriter w = new GeoJSONWriter(writer, req, rsp, geofield, formats)) {
       w.writeResponse();
-    } finally {
-      w.close();
     }
   }
 }

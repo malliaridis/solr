@@ -2562,7 +2562,7 @@ public class SolrCore implements SolrInfoBean, Closeable {
 
     openSearcherLock.lock();
     Timer.Context timerContext = newSearcherTimer.time();
-    try {
+    try (timerContext) {
       searchHolder = openNewSearcher(updateHandlerReopens, false);
       // the searchHolder will be incremented once already (and it will eventually be assigned to
       // _searcher when registered) increment it again if we are going to return it to the caller.
@@ -2605,15 +2605,13 @@ public class SolrCore implements SolrInfoBean, Closeable {
               searcherExecutor.submit(
                   () -> {
                     Timer.Context warmupContext = newSearcherWarmupTimer.time();
-                    try {
+                    try (warmupContext) {
                       newSearcher.warm(currSearcher);
                     } catch (Throwable e) {
                       log.error("Exception warming new searcher", e);
                       if (e instanceof Error) {
                         throw (Error) e;
                       }
-                    } finally {
-                      warmupContext.close();
                     }
                     return null;
                   });
@@ -2696,8 +2694,6 @@ public class SolrCore implements SolrInfoBean, Closeable {
       if (e instanceof RuntimeException) throw (RuntimeException) e;
       throw new SolrException(ErrorCode.SERVER_ERROR, e);
     } finally {
-
-      timerContext.close();
 
       if (!success) {
         newSearcherOtherErrorsCounter.inc();

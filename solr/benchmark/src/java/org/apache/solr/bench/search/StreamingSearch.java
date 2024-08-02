@@ -130,7 +130,7 @@ public class StreamingSearch {
 
   private static List<Tuple> getTuples(TupleStream tupleStream) throws IOException {
     List<Tuple> tuples = new ArrayList<>();
-    try {
+    try (tupleStream) {
       tupleStream.open();
       while (true) {
         Tuple t = tupleStream.read();
@@ -141,8 +141,6 @@ public class StreamingSearch {
         }
       }
       return tuples;
-    } finally {
-      tupleStream.close();
     }
   }
 

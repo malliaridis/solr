@@ -415,22 +415,18 @@ public class TestSolrCloudWithDelegationTokens extends SolrTestCaseJ4 {
     SolrRequest<?> request = getAdminRequest(new ModifiableSolrParams());
 
     // test without token
-    final HttpSolrClient ssWoToken =
+    try (HttpSolrClient ssWoToken =
         new HttpSolrClient.Builder(solrClientPrimary.getBaseURL().toString())
             .withResponseParser(solrClientPrimary.getParser())
-            .build();
-    try {
+            .build()) {
       doSolrRequest(ssWoToken, request, ErrorCode.UNAUTHORIZED.code);
-    } finally {
-      ssWoToken.close();
     }
 
-    final HttpSolrClient ssWToken =
+    try (HttpSolrClient ssWToken =
         new HttpSolrClient.Builder(solrClientPrimary.getBaseURL().toString())
             .withKerberosDelegationToken(token)
             .withResponseParser(solrClientPrimary.getParser())
-            .build();
-    try {
+            .build()) {
       // test with token via property
       doSolrRequest(ssWToken, request, HttpStatus.SC_OK);
 
@@ -440,8 +436,6 @@ public class TestSolrCloudWithDelegationTokens extends SolrTestCaseJ4 {
       expectThrows(
           IllegalArgumentException.class,
           () -> doSolrRequest(ssWToken, getAdminRequest(tokenParam), ErrorCode.FORBIDDEN.code));
-    } finally {
-      ssWToken.close();
     }
   }
 
