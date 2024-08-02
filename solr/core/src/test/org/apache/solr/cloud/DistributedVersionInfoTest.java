@@ -324,7 +324,7 @@ public class DistributedVersionInfoTest extends SolrCloudTestCase {
       Set<Integer> deletedDocs)
       throws Exception {
     SolrClient leaderSolr = getHttpSolrClient(leader);
-    List<SolrClient> replicas = new ArrayList<SolrClient>(notLeaders.size());
+    List<SolrClient> replicas = new ArrayList<>(notLeaders.size());
     for (Replica r : notLeaders) replicas.add(getHttpSolrClient(r));
 
     try {

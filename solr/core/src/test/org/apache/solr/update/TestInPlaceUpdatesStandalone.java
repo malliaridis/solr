@@ -1382,7 +1382,7 @@ public class TestInPlaceUpdatesStandalone extends SolrTestCaseJ4 {
    */
   @Test
   public void testComputeInPlaceUpdatableFields() throws Exception {
-    Set<String> inPlaceUpdatedFields = new HashSet<String>();
+    Set<String> inPlaceUpdatedFields = new HashSet<>();
 
     // these asserts should hold true regardless of type, or if the field has a default
     List<String> fieldsToCheck =

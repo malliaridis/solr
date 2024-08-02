@@ -1041,7 +1041,7 @@ public class Http2SolrClient extends HttpSolrClientBase {
         this.urlParamNames = http2SolrClient.urlParamNames;
       }
       if (this.listenerFactory == null) {
-        this.listenerFactory = new ArrayList<HttpListenerFactory>();
+        this.listenerFactory = new ArrayList<>();
         http2SolrClient.listenerFactory.forEach(this.listenerFactory::add);
       }
       return this;

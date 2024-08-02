@@ -592,7 +592,7 @@ public class IndexFetcher {
       fsyncService =
           ExecutorUtil.newMDCAwareSingleThreadExecutor(new SolrNamedThreadFactory("fsyncService"));
       // use a synchronized list because the list is read by other threads (to show details)
-      filesDownloaded = Collections.synchronizedList(new ArrayList<Map<String, Object>>());
+      filesDownloaded = Collections.synchronizedList(new ArrayList<>());
       // if the generation of leader is older than that of the follower, it means they are not
       // compatible to be copied then a new index directory to be created and all the files need to
       // be copied

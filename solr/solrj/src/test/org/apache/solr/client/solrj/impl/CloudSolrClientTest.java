@@ -474,7 +474,7 @@ public class CloudSolrClientTest extends SolrCloudTestCase {
     SimpleOrderedMap<?> shardsInfoMap = (SimpleOrderedMap<?>) shardsInfo;
     @SuppressWarnings({"unchecked"})
     Iterator<Map.Entry<String, ?>> itr = shardsInfoMap.asMap(100).entrySet().iterator();
-    List<String> shardAddresses = new ArrayList<String>();
+    List<String> shardAddresses = new ArrayList<>();
     while (itr.hasNext()) {
       Map.Entry<String, ?> e = itr.next();
       assertTrue(
@@ -489,7 +489,7 @@ public class CloudSolrClientTest extends SolrCloudTestCase {
     }
 
     // Make sure the distributed queries were directed to a single node only
-    Set<Integer> ports = new HashSet<Integer>();
+    Set<Integer> ports = new HashSet<>();
     for (String shardAddr : shardAddresses) {
       URI uri = URI.create(shardAddr);
       ports.add(uri.getPort());
@@ -551,7 +551,7 @@ public class CloudSolrClientTest extends SolrCloudTestCase {
     SimpleOrderedMap<?> shardsInfoMap = (SimpleOrderedMap<?>) shardsInfo;
     @SuppressWarnings({"unchecked"})
     Iterator<Map.Entry<String, ?>> itr = shardsInfoMap.asMap(100).entrySet().iterator();
-    List<String> shardAddresses = new ArrayList<String>();
+    List<String> shardAddresses = new ArrayList<>();
     while (itr.hasNext()) {
       Map.Entry<String, ?> e = itr.next();
       assertTrue(

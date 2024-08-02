@@ -97,7 +97,7 @@ public class CollectionPropsTest extends SolrCloudTestCase {
     // test logic, to prevent triggering SOLR-13678
     final Semaphore sawExpectedProps = new Semaphore(0);
     final AtomicReference<Map<String, String>> expectedProps =
-        new AtomicReference<Map<String, String>>(null);
+        new AtomicReference<>(null);
 
     final CollectionPropsWatcher w =
         new CollectionPropsWatcher() {

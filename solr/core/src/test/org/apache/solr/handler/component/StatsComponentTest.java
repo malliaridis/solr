@@ -1041,7 +1041,7 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
     assertU(adoc("id", "4"));
     assertU(commit());
 
-    Map<String, String> args = new HashMap<String, String>();
+    Map<String, String> args = new HashMap<>();
     args.put(CommonParams.Q, "*:*");
     args.put(StatsParams.STATS, "true");
     args.put(StatsParams.STATS_FIELD, "{!ex=id}id_i");
@@ -1054,7 +1054,7 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
         "//lst[@name='id_i']/double[@name='min'][.='1.0']",
         "//lst[@name='id_i']/double[@name='max'][.='4.0']");
 
-    args = new HashMap<String, String>();
+    args = new HashMap<>();
     args.put(CommonParams.Q, "*:*");
     args.put(StatsParams.STATS, "true");
     args.put(StatsParams.STATS_FIELD, "{!key=id2}id_i");
@@ -1493,7 +1493,7 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
     public final List<String> perShardXpaths;
     public final List<String> finalXpaths;
 
-    public static final Map<Stat, ExpectedStat> ALL = new LinkedHashMap<Stat, ExpectedStat>();
+    public static final Map<Stat, ExpectedStat> ALL = new LinkedHashMap<>();
 
     private ExpectedStat(
         Stat stat, String input, List<String> perShardXpaths, List<String> finalXpaths) {
@@ -1505,7 +1505,7 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
 
     public static void createSimple(Stat stat, String input, String type, String result) {
       EnumSet<Stat> deps = stat.getDistribDeps();
-      List<String> perShardXpaths = new ArrayList<String>(deps.size());
+      List<String> perShardXpaths = new ArrayList<>(deps.size());
       String xpath = KPRE + type + "[@name='" + stat + "'][.='" + result + "']";
       for (Stat dep : deps) {
         if (dep.equals(stat)) { // self dependency
@@ -1653,7 +1653,7 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
       Stat stat = expect.stat;
 
       StringBuilder exclude = new StringBuilder();
-      List<String> testXpaths = new ArrayList<String>(5 + expect.perShardXpaths.size());
+      List<String> testXpaths = new ArrayList<>(5 + expect.perShardXpaths.size());
       testXpaths.addAll(expect.perShardXpaths);
 
       int numKeysExpected = 0;
@@ -1690,11 +1690,11 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
     for (int numParams = 1; numParams <= allStats.size(); numParams++) {
       for (EnumSet<Stat> set : new StatSetCombinations(numParams, allStats)) {
         // EnumSets use natural ordering, we want to randomize the order of the params
-        List<Stat> combo = new ArrayList<Stat>(set);
+        List<Stat> combo = new ArrayList<>(set);
         Collections.shuffle(combo, random());
 
         StringBuilder paras = new StringBuilder("{!key=k ");
-        List<String> testXpaths = new ArrayList<String>(numParams + 5);
+        List<String> testXpaths = new ArrayList<>(numParams + 5);
 
         int numKeysExpected = 0;
         for (Stat stat : combo) {
@@ -2348,7 +2348,7 @@ public class StatsComponentTest extends SolrTestCaseJ4 {
 
     @Override
     public Iterator<EnumSet<Stat>> iterator() {
-      return new Iterator<EnumSet<Stat>>() {
+      return new Iterator<>() {
         final Iterator<int[]> wrapped = intCombos.iterator();
 
         @Override

@@ -1040,8 +1040,8 @@ public class TestExportWriter extends SolrTestCaseJ4 {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ROOT);
     assertU(delQ("*:*"));
     assertU(commit());
-    List<String> trieFields = new ArrayList<String>();
-    List<String> pointFields = new ArrayList<String>();
+    List<String> trieFields = new ArrayList<>();
+    List<String> pointFields = new ArrayList<>();
     for (String mv : new String[] {"s", ""}) {
       for (String indexed : new String[] {"_ni", ""}) {
         for (String type : new String[] {"i", "l", "f", "d", "dt"}) {

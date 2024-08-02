@@ -599,7 +599,7 @@ public class QueryElevationComponent extends SearchComponent implements SolrCore
       return;
     }
 
-    List<Query> updatedFilters = new ArrayList<Query>();
+    List<Query> updatedFilters = new ArrayList<>();
 
     for (Query filter : filters) {
 

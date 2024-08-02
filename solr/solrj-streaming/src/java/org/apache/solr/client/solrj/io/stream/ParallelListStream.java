@@ -100,7 +100,7 @@ public class ParallelListStream extends TupleStream implements Expressible {
 
   @Override
   public List<TupleStream> children() {
-    List<TupleStream> l = new ArrayList<TupleStream>();
+    List<TupleStream> l = new ArrayList<>();
     for (TupleStream stream : streams) {
       l.add(stream);
     }

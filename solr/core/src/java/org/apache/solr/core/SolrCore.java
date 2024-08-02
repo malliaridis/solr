@@ -2737,7 +2737,7 @@ public class SolrCore implements SolrInfoBean, Closeable {
   private RefCounted<SolrIndexSearcher> newHolder(
       SolrIndexSearcher newSearcher, final ArrayDeque<RefCounted<SolrIndexSearcher>> searcherList) {
     RefCounted<SolrIndexSearcher> holder =
-        new RefCounted<SolrIndexSearcher>(newSearcher) {
+        new RefCounted<>(newSearcher) {
           @Override
           public void close() {
             try {

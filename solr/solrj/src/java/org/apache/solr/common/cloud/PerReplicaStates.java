@@ -166,7 +166,7 @@ public class PerReplicaStates implements ReflectMapWriter {
 
   private StringBuilder appendStates(StringBuilder sb) {
     states.forEachEntry(
-        new BiConsumer<String, State>() {
+        new BiConsumer<>() {
           int count = 0;
 
           @Override

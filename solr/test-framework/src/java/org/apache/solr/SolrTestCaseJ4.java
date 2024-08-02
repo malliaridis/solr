@@ -2023,7 +2023,7 @@ public abstract class SolrTestCaseJ4 extends SolrTestCase {
       return createComparator("score_f", asc, sortMissingLast, sortMissingFirst, sortMissingAsZero);
     }
 
-    return new Comparator<Doc>() {
+    return new Comparator<>() {
       @SuppressWarnings({"rawtypes"})
       private Comparable zeroVal(Comparable template) {
         if (template == null) return null;

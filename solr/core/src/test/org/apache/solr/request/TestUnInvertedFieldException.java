@@ -90,7 +90,7 @@ public class TestUnInvertedFieldException extends SolrTestCaseJ4 {
             TestUtil.nextInt(random(), 3, 6),
             10,
             TimeUnit.MILLISECONDS,
-            new LinkedBlockingQueue<Runnable>(),
+            new LinkedBlockingQueue<>(),
             new NamedThreadFactory(getClass().getSimpleName()));
 
     try {

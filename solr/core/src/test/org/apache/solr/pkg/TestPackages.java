@@ -694,7 +694,7 @@ public class TestPackages extends SolrCloudTestCase {
       String path = jetty.getBaseURLV2().toString() + "/cluster/package?wt=javabin";
       TestDistribFileStore.assertResponseValues(
           10,
-          new Callable<NavigableObject>() {
+          new Callable<>() {
             @Override
             public NavigableObject call() throws Exception {
               try (HttpSolrClient solrClient = (HttpSolrClient) jetty.newClient()) {

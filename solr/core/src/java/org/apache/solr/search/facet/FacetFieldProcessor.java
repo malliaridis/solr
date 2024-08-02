@@ -59,7 +59,7 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
   final FacetRequest.FacetSort sort;
   final FacetRequest.FacetSort resort; // typically null (unless the user specified a prelim_sort)
 
-  final Map<String, AggValueSource> deferredAggs = new HashMap<String, AggValueSource>();
+  final Map<String, AggValueSource> deferredAggs = new HashMap<>();
 
   // TODO: push any of this down to base class?
 
@@ -650,14 +650,14 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
       if (resortAcc.equals(countAcc)) {
         final Comparator<Slot> comparator =
             null != indexOrderAcc
-                ? (new Comparator<Slot>() {
+                ? (new Comparator<>() {
                   @Override
                   public int compare(Slot x, Slot y) {
                     final int cmp = resortMul * countAcc.compare(x.slot, y.slot);
                     return cmp != 0 ? cmp : indexOrderAcc.compare(x.slot, y.slot);
                   }
                 })
-                : (new Comparator<Slot>() {
+                : (new Comparator<>() {
                   @Override
                   public int compare(Slot x, Slot y) {
                     final int cmp = resortMul * countAcc.compare(x.slot, y.slot);
@@ -671,7 +671,7 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
         // obviously indexOrderAcc is not null, and no need for a fancy tie breaker...
         Arrays.sort(
             slots,
-            new Comparator<Slot>() {
+            new Comparator<>() {
               @Override
               public int compare(Slot x, Slot y) {
                 return resortMul * indexOrderAcc.compare(x.slot, y.slot);
@@ -721,14 +721,14 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
     // now resort all the Slots according to the new collected values...
     final Comparator<Slot> comparator =
         null != indexOrderAcc
-            ? (new Comparator<Slot>() {
+            ? (new Comparator<>() {
               @Override
               public int compare(Slot x, Slot y) {
                 final int cmp = resortMul * acc.compare(x.resortSlotNum, y.resortSlotNum);
                 return cmp != 0 ? cmp : indexOrderAcc.compare(x.slot, y.slot);
               }
             })
-            : (new Comparator<Slot>() {
+            : (new Comparator<>() {
               @Override
               public int compare(Slot x, Slot y) {
                 final int cmp = resortMul * acc.compare(x.resortSlotNum, y.resortSlotNum);
@@ -921,7 +921,7 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
         }
       };
   private static final IntFunction<SlotContext> ALL_BUCKETS_SLOT_FUNCTION =
-      new IntFunction<SlotContext>() {
+      new IntFunction<>() {
         @Override
         public SlotContext apply(int value) {
           return ALL_BUCKETS_SLOT_CONTEXT;

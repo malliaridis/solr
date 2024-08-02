@@ -2416,7 +2416,7 @@ public class UpdateLog implements PluginInfoInitialized, SolrMetricProducer {
           Integer.MAX_VALUE,
           1,
           TimeUnit.SECONDS,
-          new SynchronousQueue<Runnable>(),
+          new SynchronousQueue<>(),
           new SolrNamedThreadFactory("recoveryExecutor"));
 
   public static void deleteFile(Path file) {

@@ -365,7 +365,7 @@ public class SimpleFacets {
 
     final Set<String> excludeTerms = new HashSet<>(StrUtils.splitSmart(exclude, ",", true));
 
-    return new Predicate<BytesRef>() {
+    return new Predicate<>() {
       @Override
       public boolean test(BytesRef bytesRef) {
         return !excludeTerms.contains(bytesRef.utf8ToString());
@@ -1095,7 +1095,7 @@ public class SimpleFacets {
     boolean sortByCount = sort.equals("count") || sort.equals("true");
     final int maxsize = limit >= 0 ? offset + limit : Integer.MAX_VALUE - 1;
     final BoundedTreeSet<CountPair<BytesRef, Integer>> queue =
-        sortByCount ? new BoundedTreeSet<CountPair<BytesRef, Integer>>(maxsize) : null;
+        sortByCount ? new BoundedTreeSet<>(maxsize) : null;
 
     int min = mincount - 1; // the smallest value in the top 'N' values
     int off = offset;
@@ -1312,7 +1312,7 @@ public class SimpleFacets {
    * otherwise the collation of results will fail.
    */
   public NamedList<Object> getFacetIntervalCounts() throws IOException, SyntaxError {
-    NamedList<Object> res = new SimpleOrderedMap<Object>();
+    NamedList<Object> res = new SimpleOrderedMap<>();
     String[] fields = global.getParams(FacetParams.FACET_INTERVAL);
     if (fields == null || fields.length == 0) return res;
 
@@ -1332,7 +1332,7 @@ public class SimpleFacets {
             "Can't use interval faceting on a PointField without docValues");
       }
 
-      SimpleOrderedMap<Integer> fieldResults = new SimpleOrderedMap<Integer>();
+      SimpleOrderedMap<Integer> fieldResults = new SimpleOrderedMap<>();
       res.add(parsed.key, fieldResults);
       IntervalFacets intervalFacets =
           new IntervalFacets(schemaField, searcher, parsed.docs, intervalStrs, parsed.params);

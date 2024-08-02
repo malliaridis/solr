@@ -828,8 +828,7 @@ public class TestRecoveryHdfs extends SolrTestCaseJ4 {
       addDocs(
           1,
           start,
-          new LinkedList<
-              Long>()); // don't add this to the versions list because we are going to lose it...
+          new LinkedList<>()); // don't add this to the versions list because we are going to lose it...
       h.close();
       files = HdfsUpdateLog.getLogList(fs, new Path(logDir));
       Arrays.sort(files);

@@ -64,7 +64,7 @@ public class TestPivotHelperCode extends SolrTestCaseJ4 {
     final int numIters = atLeast(100);
     for (int i = 0; i < numIters; i++) {
       final int numStrs = atLeast(1);
-      List<String> data = new ArrayList<String>(numStrs);
+      List<String> data = new ArrayList<>(numStrs);
       for (int j = 0; j < numStrs; j++) {
         // :TODO: mix in nulls
         data.add(TestUtil.randomUnicodeString(random()));

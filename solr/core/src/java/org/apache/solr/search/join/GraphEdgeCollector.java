@@ -171,7 +171,7 @@ abstract class GraphEdgeCollector extends SimpleCollector implements Collector {
           AutomatonQuery autnQuery = new AutomatonQuery(new Term(matchField.getName()), autn);
           q = autnQuery;
         } else {
-          List<BytesRef> termList = new ArrayList<BytesRef>(collectorTerms.size());
+          List<BytesRef> termList = new ArrayList<>(collectorTerms.size());
           for (int i = 0; i < collectorTerms.size(); i++) {
             BytesRef ref = new BytesRef();
             collectorTerms.get(i, ref);

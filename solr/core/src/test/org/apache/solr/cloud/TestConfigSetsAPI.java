@@ -2002,7 +2002,7 @@ public class TestConfigSetsAPI extends SolrCloudTestCase {
       assertEquals(1, actualConfigSets.size()); // only the _default configset
 
       // test multiple
-      Set<String> configSets = new HashSet<String>();
+      Set<String> configSets = new HashSet<>();
       for (int i = 0; i < 5; ++i) {
         String configSet = "configSet" + i;
         getConfigSetService().uploadConfig(configSet, configset("configset-2"));

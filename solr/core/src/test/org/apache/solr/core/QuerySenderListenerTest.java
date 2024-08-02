@@ -28,14 +28,14 @@ public class QuerySenderListenerTest extends SolrTestCaseJ4 {
   public void testConvertQueriesToList() {
 
     // represents a warming query
-    NamedList<Object> query = new NamedList<Object>();
+    NamedList<Object> query = new NamedList<>();
 
     // in the JSON config model, queries is an ArrayList of NamedLists
-    ArrayList<Object> queries = new ArrayList<Object>();
+    ArrayList<Object> queries = new ArrayList<>();
     queries.add(query);
 
     // in the XML config model, queries is an ArrayList of ArrayLists of NamedLists
-    ArrayList<Object> queriesList = new ArrayList<Object>();
+    ArrayList<Object> queriesList = new ArrayList<>();
     queriesList.add(query);
     queries.add(queriesList);
 

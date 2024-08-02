@@ -44,7 +44,7 @@ public class TrollingIndexReaderFactory extends StandardIndexReaderFactory {
 
   private static volatile Trap trap;
   private static final BlockingQueue<List<Object>> lastStacktraces =
-      new LinkedBlockingQueue<List<Object>>();
+      new LinkedBlockingQueue<>();
   private static final long startTime = ManagementFactory.getRuntimeMXBean().getStartTime();
   private static final int keepStackTraceLines = 20;
   protected static final int maxTraces = 4;
@@ -110,7 +110,7 @@ public class TrollingIndexReaderFactory extends StandardIndexReaderFactory {
 
   public static Trap catchClass(String className, Runnable onCaught) {
     Predicate<StackTraceElement> judge =
-        new Predicate<StackTraceElement>() {
+        new Predicate<>() {
           @Override
           public boolean test(StackTraceElement trace) {
             return trace.getClassName().contains(className);

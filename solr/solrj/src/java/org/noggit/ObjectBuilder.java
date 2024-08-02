@@ -151,7 +151,7 @@ public class ObjectBuilder {
   }
 
   public Object newObject() throws IOException {
-    return new LinkedHashMap<Object, Object>();
+    return new LinkedHashMap<>();
   }
 
   public Object getKey() throws IOException {
@@ -181,7 +181,7 @@ public class ObjectBuilder {
   }
 
   public Object newArray() {
-    return new ArrayList<Object>();
+    return new ArrayList<>();
   }
 
   @SuppressWarnings("unchecked")

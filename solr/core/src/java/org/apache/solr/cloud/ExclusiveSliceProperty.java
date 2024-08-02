@@ -242,7 +242,7 @@ class ExclusiveSliceProperty {
               continue;
             }
             if (nodesHostingProp.containsKey(ent.getKey()) == false) {
-              nodesHostingProp.put(ent.getKey(), new ArrayList<SliceReplica>());
+              nodesHostingProp.put(ent.getKey(), new ArrayList<>());
             }
             if (minSize > nodesHostingReplicas.get(ent.getKey()).size()
                 && nodesHostingProp.get(ent.getKey()).size() < tmpMaxPropPerNode) {
@@ -256,7 +256,7 @@ class ExclusiveSliceProperty {
       // Now, you have a slice and node to put it on
       shardsNeedingHosts.remove(srToChange.slice.getName());
       if (nodesHostingProp.containsKey(nodeName) == false) {
-        nodesHostingProp.put(nodeName, new ArrayList<SliceReplica>());
+        nodesHostingProp.put(nodeName, new ArrayList<>());
       }
       nodesHostingProp.get(nodeName).add(srToChange);
       adjustLimits(nodesHostingProp.get(nodeName));

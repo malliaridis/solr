@@ -81,7 +81,7 @@ public class LazySolrCluster implements SolrCluster {
               return Boolean.FALSE;
             });
 
-    return new SimpleMap<CollectionConfig>() {
+    return new SimpleMap<>() {
       @Override
       public CollectionConfig get(String key) {
         if (configNames.contains(key)) {
@@ -106,7 +106,7 @@ public class LazySolrCluster implements SolrCluster {
   }
 
   private SimpleMap<SolrNode> lazyNodeMap() {
-    return new SimpleMap<SolrNode>() {
+    return new SimpleMap<>() {
       @Override
       public SolrNode get(String key) {
         if (!zkStateReader.getClusterState().liveNodesContain(key)) {
@@ -130,7 +130,7 @@ public class LazySolrCluster implements SolrCluster {
   }
 
   private SimpleMap<SolrCollection> lazyCollectionsWithAlias(ZkStateReader zkStateReader) {
-    return new SimpleMap<SolrCollection>() {
+    return new SimpleMap<>() {
       @Override
       public SolrCollection get(String key) {
         SolrCollection result = collections.get(key);
@@ -160,7 +160,7 @@ public class LazySolrCluster implements SolrCluster {
   }
 
   private SimpleMap<SolrCollection> lazyCollectionsMap(ZkStateReader zkStateReader) {
-    return new SimpleMap<SolrCollection>() {
+    return new SimpleMap<>() {
       @Override
       public SolrCollection get(String key) {
         return _collection(key, null);

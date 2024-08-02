@@ -989,7 +989,7 @@ public class SplitShardCmd implements CollApiCmds.CollectionApiCommand {
       props.put(SHARD_ID_PROP, subSlice);
       ZkNodeProps m = new ZkNodeProps(props);
       try {
-        new DeleteShardCmd(ccc).call(clusterState, m, new NamedList<Object>());
+        new DeleteShardCmd(ccc).call(clusterState, m, new NamedList<>());
       } catch (Exception e) {
         log.warn(
             "Cleanup failed after failed split of {}/{} : (deleting existing sub shard{})",

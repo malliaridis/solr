@@ -65,20 +65,20 @@ public class TestNeuralNetworkModel extends TestRerankBase {
   protected static Map<String, Object> createLayerParams(
       double[][] matrix, double[] bias, String activation) {
 
-    final ArrayList<ArrayList<Double>> matrixList = new ArrayList<ArrayList<Double>>();
+    final ArrayList<ArrayList<Double>> matrixList = new ArrayList<>();
     for (int row = 0; row < matrix.length; row++) {
-      matrixList.add(new ArrayList<Double>());
+      matrixList.add(new ArrayList<>());
       for (int col = 0; col < matrix[row].length; col++) {
         matrixList.get(row).add(matrix[row][col]);
       }
     }
 
-    final ArrayList<Double> biasList = new ArrayList<Double>();
+    final ArrayList<Double> biasList = new ArrayList<>();
     for (double b : bias) {
       biasList.add(b);
     }
 
-    final Map<String, Object> layer = new HashMap<String, Object>();
+    final Map<String, Object> layer = new HashMap<>();
     layer.put("matrix", matrixList);
     layer.put("bias", biasList);
     layer.put("activation", activation);
@@ -124,8 +124,8 @@ public class TestNeuralNetworkModel extends TestRerankBase {
 
     double[] biasTwo = {outputNodeBias};
 
-    Map<String, Object> params = new HashMap<String, Object>();
-    ArrayList<Map<String, Object>> layers = new ArrayList<Map<String, Object>>();
+    Map<String, Object> params = new HashMap<>();
+    ArrayList<Map<String, Object>> layers = new ArrayList<>();
 
     layers.add(createLayerParams(matrixOne, biasOne, "relu"));
     layers.add(createLayerParams(matrixTwo, biasTwo, "relu"));
@@ -144,7 +144,7 @@ public class TestNeuralNetworkModel extends TestRerankBase {
     assertEquals(4, featuresInModel.size()); // the test model uses four features
 
     final List<Normalizer> norms =
-        new ArrayList<Normalizer>(
+        new ArrayList<>(
             Collections.nCopies(featuresInModel.size(), IdentityNormalizer.INSTANCE));
     final LTRScoringModel ltrScoringModel =
         createNeuralNetworkModel(
@@ -343,7 +343,7 @@ public class TestNeuralNetworkModel extends TestRerankBase {
 
     final float[] featureValues = {1.2f, 3.4f, 5.6f, 7.8f};
 
-    final List<Explanation> explanations = new ArrayList<Explanation>();
+    final List<Explanation> explanations = new ArrayList<>();
     for (float featureValue : featureValues) {
       explanations.add(Explanation.match(featureValue, ""));
     }
@@ -416,7 +416,7 @@ public class TestNeuralNetworkModel extends TestRerankBase {
     float actualScore = model.score(featureValues);
     assertEquals(expectedScore, actualScore, 0.001);
 
-    final List<Explanation> explanations = new ArrayList<Explanation>();
+    final List<Explanation> explanations = new ArrayList<>();
     for (float featureValue : featureValues) {
       explanations.add(Explanation.match(featureValue, ""));
     }

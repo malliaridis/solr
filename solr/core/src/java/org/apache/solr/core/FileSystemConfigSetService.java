@@ -118,7 +118,7 @@ public class FileSystemConfigSetService extends ConfigSetService {
     try {
       Files.walkFileTree(
           dir,
-          new SimpleFileVisitor<Path>() {
+          new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
                 throws IOException {
@@ -198,7 +198,7 @@ public class FileSystemConfigSetService extends ConfigSetService {
     try {
       Files.walkFileTree(
           source,
-          new SimpleFileVisitor<Path>() {
+          new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
                 throws IOException {

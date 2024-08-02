@@ -96,7 +96,7 @@ public class PivotFacetField {
     if (null != parentValue) {
       return parentValue.getValuePath();
     }
-    return new ArrayList<String>(3);
+    return new ArrayList<>(3);
   }
 
   /**

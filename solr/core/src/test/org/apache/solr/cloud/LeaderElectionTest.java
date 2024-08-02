@@ -72,7 +72,7 @@ public class LeaderElectionTest extends SolrTestCaseJ4 {
             .withTimeout(TIMEOUT, TimeUnit.MILLISECONDS)
             .build();
     zkStateReader = new ZkStateReader(zkClient);
-    seqToThread = Collections.synchronizedMap(new HashMap<Integer, Thread>());
+    seqToThread = Collections.synchronizedMap(new HashMap<>());
     zkClient.makePath("/collections/collection1", true);
     zkClient.makePath("/collections/collection2", true);
   }
@@ -475,7 +475,7 @@ public class LeaderElectionTest extends SolrTestCaseJ4 {
   public void testStressElection() throws Exception {
     final ScheduledExecutorService scheduler =
         Executors.newScheduledThreadPool(15, new SolrNamedThreadFactory("stressElection"));
-    final List<ClientThread> threads = Collections.synchronizedList(new ArrayList<ClientThread>());
+    final List<ClientThread> threads = Collections.synchronizedList(new ArrayList<>());
 
     // start with a leader
     ClientThread thread1 = null;

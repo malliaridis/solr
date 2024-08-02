@@ -158,7 +158,7 @@ class XLSXWriter extends TabularResponseWriter {
     SchemaField sf;
   }
 
-  private Map<String, XLField> xlFields = new LinkedHashMap<String, XLField>();
+  private Map<String, XLField> xlFields = new LinkedHashMap<>();
 
   public XLSXWriter(Writer writer, SolrQueryRequest req, SolrQueryResponse rsp) {
     super(writer, req, rsp);

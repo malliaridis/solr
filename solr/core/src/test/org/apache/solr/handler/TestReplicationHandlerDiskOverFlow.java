@@ -137,7 +137,7 @@ public class TestReplicationHandlerDiskOverFlow extends SolrTestCaseJ4 {
     long szFollower = indexDocs(followerClient, 1200, 1000);
 
     IndexFetcher.usableDiskSpaceProvider =
-        new Function<String, Long>() {
+        new Function<>() {
           @Override
           public Long apply(String s) {
             return szLeader;

@@ -1048,7 +1048,7 @@ public abstract class AbstractBasicDistributedZkTestBase extends AbstractFullDis
                 Integer.MAX_VALUE,
                 5,
                 TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
+                new SynchronousQueue<>(),
                 new SolrNamedThreadFactory("testExecutor"));
         int cnt = 3;
 

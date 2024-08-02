@@ -451,7 +451,7 @@ public class TestInPlaceUpdatesDistrib extends AbstractFullDistribZkTestBase {
     int numDocs = atLeast(100);
     if (onlyLeaderIndexes) numDocs = TestUtil.nextInt(random(), 10, 50);
     log.info("Trying num docs = {}", numDocs);
-    final List<Integer> ids = new ArrayList<Integer>(numDocs);
+    final List<Integer> ids = new ArrayList<>(numDocs);
     for (int id = 0; id < numDocs; id++) {
       ids.add(id);
     }

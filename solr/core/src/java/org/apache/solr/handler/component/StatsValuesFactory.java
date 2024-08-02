@@ -569,7 +569,7 @@ public class StatsValuesFactory {
           tdigest.asSmallBytes(buf);
           res.add("percentiles", Arrays.copyOf(buf.array(), buf.position()));
         } else {
-          NamedList<Object> percentileNameList = new NamedList<Object>();
+          NamedList<Object> percentileNameList = new NamedList<>();
           for (Double percentile : statsField.getPercentilesList()) {
             // Empty document set case
             if (tdigest.size() == 0) {

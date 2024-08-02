@@ -330,7 +330,7 @@ public class MoreLikeThisComponent extends SearchComponent {
 
     // hmm...we are ordering by scores that are not really comparable...
     Comparator<SolrDocument> c =
-        new Comparator<SolrDocument>() {
+        new Comparator<>() {
           @Override
           public int compare(SolrDocument o1, SolrDocument o2) {
             Float f1 = getFloat(o1);

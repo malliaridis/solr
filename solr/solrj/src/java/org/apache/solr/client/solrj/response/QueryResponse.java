@@ -364,7 +364,7 @@ public class QueryResponse extends SolrResponseBase {
       for (Map.Entry<String, NamedList<Object>> intervalField : intervalsNL) {
         String field = intervalField.getKey();
         List<IntervalFacet.Count> counts =
-            new ArrayList<IntervalFacet.Count>(intervalField.getValue().size());
+            new ArrayList<>(intervalField.getValue().size());
         for (Map.Entry<String, Object> interval : intervalField.getValue()) {
           counts.add(new IntervalFacet.Count(interval.getKey(), (Integer) interval.getValue()));
         }

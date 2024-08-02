@@ -333,7 +333,7 @@ public class ZkMaintenanceUtils {
         Path.of(zkPath).getNameCount() - rootPath.getNameCount() - 1; // will be negative
     Files.walkFileTree(
         rootPath,
-        new SimpleFileVisitor<Path>() {
+        new SimpleFileVisitor<>() {
           @Override
           public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
               throws IOException {

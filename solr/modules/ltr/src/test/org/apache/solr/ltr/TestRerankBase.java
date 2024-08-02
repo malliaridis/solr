@@ -358,7 +358,7 @@ public class TestRerankBase extends RestTestBase {
     final List<Feature> features = new ArrayList<>();
     int pos = 0;
     for (final String name : names) {
-      final Map<String, Object> params = new HashMap<String, Object>();
+      final Map<String, Object> params = new HashMap<>();
       params.put("value", 10);
       final Feature f =
           Feature.getInstance(
@@ -422,7 +422,7 @@ public class TestRerankBase extends RestTestBase {
       String featureClassName, LinkedHashMap<String, Object> featureParams) throws Exception {
 
     // start with default parameters
-    final LinkedHashMap<String, Object> paramsA = new LinkedHashMap<String, Object>();
+    final LinkedHashMap<String, Object> paramsA = new LinkedHashMap<>();
     final Object defaultValue;
     switch (random().nextInt(6)) {
       case 0:

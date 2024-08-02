@@ -1312,7 +1312,7 @@ public class CollectionsHandler extends RequestHandlerBase implements Permission
                     Collection<Replica> replicas;
                     if (!checkLeaderOnly) replicas = shard.getReplicas();
                     else {
-                      replicas = new ArrayList<Replica>();
+                      replicas = new ArrayList<>();
                       replicas.add(shard.getLeader());
                     }
                     for (Replica replica : replicas) {

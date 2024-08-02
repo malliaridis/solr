@@ -397,7 +397,7 @@ public class NamedList<T>
   }
 
   public Map<String, T> asShallowMap(boolean allowDps) {
-    return new Map<String, T>() {
+    return new Map<>() {
       @Override
       public int size() {
         return NamedList.this.size();
@@ -613,7 +613,7 @@ public class NamedList<T>
     final NamedList<T> list = this;
 
     Iterator<Map.Entry<String, T>> iter =
-        new Iterator<Map.Entry<String, T>>() {
+        new Iterator<>() {
 
           int idx = 0;
 
@@ -626,7 +626,7 @@ public class NamedList<T>
           public Map.Entry<String, T> next() {
             final int index = idx++;
             Map.Entry<String, T> nv =
-                new Map.Entry<String, T>() {
+                new Map.Entry<>() {
                   @Override
                   public String getKey() {
                     return list.getName(index);

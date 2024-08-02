@@ -148,7 +148,7 @@ public final class DefaultSolrCoreState extends SolrCoreState
     // and then add a releaseWriter() call.
     if (refCntWriter == null && indexWriter != null) {
       refCntWriter =
-          new RefCounted<IndexWriter>(indexWriter) {
+          new RefCounted<>(indexWriter) {
 
             @Override
             public void decref() {

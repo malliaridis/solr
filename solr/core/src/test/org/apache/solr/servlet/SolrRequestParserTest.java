@@ -252,7 +252,7 @@ public class SolrRequestParserTest extends SolrTestCaseJ4 {
       FormDataRequestParser formdata = new FormDataRequestParser(2048);
       StandardRequestParser standard = new StandardRequestParser(multipart, raw, formdata);
 
-      SolrParams p = standard.parseParamsAndFillStreams(request, new ArrayList<ContentStream>());
+      SolrParams p = standard.parseParamsAndFillStreams(request, new ArrayList<>());
 
       assertEquals("contentType: " + contentType, "hello", p.get("q"));
       assertEquals("contentType: " + contentType, "\u00FC", p.get("qt"));
@@ -314,7 +314,7 @@ public class SolrRequestParserTest extends SolrTestCaseJ4 {
     FormDataRequestParser formdata = new FormDataRequestParser(2048);
     StandardRequestParser standard = new StandardRequestParser(multipart, raw, formdata);
 
-    SolrParams p = standard.parseParamsAndFillStreams(request, new ArrayList<ContentStream>());
+    SolrParams p = standard.parseParamsAndFillStreams(request, new ArrayList<>());
 
     assertEquals("contentType: " + contentType, "hello", p.get("q"));
     assertEquals("contentType: " + contentType, "\u00FC", p.get("qt"));

@@ -4262,7 +4262,7 @@ public class TestJsonFacets extends SolrTestCaseHS {
       // here we'll prelim_sort & sort on things that are both "not x" and using the debug()
       // counters (wrapping x) to assert that 'x' is correctly deferred and only collected for the
       // final top buckets
-      final List<String> sorts = new ArrayList<String>(Arrays.asList("index asc", "count asc"));
+      final List<String> sorts = new ArrayList<>(Arrays.asList("index asc", "count asc"));
       if (extraAgg) {
         sorts.add("y asc"); // same for every bucket, but index order tiebreaker should kick in
       }

@@ -1118,7 +1118,7 @@ public class TestDistributedSearch extends BaseDistributedSearchTestCase {
                 "stats.field",
                 "{!" + stat1 + "=true " + stat2 + "=true}" + i1);
 
-        final List<String> statsExpected = new ArrayList<String>(2);
+        final List<String> statsExpected = new ArrayList<>(2);
         statsExpected.add(stat1);
         if (!stat1.equals(stat2)) {
           statsExpected.add(stat2);
@@ -1346,7 +1346,7 @@ public class TestDistributedSearch extends BaseDistributedSearchTestCase {
               }) {
 
             // EnumSets use natural ordering, we want to randomize the order of the params
-            List<Stat> combo = new ArrayList<Stat>(set);
+            List<Stat> combo = new ArrayList<>(set);
             Collections.shuffle(combo, random());
 
             StringBuilder paras = new StringBuilder("{!key=k ");

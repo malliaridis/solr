@@ -273,7 +273,7 @@ public class GatherNodesStream extends TupleStream implements Expressible {
           Integer.parseInt(((StreamExpressionValue) docFreqExpression.getParameter()).getValue());
     }
 
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, String> params = new HashMap<>();
     for (StreamExpressionNamedParameter namedParam : namedParams) {
       if (!namedParam.getName().equals("zkHost")
           && !namedParam.getName().equals("gather")

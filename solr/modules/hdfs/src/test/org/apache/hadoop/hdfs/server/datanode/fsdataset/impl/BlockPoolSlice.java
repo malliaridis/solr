@@ -115,7 +115,7 @@ public class BlockPoolSlice {
   private static final int VOLUMES_REPLICA_ADD_THREADPOOL_SIZE = Runtime
       .getRuntime().availableProcessors();
   private static final Comparator<File> FILE_COMPARATOR =
-      new Comparator<File>() {
+      new Comparator<>() {
         @Override
         public int compare(File f1, File f2) {
           return f1.getName().compareTo(f2.getName());
@@ -344,9 +344,9 @@ public class BlockPoolSlice {
     boolean  success = readReplicasFromCache(volumeMap, lazyWriteReplicaMap);
     if (!success) {
       List<IOException> exceptions = Collections
-          .synchronizedList(new ArrayList<IOException>());
+          .synchronizedList(new ArrayList<>());
       Queue<RecursiveAction> subTaskQueue =
-          new ConcurrentLinkedQueue<RecursiveAction>();
+          new ConcurrentLinkedQueue<>();
 
       // add finalized replicas
       AddReplicaProcessor task = new AddReplicaProcessor(volumeMap,

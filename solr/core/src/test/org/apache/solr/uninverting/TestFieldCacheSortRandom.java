@@ -197,7 +197,7 @@ public class TestFieldCacheSortRandom extends SolrTestCase {
 
       // Compute expected results:
       f.matchValues.sort(
-          new Comparator<BytesRef>() {
+          new Comparator<>() {
             @Override
             public int compare(BytesRef a, BytesRef b) {
               if (a == null) {
@@ -285,7 +285,7 @@ public class TestFieldCacheSortRandom extends SolrTestCase {
     private float density;
     private final List<BytesRef> docValues;
     public final List<BytesRef> matchValues =
-        Collections.synchronizedList(new ArrayList<BytesRef>());
+        Collections.synchronizedList(new ArrayList<>());
 
     // density should be 0.0 ... 1.0
     public RandomQuery(long seed, float density, List<BytesRef> docValues) {

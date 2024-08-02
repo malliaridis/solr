@@ -262,7 +262,7 @@ public class StreamExpressionParser {
   private static List<String> splitOn(String clause, char splitOnThis) {
     String working = clause.trim();
 
-    List<String> parts = new ArrayList<String>();
+    List<String> parts = new ArrayList<>();
 
     while (true) { // will break when next splitOnThis isn't found
       int nextIdx = findNextClear(working, 0, splitOnThis);

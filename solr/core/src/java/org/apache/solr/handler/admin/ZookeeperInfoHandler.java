@@ -167,7 +167,7 @@ public final class ZookeeperInfoHandler extends RequestHandlerBase {
       if (!regexFilter.startsWith("(?i)")) regexFilter = "(?i)" + regexFilter;
 
       Pattern filterRegex = Pattern.compile(regexFilter);
-      List<String> filtered = new ArrayList<String>();
+      List<String> filtered = new ArrayList<>();
       for (String next : collections) {
         if (matches(filterRegex, next)) filtered.add(next);
       }
@@ -280,7 +280,7 @@ public final class ZookeeperInfoHandler extends RequestHandlerBase {
         throws KeeperException, InterruptedException {
       if (cachedCollections == null) {
         // cache is stale, rebuild the full list ...
-        cachedCollections = new ArrayList<String>();
+        cachedCollections = new ArrayList<>();
 
         List<String> fromZk = zkClient.getChildren("/collections", this, true);
         if (fromZk != null) cachedCollections.addAll(fromZk);
@@ -549,7 +549,7 @@ public final class ZookeeperInfoHandler extends RequestHandlerBase {
           page.selectPage(matchesStatusFilter);
 
           // rebuild the Map of state data
-          SortedMap<String, Object> map = new TreeMap<String, Object>(pagingSupport);
+          SortedMap<String, Object> map = new TreeMap<>(pagingSupport);
           for (String next : page.selected) map.put(next, collectionStates.get(next));
           collectionStates = map;
         }

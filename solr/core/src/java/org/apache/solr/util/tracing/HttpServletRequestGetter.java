@@ -28,7 +28,7 @@ public class HttpServletRequestGetter implements TextMapGetter<HttpServletReques
 
   @Override
   public Iterable<String> keys(HttpServletRequest carrier) {
-    return new Iterable<String>() {
+    return new Iterable<>() {
       @Override
       public Iterator<String> iterator() {
         return carrier.getHeaderNames().asIterator();

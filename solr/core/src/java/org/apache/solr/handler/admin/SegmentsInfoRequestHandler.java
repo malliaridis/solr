@@ -272,7 +272,7 @@ public class SegmentsInfoRequestHandler extends RequestHandlerBase {
                       size = dir.fileLength(f);
                     } catch (IOException e) {
                     }
-                    return new Pair<String, Long>(f, size);
+                    return new Pair<>(f, size);
                   })
               .sorted(
                   (p1, p2) -> {

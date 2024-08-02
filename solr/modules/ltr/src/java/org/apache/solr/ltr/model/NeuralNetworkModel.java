@@ -306,7 +306,7 @@ public class NeuralNetworkModel extends LTRScoringModel {
 
   @SuppressWarnings({"unchecked"})
   public void setLayers(Object layers) {
-    this.layers = new ArrayList<Layer>();
+    this.layers = new ArrayList<>();
     for (final Object o : (List<Object>) layers) {
       final Layer layer = createLayer(o);
       this.layers.add(layer);

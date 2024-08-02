@@ -184,7 +184,7 @@ public class DeleteReplicaCmd implements CollectionApiCommand {
       Slice slice, String shard, String collectionName, int count) {
     validateReplicaAvailability(slice, shard, collectionName, count);
     Collection<Replica> allReplicas = slice.getReplicas();
-    Set<String> replicasToBeRemoved = new HashSet<String>();
+    Set<String> replicasToBeRemoved = new HashSet<>();
     Replica leader = slice.getLeader();
     for (Replica replica : allReplicas) {
       if (count == 0) {

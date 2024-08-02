@@ -839,7 +839,7 @@ public class MiniSolrCloudCluster {
   }
 
   public static Overseer getOpenOverseer(List<Overseer> overseers) {
-    ArrayList<Overseer> shuffledOverseers = new ArrayList<Overseer>(overseers);
+    ArrayList<Overseer> shuffledOverseers = new ArrayList<>(overseers);
     Collections.shuffle(shuffledOverseers, LuceneTestCase.random());
     for (Overseer overseer : shuffledOverseers) {
       if (!overseer.isClosed()) {

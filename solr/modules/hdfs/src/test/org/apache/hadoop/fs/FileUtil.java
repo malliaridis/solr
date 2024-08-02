@@ -1523,7 +1523,7 @@ public class FileUtil {
 
     StringBuilder unexpandedWildcardClasspath = new StringBuilder();
     // Append all entries
-    List<String> classPathEntryList = new ArrayList<String>(
+    List<String> classPathEntryList = new ArrayList<>(
         classPathEntries.length);
     for (String classPathEntry: classPathEntries) {
       if (classPathEntry.length() == 0) {

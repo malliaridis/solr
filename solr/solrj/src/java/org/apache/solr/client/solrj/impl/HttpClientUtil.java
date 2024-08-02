@@ -210,7 +210,7 @@ public class HttpClientUtil {
       // we also do not want to have to acquire the mutex when the list is empty or put a global
       // mutex around the process calls
       interceptors.forEach(
-          new Consumer<HttpRequestInterceptor>() {
+          new Consumer<>() {
 
             @Override
             public void accept(HttpRequestInterceptor interceptor) {

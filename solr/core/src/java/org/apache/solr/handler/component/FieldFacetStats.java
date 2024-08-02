@@ -114,7 +114,7 @@ public class FieldFacetStats {
         key = topLevelSortedValues.lookupOrd(term).utf8ToString();
       }
       while (facetStatsTerms.size() <= statsTermNum) {
-        facetStatsTerms.add(new HashMap<String, Integer>());
+        facetStatsTerms.add(new HashMap<>());
       }
 
       final Map<String, Integer> statsTermCounts = facetStatsTerms.get(statsTermNum);
@@ -134,7 +134,7 @@ public class FieldFacetStats {
   public boolean accumulateTermNum(int statsTermNum, BytesRef value) throws IOException {
     if (value == null) return false;
     while (facetStatsTerms.size() <= statsTermNum) {
-      facetStatsTerms.add(new HashMap<String, Integer>());
+      facetStatsTerms.add(new HashMap<>());
     }
     for (Map.Entry<String, Integer> pairs : facetStatsTerms.get(statsTermNum).entrySet()) {
       String key = pairs.getKey();

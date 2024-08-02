@@ -45,7 +45,7 @@ public abstract class RecursiveEvaluator implements StreamEvaluator, ValueWorker
 
   protected StreamFactory constructingFactory;
 
-  protected List<StreamEvaluator> containedEvaluators = new ArrayList<StreamEvaluator>();
+  protected List<StreamEvaluator> containedEvaluators = new ArrayList<>();
 
   public RecursiveEvaluator(StreamExpression expression, StreamFactory factory) throws IOException {
     this(expression, factory, new ArrayList<>());

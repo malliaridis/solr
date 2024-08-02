@@ -388,7 +388,7 @@ public class SpellCheckComponentTest extends SolrTestCaseJ4 {
     final String q = "documemtsss broens";
     final String jsonNl = "map";
     final boolean collateExtendedResults = random().nextBoolean();
-    final List<String> testsList = new ArrayList<String>();
+    final List<String> testsList = new ArrayList<>();
     if (collateExtendedResults) {
       testsList.add("/spellcheck/collations/collation/collationQuery=='document brown'");
       testsList.add("/spellcheck/collations/collation/hits==0");

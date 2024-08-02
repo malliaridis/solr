@@ -262,7 +262,7 @@ public class MultipleAdditiveTreesModel extends LTRScoringModel {
 
   @SuppressWarnings({"unchecked"})
   public void setTrees(Object trees) {
-    this.trees = new ArrayList<RegressionTree>();
+    this.trees = new ArrayList<>();
     for (final Object o : (List<Object>) trees) {
       final RegressionTree rt = createRegressionTree((Map<String, Object>) o);
       this.trees.add(rt);
@@ -278,7 +278,7 @@ public class MultipleAdditiveTreesModel extends LTRScoringModel {
       Map<String, Object> params) {
     super(name, features, norms, featureStoreName, allFeatures, params);
 
-    fname2index = new HashMap<String, Integer>();
+    fname2index = new HashMap<>();
     for (int i = 0; i < features.size(); ++i) {
       final String key = features.get(i).getName();
       fname2index.put(key, i);

@@ -150,7 +150,7 @@ public class IntervalFacets implements Iterable<FacetInterval> {
      */
     Arrays.sort(
         sortedIntervals,
-        new Comparator<FacetInterval>() {
+        new Comparator<>() {
 
           @Override
           public int compare(FacetInterval o1, FacetInterval o2) {
@@ -943,6 +943,6 @@ public class IntervalFacets implements Iterable<FacetInterval> {
   /** Iterate over all the intervals */
   @Override
   public Iterator<FacetInterval> iterator() {
-    return new ArrayList<FacetInterval>(Arrays.asList(intervals)).iterator();
+    return new ArrayList<>(Arrays.asList(intervals)).iterator();
   }
 }

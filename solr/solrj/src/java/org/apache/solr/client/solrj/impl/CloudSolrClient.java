@@ -624,7 +624,7 @@ public abstract class CloudSolrClient extends SolrClient {
                 ToleratedUpdateError.getEffectiveMaxErrors(shardMaxToleratedErrors));
 
         if (null == toleratedErrors) {
-          toleratedErrors = new ArrayList<SimpleOrderedMap<String>>(shardTolerantErrors.size());
+          toleratedErrors = new ArrayList<>(shardTolerantErrors.size());
         }
         for (SimpleOrderedMap<String> err : shardTolerantErrors) {
           toleratedErrors.add(err);
@@ -722,7 +722,7 @@ public abstract class CloudSolrClient extends SolrClient {
       this.routes = routes;
 
       // create a merged copy of the metadata from all wrapped exceptions
-      NamedList<String> metadata = new NamedList<String>();
+      NamedList<String> metadata = new NamedList<>();
       for (int i = 0; i < throwables.size(); i++) {
         Throwable t = throwables.getVal(i);
         if (t instanceof SolrException) {

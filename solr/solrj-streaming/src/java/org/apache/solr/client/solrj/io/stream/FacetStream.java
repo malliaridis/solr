@@ -77,7 +77,7 @@ public class FacetStream extends TupleStream implements Expressible, ParallelMet
   private boolean refine;
   private String method;
   private FieldComparator[] bucketSorts;
-  private List<Tuple> tuples = new ArrayList<Tuple>();
+  private List<Tuple> tuples = new ArrayList<>();
   private int index;
   private String zkHost;
   private ModifiableSolrParams params;

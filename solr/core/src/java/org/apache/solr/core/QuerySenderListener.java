@@ -114,7 +114,7 @@ public class QuerySenderListener extends AbstractSolrEventListener {
 
   protected static List<NamedList<Object>> convertQueriesToList(ArrayList<Object> queries) {
 
-    List<NamedList<Object>> allLists = new ArrayList<NamedList<Object>>();
+    List<NamedList<Object>> allLists = new ArrayList<>();
 
     for (Object o : queries) {
       if (o instanceof ArrayList) {

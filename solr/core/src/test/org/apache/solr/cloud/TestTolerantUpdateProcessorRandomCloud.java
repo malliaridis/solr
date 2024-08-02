@@ -112,7 +112,7 @@ public class TestTolerantUpdateProcessorRandomCloud extends SolrCloudTestCase {
         client.close();
       }
     }
-    NODE_CLIENTS = new ArrayList<SolrClient>(numServers);
+    NODE_CLIENTS = new ArrayList<>(numServers);
 
     for (JettySolrRunner jetty : cluster.getJettySolrRunners()) {
       URL jettyURL = jetty.getBaseUrl();
@@ -161,7 +161,7 @@ public class TestTolerantUpdateProcessorRandomCloud extends SolrCloudTestCase {
                   "maxErrors", "-1",
                   "update.chain", "tolerant-chain-max-errors-10"));
       final int numCmds = TestUtil.nextInt(random(), 1, 20);
-      final List<ExpectedErr> expectedErrors = new ArrayList<ExpectedErr>(numCmds);
+      final List<ExpectedErr> expectedErrors = new ArrayList<>(numCmds);
       int expectedErrorsCount = 0;
       // it's ambiguous/confusing which order mixed DELQ + ADD  (or ADD and DELI for the same ID)
       // in the same request wll be processed by various clients, so we keep things simple

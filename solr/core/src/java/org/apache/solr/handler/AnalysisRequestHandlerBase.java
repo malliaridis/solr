@@ -241,7 +241,7 @@ public abstract class AnalysisRequestHandlerBase extends RequestHandlerBase {
     // sort the tokens by absolute position
     ArrayUtil.timSort(
         tokens,
-        new Comparator<AttributeSource>() {
+        new Comparator<>() {
           @Override
           public int compare(AttributeSource a, AttributeSource b) {
             return arrayCompare(

@@ -72,8 +72,8 @@ public class TestSolrQueryParser extends SolrTestCaseJ4 {
     createIndex();
   }
 
-  private static final List<String> HAS_VAL_FIELDS = new ArrayList<String>(41);
-  private static final List<String> HAS_NAN_FIELDS = new ArrayList<String>(12);
+  private static final List<String> HAS_VAL_FIELDS = new ArrayList<>(41);
+  private static final List<String> HAS_NAN_FIELDS = new ArrayList<>(12);
 
   @AfterClass
   public static void afterClass() {

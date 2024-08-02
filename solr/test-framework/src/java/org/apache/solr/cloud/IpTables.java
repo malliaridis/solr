@@ -31,7 +31,7 @@ public class IpTables {
   private static final boolean ENABLED = Boolean.getBoolean("solr.tests.use.iptables");
 
   private static final Set<Integer> BLOCK_PORTS =
-      Collections.synchronizedSet(new HashSet<Integer>());
+      Collections.synchronizedSet(new HashSet<>());
 
   public static void blockPort(int port) throws IOException, InterruptedException {
     if (ENABLED) {

@@ -136,7 +136,7 @@ public class OverseerTest extends SolrTestCaseJ4 {
     private final ZkStateReader zkStateReader;
     private final String nodeName;
     private final Map<String, ElectionContext> electionContext =
-        Collections.synchronizedMap(new HashMap<String, ElectionContext>());
+        Collections.synchronizedMap(new HashMap<>());
     private List<Overseer> overseers;
 
     public MockZKController(String zkAddress, String nodeName, List<Overseer> overseers)

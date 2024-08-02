@@ -213,7 +213,7 @@ public class ReRankScaler {
     }
 
     Comparator<ScoreDoc> sortDocComparator =
-        new Comparator<ScoreDoc>() {
+        new Comparator<>() {
           @Override
           public int compare(ScoreDoc a, ScoreDoc b) {
             // Sort by score descending, then docID ascending:

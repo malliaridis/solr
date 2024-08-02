@@ -488,7 +488,7 @@ public class LTRScoringQuery extends Query implements Accountable {
     public ModelScorer scorer(LeafReaderContext context) throws IOException {
 
       final List<Feature.FeatureWeight.FeatureScorer> featureScorers =
-          new ArrayList<Feature.FeatureWeight.FeatureScorer>(extractedFeatureWeights.length);
+          new ArrayList<>(extractedFeatureWeights.length);
       for (final Feature.FeatureWeight featureWeight : extractedFeatureWeights) {
         final Feature.FeatureWeight.FeatureScorer scorer = featureWeight.scorer(context);
         if (scorer != null) {

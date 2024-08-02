@@ -49,7 +49,7 @@ public class BlockDirectoryCache implements Cache {
     if (releaseBlocks) {
       keysToRelease =
           Collections.newSetFromMap(
-              new ConcurrentHashMap<BlockCacheKey, Boolean>(1024, 0.75f, 512));
+              new ConcurrentHashMap<>(1024, 0.75f, 512));
       blockCache.setOnRelease(
           new OnRelease() {
 

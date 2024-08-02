@@ -99,7 +99,7 @@ public class GetSchemaAPITest extends SolrTestCaseJ4 {
   @Test
   @SuppressWarnings("unchecked")
   public void testReliesOnIndexSchemaWhenFetchingSimilarity() {
-    final var map = new SimpleOrderedMap<Object>();
+    final var map = new SimpleOrderedMap<>();
     map.add("flagKey", "flagValue");
     final SimilarityFactory mockSimFactory = mock(SimilarityFactory.class);
     when(mockSimFactory.getNamedPropertyValues()).thenReturn(map);

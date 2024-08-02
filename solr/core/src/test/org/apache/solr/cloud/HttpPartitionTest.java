@@ -498,7 +498,7 @@ public class HttpPartitionTest extends AbstractFullDistribZkTestBase {
     Replica leader =
         ZkStateReader.from(cloudClient).getLeaderRetry(testCollectionName, "shard1", 10000);
     SolrClient leaderSolr = getHttpSolrClient(leader, testCollectionName);
-    List<SolrClient> replicas = new ArrayList<SolrClient>(notLeaders.size());
+    List<SolrClient> replicas = new ArrayList<>(notLeaders.size());
 
     for (Replica r : notLeaders) {
       replicas.add(getHttpSolrClient(r, testCollectionName));

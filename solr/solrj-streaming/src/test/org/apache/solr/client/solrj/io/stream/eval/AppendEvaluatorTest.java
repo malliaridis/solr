@@ -36,7 +36,7 @@ public class AppendEvaluatorTest extends SolrTestCase {
     super();
 
     factory = new StreamFactory().withFunctionName("append", AppendEvaluator.class);
-    values = new HashMap<String, Object>();
+    values = new HashMap<>();
   }
 
   @Test

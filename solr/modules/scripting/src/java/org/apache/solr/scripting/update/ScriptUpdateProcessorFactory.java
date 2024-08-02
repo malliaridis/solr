@@ -430,7 +430,7 @@ public class ScriptUpdateProcessorFactory extends UpdateRequestProcessorFactory
      */
     private boolean invokeFunction(String name, Object... cmd) {
       return AccessController.doPrivileged(
-          new PrivilegedAction<Boolean>() {
+          new PrivilegedAction<>() {
             @Override
             public Boolean run() {
               return invokeFunctionUnsafe(name, cmd);

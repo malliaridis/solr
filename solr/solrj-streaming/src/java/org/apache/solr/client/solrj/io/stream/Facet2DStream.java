@@ -59,7 +59,7 @@ public class Facet2DStream extends TupleStream implements Expressible {
   private Metric metric;
   private String zkHost;
   private Iterator<Tuple> out;
-  private List<Tuple> tuples = new ArrayList<Tuple>();
+  private List<Tuple> tuples = new ArrayList<>();
   private int dimensionX;
   private int dimensionY;
   private FieldComparator bucketSort;

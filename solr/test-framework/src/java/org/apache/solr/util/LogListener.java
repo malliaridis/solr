@@ -396,7 +396,7 @@ public final class LogListener implements Closeable, AutoCloseable {
 
     // may be mutated in main thread while background thread is actively logging
     public final AtomicReference<Predicate<String>> predicate =
-        new AtomicReference<Predicate<String>>(null);
+        new AtomicReference<>(null);
 
     final Level level;
 

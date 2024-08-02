@@ -604,7 +604,7 @@ public class CollectionHandlingUtils {
     private final String adminPath;
     private final ZkStateReader zkStateReader;
     private final ShardHandlerFactory shardHandlerFactory;
-    private final NamedList<String> shardAsyncIdByNode = new NamedList<String>();
+    private final NamedList<String> shardAsyncIdByNode = new NamedList<>();
 
     public ShardRequestTracker(
         String asyncId,

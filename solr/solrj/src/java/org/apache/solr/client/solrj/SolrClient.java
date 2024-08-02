@@ -368,7 +368,7 @@ public abstract class SolrClient implements Serializable, Closeable {
       throws SolrServerException, IOException {
     UpdateRequest req = new UpdateRequest();
     req.setDocIterator(
-        new Iterator<SolrInputDocument>() {
+        new Iterator<>() {
 
           @Override
           public boolean hasNext() {

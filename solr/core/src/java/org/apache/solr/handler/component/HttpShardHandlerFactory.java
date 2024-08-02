@@ -249,8 +249,8 @@ public class HttpShardHandlerFactory extends ShardHandlerFactory
 
     BlockingQueue<Runnable> blockingQueue =
         (this.queueSize == -1)
-            ? new SynchronousQueue<Runnable>(this.accessPolicy)
-            : new ArrayBlockingQueue<Runnable>(this.queueSize, this.accessPolicy);
+            ? new SynchronousQueue<>(this.accessPolicy)
+            : new ArrayBlockingQueue<>(this.queueSize, this.accessPolicy);
 
     this.commExecutor =
         new ExecutorUtil.MDCAwareThreadPoolExecutor(

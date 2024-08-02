@@ -52,7 +52,7 @@ public class SolrCores {
   private final CoreContainer container;
 
   private final Set<String> currentlyLoadingCores =
-      Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+      Collections.newSetFromMap(new ConcurrentHashMap<>());
 
   // This map will hold objects that are being currently operated on. The core (value) may be null
   // in the case of initial load. The rule is, never to any operation on a core that is currently
