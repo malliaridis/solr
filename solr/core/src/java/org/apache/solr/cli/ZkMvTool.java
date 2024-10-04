@@ -77,9 +77,9 @@ public class ZkMvTool extends ToolBase {
   @Override
   public void runImpl(CommandLine cli) throws Exception {
     SolrCLI.raiseLogLevelUnlessVerbose(cli);
-    String zkHost = SolrCLI.getZkHost(cli);
+    String zkHost = CLIUtils.getZkHost(cli);
 
-    try (SolrZkClient zkClient = SolrCLI.getSolrZkClient(cli, zkHost)) {
+    try (SolrZkClient zkClient = CLIUtils.getSolrZkClient(cli, zkHost)) {
       echoIfVerbose("\nConnecting to ZooKeeper at " + zkHost + " ...", cli);
       String src = cli.getArgs()[0];
       String dst = cli.getArgs()[1];

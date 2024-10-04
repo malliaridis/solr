@@ -325,7 +325,7 @@ public class PostTool extends ToolBase {
       String url = cli.getOptionValue(SOLR_URL_OPTION);
       solrUpdateUrl = new URI(url);
     } else if (cli.hasOption(COLLECTION_NAME_OPTION)) {
-      String url = SolrCLI.getDefaultSolrUrl() + "/solr/" + cli.getOptionValue(COLLECTION_NAME_OPTION) + "/update";
+      String url = CLIUtils.getDefaultSolrUrl() + "/solr/" + cli.getOptionValue(COLLECTION_NAME_OPTION) + "/update";
       solrUpdateUrl = new URI(url);
     } else {
       throw new IllegalArgumentException(
@@ -801,7 +801,7 @@ public class PostTool extends ToolBase {
     info("COMMITting Solr index changes to " + solrUpdateUrl + "...");
     String url = solrUpdateUrl.toString();
     url = url.substring(0, url.lastIndexOf("/update"));
-    try (final SolrClient client = SolrCLI.getSolrClient(url, credentials)) {
+    try (final SolrClient client = CLIUtils.getSolrClient(url, credentials)) {
       client.commit();
     }
   }
@@ -811,7 +811,7 @@ public class PostTool extends ToolBase {
     info("Performing an OPTIMIZE to " + solrUpdateUrl + "...");
     String url = solrUpdateUrl.toString();
     url = url.substring(0, url.lastIndexOf("/update"));
-    try (final SolrClient client = SolrCLI.getSolrClient(url, credentials)) {
+    try (final SolrClient client = CLIUtils.getSolrClient(url, credentials)) {
       client.optimize();
     }
   }

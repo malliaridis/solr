@@ -117,9 +117,9 @@ public class ConfigSetDownloadTool extends ToolBase {
   @Override
   public void runImpl(CommandLine cli) throws Exception {
     SolrCLI.raiseLogLevelUnlessVerbose(cli);
-    String zkHost = SolrCLI.getZkHost(cli);
+    String zkHost = CLIUtils.getZkHost(cli);
 
-    try (SolrZkClient zkClient = SolrCLI.getSolrZkClient(cli, zkHost)) {
+    try (SolrZkClient zkClient = CLIUtils.getSolrZkClient(cli, zkHost)) {
       echoIfVerbose("\nConnecting to ZooKeeper at " + zkHost + " ...", cli);
       String confName = cli.getOptionValue(CONF_NAME_OPTION);
       String confDir = cli.getOptionValue(CONF_DIR_OPTION);

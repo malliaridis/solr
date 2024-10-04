@@ -73,7 +73,7 @@ public class SnapshotDeleteTool extends ToolBase {
 
     String snapshotName = cli.getOptionValue(SNAPSHOT_NAME_OPTION);
     String collectionName = cli.getOptionValue(COLLECTION_NAME_OPTION);
-    try (var solrClient = SolrCLI.getSolrClient(cli)) {
+    try (var solrClient = CLIUtils.getSolrClient(cli)) {
       deleteSnapshot(solrClient, collectionName, snapshotName);
     }
   }

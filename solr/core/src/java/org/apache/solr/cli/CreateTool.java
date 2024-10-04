@@ -32,6 +32,7 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.file.PathUtils;
+import org.apache.solr.cli.CommonCLIOptions.DefaultValues;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -100,7 +101,7 @@ public class CreateTool extends ToolBase {
       .hasArg()
       .desc(
           "Configuration directory to copy when creating the new collection; default is "
-              + SolrCLI.DEFAULT_CONFIG_SET
+              + DefaultValues.DEFAULT_CONFIG_SET
               + '.')
       .build();
 
@@ -117,7 +118,7 @@ public class CreateTool extends ToolBase {
       .required(false)
       .desc(
           "Configuration directory to copy when creating the new collection; default is "
-              + SolrCLI.DEFAULT_CONFIG_SET
+              + DefaultValues.DEFAULT_CONFIG_SET
               + '.')
       .build();
 
@@ -187,8 +188,8 @@ public class CreateTool extends ToolBase {
   public void runImpl(CommandLine cli) throws Exception {
     SolrCLI.raiseLogLevelUnlessVerbose(cli);
 
-    try (var solrClient = SolrCLI.getSolrClient(cli)) {
-      if (SolrCLI.isCloudMode(solrClient)) {
+    try (var solrClient = CLIUtils.getSolrClient(cli)) {
+      if (CLIUtils.isCloudMode(solrClient)) {
         createCollection(cli);
       } else {
         createCore(cli, solrClient);
@@ -198,10 +199,10 @@ public class CreateTool extends ToolBase {
 
   protected void createCore(CommandLine cli, SolrClient solrClient) throws Exception {
     String coreName = cli.getOptionValue(COLLECTION_NAME_OPTION);
-    String solrUrl = cli.getOptionValue(CommonCLIOptions.SOLR_URL_OPTION, SolrCLI.getDefaultSolrUrl());
+    String solrUrl = cli.getOptionValue(CommonCLIOptions.SOLR_URL_OPTION, CLIUtils.getDefaultSolrUrl());
 
     final String solrInstallDir = System.getProperty("solr.install.dir");
-    final String confDirName = cli.getOptionValue(CONF_DIR_OPTION, SolrCLI.DEFAULT_CONFIG_SET);
+    final String confDirName = cli.getOptionValue(CONF_DIR_OPTION, DefaultValues.DEFAULT_CONFIG_SET);
 
     // we allow them to pass a directory instead of a configset name
     Path configsetDir = Paths.get(confDirName);
@@ -222,7 +223,7 @@ public class CreateTool extends ToolBase {
     // convert raw JSON into user-friendly output
     coreRootDirectory = (String) systemInfo.get("core_root");
 
-    if (SolrCLI.safeCheckCoreExists(solrUrl, coreName, cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION))) {
+    if (CLIUtils.safeCheckCoreExists(solrUrl, coreName, cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION))) {
       throw new IllegalArgumentException(
           "\nCore '"
               + coreName
@@ -271,8 +272,8 @@ public class CreateTool extends ToolBase {
             .withKeyStoreReloadInterval(-1, TimeUnit.SECONDS)
             .withOptionalBasicAuthCredentials(
                 cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION));
-    String zkHost = SolrCLI.getZkHost(cli);
-    try (CloudSolrClient cloudSolrClient = SolrCLI.getCloudHttp2SolrClient(zkHost, builder)) {
+    String zkHost = CLIUtils.getZkHost(cli);
+    try (CloudSolrClient cloudSolrClient = CLIUtils.getCloudHttp2SolrClient(zkHost, builder)) {
       echoIfVerbose("Connecting to ZooKeeper at " + zkHost, cli);
       cloudSolrClient.connect();
       createCollection(cloudSolrClient, cli);
@@ -285,7 +286,7 @@ public class CreateTool extends ToolBase {
     String collectionName = cli.getOptionValue(COLLECTION_NAME_OPTION);
     final String solrInstallDir = System.getProperty("solr.install.dir");
     String confName = cli.getOptionValue(CONF_NAME_OPTION);
-    String confDir = cli.getOptionValue(CONF_DIR_OPTION, SolrCLI.DEFAULT_CONFIG_SET);
+    String confDir = cli.getOptionValue(CONF_DIR_OPTION, DefaultValues.DEFAULT_CONFIG_SET);
     Path solrInstallDirPath = Paths.get(solrInstallDir);
     Path confDirPath = Paths.get(confDir);
     ensureConfDirExists(solrInstallDirPath, confDirPath);
@@ -324,7 +325,7 @@ public class CreateTool extends ToolBase {
       }
 
       // TODO: This should be done using the configSet API
-      final Path configsetsDirPath = SolrCLI.getConfigSetsDir(solrInstallDirPath);
+      final Path configsetsDirPath = CLIUtils.getConfigSetsDir(solrInstallDirPath);
       ConfigSetService configSetService =
           new ZkConfigSetService(ZkStateReader.from(cloudSolrClient).getZkClient());
       Path confPath = ConfigSetService.getConfigsetPath(confDir, configsetsDirPath.toString());
@@ -342,7 +343,7 @@ public class CreateTool extends ToolBase {
     }
 
     // since creating a collection is a heavy-weight operation, check for existence first
-    if (SolrCLI.safeCheckCollectionExists(
+    if (CLIUtils.safeCheckCollectionExists(
         solrUrl, collectionName, cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION))) {
       throw new IllegalStateException(
           "\nCollection '"
@@ -388,7 +389,7 @@ public class CreateTool extends ToolBase {
   }
 
   private Path getFullConfDir(Path solrInstallDir, Path confDirName) {
-    return SolrCLI.getConfigSetsDir(solrInstallDir).resolve(confDirName);
+    return CLIUtils.getConfigSetsDir(solrInstallDir).resolve(confDirName);
   }
 
   private void ensureConfDirExists(Path solrInstallDir, Path confDirName) {
@@ -403,13 +404,13 @@ public class CreateTool extends ToolBase {
   }
 
   private void printDefaultConfigsetWarningIfNecessary(CommandLine cli) {
-    final String confDirectoryName = cli.getOptionValue(CONF_DIR_OPTION, SolrCLI.DEFAULT_CONFIG_SET);
+    final String confDirectoryName = cli.getOptionValue(CONF_DIR_OPTION, DefaultValues.DEFAULT_CONFIG_SET);
     final String confName = cli.getOptionValue(CONF_NAME_OPTION, "");
 
     if (confDirectoryName.equals("_default")
         && (confName.equals("") || confName.equals("_default"))) {
       final String collectionName = cli.getOptionValue(COLLECTION_NAME_OPTION);
-      final String solrUrl = cli.getOptionValue(CommonCLIOptions.SOLR_URL_OPTION, SolrCLI.getDefaultSolrUrl());
+      final String solrUrl = cli.getOptionValue(CommonCLIOptions.SOLR_URL_OPTION, CLIUtils.getDefaultSolrUrl());
       final String curlCommand =
           String.format(
               Locale.ROOT,

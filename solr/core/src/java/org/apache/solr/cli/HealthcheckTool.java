@@ -90,12 +90,12 @@ public class HealthcheckTool extends ToolBase {
   @Override
   public void runImpl(CommandLine cli) throws Exception {
     SolrCLI.raiseLogLevelUnlessVerbose(cli);
-    String zkHost = SolrCLI.getZkHost(cli);
+    String zkHost = CLIUtils.getZkHost(cli);
     if (zkHost == null) {
       CLIO.err("Healthcheck tool only works in Solr Cloud mode.");
       System.exit(1);
     }
-    try (CloudHttp2SolrClient cloudSolrClient = SolrCLI.getCloudHttp2SolrClient(zkHost)) {
+    try (CloudHttp2SolrClient cloudSolrClient = CLIUtils.getCloudHttp2SolrClient(zkHost)) {
       echoIfVerbose("\nConnecting to ZooKeeper at " + zkHost + " ...", cli);
       cloudSolrClient.connect();
       runCloudTool(cloudSolrClient, cli);
@@ -127,7 +127,7 @@ public class HealthcheckTool extends ToolBase {
     SolrQuery q = new SolrQuery("*:*");
     q.setRows(0);
     QueryResponse qr = cloudSolrClient.query(collection, q);
-    SolrCLI.checkCodeForAuthError(qr.getStatus());
+    CLIUtils.checkCodeForAuthError(qr.getStatus());
     String collErr = null;
     long docCount = -1;
     try {
@@ -171,11 +171,11 @@ public class HealthcheckTool extends ToolBase {
           q.setRows(0);
           q.set(DISTRIB, "false");
           try (var solrClientForCollection =
-              SolrCLI.getSolrClient(coreUrl, cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION))) {
+              CLIUtils.getSolrClient(coreUrl, cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION))) {
             qr = solrClientForCollection.query(q);
             numDocs = qr.getResults().getNumFound();
             try (var solrClient =
-                SolrCLI.getSolrClient(
+                CLIUtils.getSolrClient(
                     replicaCoreProps.getBaseUrl(),
                     cli.getOptionValue(CommonCLIOptions.CREDENTIALS_OPTION))) {
               NamedList<Object> systemInfo =
@@ -193,7 +193,7 @@ public class HealthcheckTool extends ToolBase {
           } catch (Exception exc) {
             log.error("ERROR: {} when trying to reach: {}", exc, coreUrl);
 
-            if (SolrCLI.checkCommunicationError(exc)) {
+            if (CLIUtils.checkCommunicationError(exc)) {
               replicaStatus = Replica.State.DOWN.toString();
             } else {
               replicaStatus = "error: " + exc;
