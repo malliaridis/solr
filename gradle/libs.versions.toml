@@ -14,6 +14,7 @@
 # limitations under the License.
 [versions]
 adobe-testing-s3mock = "3.12.0"
+ajalt-clikt = "5.1.0"
 amazon-awssdk = "2.42.34"
 # @keep Antora version used in ref-guide
 antora = "3.1.12"
@@ -142,6 +143,8 @@ jna = "5.18.1"
 # @keep for version alignment
 joda-time = "2.14.0"
 junit = "4.13.2"
+junit-bom = "5.6.2"
+junit-jupiter = "5.13.4"
 kotlin = "2.3.20"
 # @keep for version alignment
 kotlinx-atomicfu = "0.31.0"
@@ -149,6 +152,7 @@ kotlinx-atomicfu = "0.31.0"
 kotlinx-browser = "0.5.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
+kotlinx-io = "0.9.0"
 kotlinx-serialization = "1.11.0"
 # @keep used by spotless
 ktlint = "1.8.0"
@@ -225,6 +229,8 @@ undercouch-download = { id = "de.undercouch.download", version.ref = "undercouch
 [libraries]
 adobe-testing-s3mock-junit4 = { module = "com.adobe.testing:s3mock-junit4", version.ref = "adobe-testing-s3mock" }
 adobe-testing-s3mock-testsupportcommon = { module = "com.adobe.testing:s3mock-testsupport-common", version.ref = "adobe-testing-s3mock" }
+ajalt-clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "ajalt-clikt" }
+ajalt-clikt-core = { module = "com.github.ajalt.clikt:clikt-core", version.ref = "ajalt-clikt" }
 amazon-awssdk-apacheclient = { module = "software.amazon.awssdk:apache-client", version.ref = "amazon-awssdk" }
 amazon-awssdk-auth = { module = "software.amazon.awssdk:auth", version.ref = "amazon-awssdk" }
 amazon-awssdk-awscore = { module = "software.amazon.awssdk:aws-core", version.ref = "amazon-awssdk" }
@@ -328,6 +334,7 @@ eclipse-jdt-ecj = { module = "org.eclipse.jdt:ecj", version.ref = "eclipse-ecj" 
 eclipse-jetty-alpnjavaclient = { module = "org.eclipse.jetty:jetty-alpn-java-client", version.ref = "eclipse-jetty" }
 eclipse-jetty-alpnjavaserver = { module = "org.eclipse.jetty:jetty-alpn-java-server", version.ref = "eclipse-jetty" }
 eclipse-jetty-alpnserver = { module = "org.eclipse.jetty:jetty-alpn-server", version.ref = "eclipse-jetty" }
+eclipse-jetty-bom = { module = "org.eclipse.jetty:jetty-bom", version.ref = "eclipse-jetty" }
 eclipse-jetty-client = { module = "org.eclipse.jetty:jetty-client", version.ref = "eclipse-jetty" }
 eclipse-jetty-deploy = { module = "org.eclipse.jetty:jetty-deploy", version.ref = "eclipse-jetty" }
 eclipse-jetty-ee10-servlet = { module = "org.eclipse.jetty.ee10:jetty-ee10-servlet", version.ref = "eclipse-jetty" }
@@ -427,6 +434,7 @@ jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "j
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 # @keep transitive dependency for version alignment
 jodatime-jodatime = { module = "joda-time:joda-time", version.ref = "joda-time" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit-bom" }
 junit-junit = { module = "junit:junit", version.ref = "junit" }
 # @keep transitive dependency for version alignment
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
@@ -438,6 +446,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
@@ -447,6 +456,7 @@ ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotia
 ktor-client-core = { module = "io.ktor:ktor-client-core" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock" }
 ktor-client-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
+ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json" }
 ktor-server-cio = { module = "io.ktor:ktor-server-cio" }
 ktor-server-core = { module = "io.ktor:ktor-server-core" }
 ktor-server-htmlBuilder = { module = "io.ktor:ktor-server-html-builder" }
