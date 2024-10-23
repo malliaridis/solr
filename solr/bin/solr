@@ -590,7 +590,7 @@ else
   exit
 fi
 
-# configure authentication
+# region configure authentication
 if [[ "$SCRIPT_CMD" == "auth" ]]; then
   : "${SOLR_SERVER_DIR:=$DEFAULT_SERVER_DIR}"
   if [ ! -e "$SOLR_SERVER_DIR" ]; then
@@ -623,6 +623,7 @@ if [[ "$SCRIPT_CMD" == "auth" ]]; then
   run_tool auth $@ --solr-url "$SOLR_URL_SCHEME://$SOLR_TOOL_HOST:${AUTH_PORT:-8983}" --auth-conf-dir "$SOLR_HOME" "--solr-include-file" "$SOLR_INCLUDE"
   exit $?
 fi
+# endregion
 
 # at this point all tools that have a custom run process, like "status" and "auth" have been run and exited.
 # Unless a command is one of the ones in the if clause below, we will just run it with the default run_tool function and then exit.
@@ -633,6 +634,8 @@ if [ "$SCRIPT_CMD" != "start" ] && [ "$SCRIPT_CMD" != "stop" ] && [ "$SCRIPT_CMD
 fi
 
 # Everything below here is to support start, stop and restart.
+
+# region ulimits
 
 #Check current Ulimits for Open Files and Max Processes.  Warn if they are below the recommended values.
 
@@ -677,6 +680,7 @@ if [[ "${SOLR_ULIMIT_CHECKS:-}" != "false" ]]; then
     fi
   fi
 fi
+# endregion ulimits
 
 # Run in foreground (default is to run in the background)
 FG="false"

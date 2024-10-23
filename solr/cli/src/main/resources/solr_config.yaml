@@ -1,0 +1,127 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+solr:
+  # Configuration for Solr Admin UI
+  admin:
+    enabled: true
+    # Enabled experimental features in the AdminUI (like the New UI). Consider disabling this if
+    # there are any issues.
+    experimental: true
+  auth:
+    httpclient:
+      builder:
+        factory:
+    # Can be undefined, basic or kerberos.
+    type:
+  default:
+    confdir:
+  data:
+    home:
+  deleteUnknownCores: false
+  gc:
+    log:
+      options:
+        # If append is true, the value is appended to a default set of GC log options.
+        append: true
+        value: "-Xlog:gc*"
+    options:
+      value: "
+      -XX:+UseG1GC
+      -XX:+PerfDisableSharedMem
+      -XX:+ParallelRefProcEnabled
+      -XX:MaxGCPauseMillis=250
+      -XX:+UseLargePages
+      -XX:+AlwaysPreTouch
+      -XX:+ExplicitGCInvokesConcurrent"
+  heap:
+    dump:
+      dir:
+  host: "127.0.0.1"
+  install:
+    # Solr install directory. Leave undefined / empty to use Solr tip.
+    dir:
+    symDir:
+  jetty:
+    # Leave undefined / empty to use solr server dir.
+    home:
+    # Jetty Host to use. Falls back to solr.host
+    host:
+    https:
+      port:
+    inetaccess:
+      includes:
+      excludes:
+  jmx:
+    enabled: false
+    rmi:
+      port: 18983
+  log:
+    dir:
+  modules:
+    - "jdk.incubator.vector"
+  port:
+    bind: 8983
+    advertise:
+  plugins:
+    placement: default
+  script:
+    remoteStreaming: true
+  server:
+    # Directory that points to the Solr server installation
+    dir: ""
+  ssl:
+    enabled: false
+    port:
+  stop:
+    # Stop key used for identifying Solr processes
+    key: SolrRocks
+    # If stop port is unspecified, "solr.port" is used.
+    port: 7983
+    # The time to wait for an instance to stop before gracefully terminating the process.
+    waitMs: 180000
+  timezone: "UTC"
+  ulimit:
+    # Enable or disable ulimit checks.
+    checks: true
+    # Recommended user limits (ulimit). Negative values are interpreted as unlimited.
+    recommended:
+      openFiles: 65000
+      maxProcesses: 65000
+      maxMemory: -1
+      virtualMemory: -1
+  zk:
+    embedded:
+      enabled: true
+      createChroot: true
+      # TODO Host should be an array instead
+      host: "127.0.0.1:9983"
+    client:
+      timeoutMs: 30000
+
+# TODO See if these are necessary and should be configured here
+com:
+  sun:
+    management:
+      jmxremote:
+        local:
+          only: false
+        ssl: false
+        authenticate: false
+        port: 18983
+        rmi:
+          port: 18983

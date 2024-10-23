@@ -27,6 +27,7 @@ pluginManagement {
 plugins {
     id 'com.gradle.develocity' version '3.17.6'
     id 'com.gradle.common-custom-user-data-gradle-plugin' version '2.0.2'
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
 apply from: file('gradle/develocity.gradle')
@@ -40,6 +41,7 @@ include "solr:solrj"
 include "solr:solrj-zookeeper"
 include "solr:solrj-streaming"
 include "solr:core"
+include 'solr:cli'
 include "solr:cross-dc-manager"
 include "solr:server"
 include "solr:modules:analysis-extras"
