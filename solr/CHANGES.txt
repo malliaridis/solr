@@ -108,7 +108,7 @@ Other Changes
 
 * SOLR-17285: SolrJ RemoteSolrException moved to SolrClient. (@samuelrivascoding)
 
-* SOLR-17321: Bump up minimum Java version for Apache Solr is now 21, and for SolrJ, it is 17. (Sanjay Dutt, David Smiley)
+* SOLR-17321: Minimum Java version for Apache Solr is now 21, and for SolrJ, it is 17. (Sanjay Dutt, David Smiley)
 
 ==================  9.8.0 ==================
 New Features
@@ -169,6 +169,8 @@ Optimizations
 * SOLR-3913: Optimize PostTool to call just optimize when both commit and optimize requested. (Eric Pugh)
 
 * SOLR-17441: Improve system metrics collection by skipping unreadable MXBean properties, making /admin/info/system calls faster (Haythem Khiri)
+
+* SOLR-16503: Switched from HTTP1 to HTTP2 in SolrClientCloudManager by replacing CloudLegacySolrClient with CloudHttp2SolrClient. (Sanjay Dutt, David Smiley)
 
 Bug Fixes
 ---------------------
