@@ -426,70 +426,64 @@ public class SolrConfigHandler extends RequestHandlerBase
     private void handleParams(ArrayList<CommandOperation> ops, RequestParams params) {
       for (CommandOperation op : ops) {
         switch (op.name) {
-          case SET:
-          case UPDATE:
-            {
-              Map<String, Object> map = op.getDataMap();
-              if (op.hasError()) break;
+          case SET, UPDATE -> {
+            Map<String, Object> map = op.getDataMap();
+            if (op.hasError()) break;
 
-              for (Map.Entry<String, Object> entry : map.entrySet()) {
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
 
-                @SuppressWarnings({"rawtypes"})
-                Map val;
-                String key = entry.getKey();
-                if (StrUtils.isNullOrEmpty(key)) {
-                  op.addError("null key ");
-                  continue;
-                }
-                key = key.trim();
-                String err = validateName(key);
-                if (err != null) {
-                  op.addError(err);
-                  continue;
-                }
-
-                try {
-                  val = (Map) entry.getValue();
-                } catch (Exception e1) {
-                  op.addError("invalid params for key : " + key);
-                  continue;
-                }
-
-                if (val.containsKey("")) {
-                  op.addError("Empty keys are not allowed in params");
-                  continue;
-                }
-
-                RequestParams.ParamSet old = params.getParams(key);
-                if (op.name.equals(UPDATE)) {
-                  if (old == null) {
-                    op.addError(formatString("unknown paramset {0} cannot update ", key));
-                    continue;
-                  }
-                  params = params.setParams(key, old.update(val));
-                } else {
-                  Long version = old == null ? 0 : old.getVersion() + 1;
-                  params = params.setParams(key, RequestParams.createParamSet(val, version));
-                }
+              @SuppressWarnings({"rawtypes"})
+              Map val;
+              String key = entry.getKey();
+              if (StrUtils.isNullOrEmpty(key)) {
+                op.addError("null key ");
+                continue;
               }
-              break;
-            }
-          case "delete":
-            {
-              List<String> name = op.getStrs(CommandOperation.ROOT_OBJ);
-              if (op.hasError()) break;
-              for (String s : name) {
-                if (params.getParams(s) == null) {
-                  op.addError(formatString("Could not delete. No such params ''{0}'' exist", s));
-                }
-                params = params.setParams(s, null);
+              key = key.trim();
+              String err = validateName(key);
+              if (err != null) {
+                op.addError(err);
+                continue;
               }
-              break;
+
+              try {
+                val = (Map) entry.getValue();
+              } catch (Exception e1) {
+                op.addError("invalid params for key : " + key);
+                continue;
+              }
+
+              if (val.containsKey("")) {
+                op.addError("Empty keys are not allowed in params");
+                continue;
+              }
+
+              RequestParams.ParamSet old = params.getParams(key);
+              if (op.name.equals(UPDATE)) {
+                if (old == null) {
+                  op.addError(formatString("unknown paramset {0} cannot update ", key));
+                  continue;
+                }
+                params = params.setParams(key, old.update(val));
+              } else {
+                Long version = old == null ? 0 : old.getVersion() + 1;
+                params = params.setParams(key, RequestParams.createParamSet(val, version));
+              }
             }
-          default:
-            {
-              op.unknownOperation();
+          }
+          case "delete" -> {
+            List<String> name = op.getStrs(CommandOperation.ROOT_OBJ);
+            if (op.hasError()) break;
+            for (String s : name) {
+              if (params.getParams(s) == null) {
+                op.addError(formatString("Could not delete. No such params ''{0}'' exist", s));
+              }
+              params = params.setParams(s, null);
             }
+          }
+          default -> {
+            op.unknownOperation();
+          }
         }
       }
 
@@ -539,40 +533,31 @@ public class SolrConfigHandler extends RequestHandlerBase
         throws IOException {
       for (CommandOperation op : ops) {
         switch (op.name) {
-          case SET_PROPERTY:
-            overlay = applySetProp(op, overlay);
-            break;
-          case UNSET_PROPERTY:
-            overlay = applyUnset(op, overlay);
-            break;
-          case SET_USER_PROPERTY:
-            overlay = applySetUserProp(op, overlay);
-            break;
-          case UNSET_USER_PROPERTY:
-            overlay = applyUnsetUserProp(op, overlay);
-            break;
-          default:
-            {
-              List<String> pcs = StrUtils.splitSmart(op.name.toLowerCase(Locale.ROOT), '-');
-              if (pcs.size() != 2) {
-                op.addError(formatString("Unknown operation ''{0}'' ", op.name));
-              } else {
-                String prefix = pcs.get(0);
-                String name = pcs.get(1);
-                if (cmdPrefixes.contains(prefix) && namedPlugins.containsKey(name)) {
-                  SolrConfig.SolrPluginInfo info = namedPlugins.get(name);
-                  if ("delete".equals(prefix)) {
-                    overlay = deleteNamedComponent(op, overlay, info.getCleanTag());
-                  } else {
-                    overlay =
-                        updateNamedPlugin(
-                            info, op, overlay, prefix.equals("create") || prefix.equals("add"));
-                  }
+          case SET_PROPERTY -> overlay = applySetProp(op, overlay);
+          case UNSET_PROPERTY -> overlay = applyUnset(op, overlay);
+          case SET_USER_PROPERTY -> overlay = applySetUserProp(op, overlay);
+          case UNSET_USER_PROPERTY -> overlay = applyUnsetUserProp(op, overlay);
+          default -> {
+            List<String> pcs = StrUtils.splitSmart(op.name.toLowerCase(Locale.ROOT), '-');
+            if (pcs.size() != 2) {
+              op.addError(formatString("Unknown operation ''{0}'' ", op.name));
+            } else {
+              String prefix = pcs.get(0);
+              String name = pcs.get(1);
+              if (cmdPrefixes.contains(prefix) && namedPlugins.containsKey(name)) {
+                SolrConfig.SolrPluginInfo info = namedPlugins.get(name);
+                if ("delete".equals(prefix)) {
+                  overlay = deleteNamedComponent(op, overlay, info.getCleanTag());
                 } else {
-                  op.unknownOperation();
+                  overlay =
+                      updateNamedPlugin(
+                          info, op, overlay, prefix.equals("create") || prefix.equals("add"));
                 }
+              } else {
+                op.unknownOperation();
               }
             }
+          }
         }
       }
       @SuppressWarnings({"rawtypes"})
@@ -950,14 +935,11 @@ public class SolrConfigHandler extends RequestHandlerBase
 
   @Override
   public Name getPermissionName(AuthorizationContext ctx) {
-    switch (ctx.getHttpMethod()) {
-      case "GET":
-        return Name.CONFIG_READ_PERM;
-      case "POST":
-        return Name.CONFIG_EDIT_PERM;
-      default:
-        return null;
-    }
+    return switch (ctx.getHttpMethod()) {
+      case "GET" -> Name.CONFIG_READ_PERM;
+      case "POST" -> Name.CONFIG_EDIT_PERM;
+      default -> null;
+    };
   }
 
   private static class PerReplicaCallable extends CollectionRequiringSolrRequest<SolrResponse>

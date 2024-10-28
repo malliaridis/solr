@@ -1057,11 +1057,12 @@ public class SolrIndexSearcher extends IndexSearcher implements Closeable, SolrI
   private static final BitDocSet EMPTY = new BitDocSet(new FixedBitSet(0), 0);
 
   private BitDocSet computeLiveDocs() {
-    switch (leafContexts.size()) {
-      case 0:
+    return switch (leafContexts.size()) {
+      case 0 -> {
         assert numDocs() == 0;
-        return EMPTY;
-      case 1:
+        yield EMPTY;
+      }
+      case 1 -> {
         final Bits onlySegLiveDocs = leafContexts.get(0).reader().getLiveDocs();
         final FixedBitSet fbs;
         if (onlySegLiveDocs == null) {
@@ -1073,8 +1074,9 @@ public class SolrIndexSearcher extends IndexSearcher implements Closeable, SolrI
           fbs = FixedBitSet.copyOf(onlySegLiveDocs);
         }
         assert fbs.cardinality() == numDocs();
-        return new BitDocSet(fbs, numDocs());
-      default:
+        yield new BitDocSet(fbs, numDocs());
+      }
+      default -> {
         final FixedBitSet bs = new FixedBitSet(maxDoc());
         for (LeafReaderContext ctx : leafContexts) {
           final LeafReader r = ctx.reader();
@@ -1089,8 +1091,9 @@ public class SolrIndexSearcher extends IndexSearcher implements Closeable, SolrI
           }
         }
         assert bs.cardinality() == numDocs();
-        return new BitDocSet(bs, numDocs());
-    }
+        yield new BitDocSet(bs, numDocs());
+      }
+    };
   }
 
   private BitDocSet populateLiveDocs(Supplier<BitDocSet> liveDocsSupplier) {

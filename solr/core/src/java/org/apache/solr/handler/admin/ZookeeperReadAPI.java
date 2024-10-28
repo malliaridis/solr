@@ -154,15 +154,11 @@ public class ZookeeperReadAPI extends AdminAPIBase {
 
   /** Simple mime type guessing based on first character of the response */
   private String guessMime(byte firstByte) {
-    switch (firstByte) {
-      case '{':
-        return CommonParams.JSON_MIME;
-      case '<':
-      case '?':
-        return XMLResponseParser.XML_CONTENT_TYPE;
-      default:
-        return BinaryResponseParser.BINARY_CONTENT_TYPE;
-    }
+    return switch (firstByte) {
+      case '{' -> CommonParams.JSON_MIME;
+      case '<', '?' -> XMLResponseParser.XML_CONTENT_TYPE;
+      default -> BinaryResponseParser.BINARY_CONTENT_TYPE;
+    };
   }
 
   /** Reads content of a znode */

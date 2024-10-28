@@ -199,7 +199,7 @@ public class DenseVectorField extends FloatPointField {
     }
 
     switch (vectorEncoding) {
-      case FLOAT32:
+      case FLOAT32, BYTE -> {
         if (dimension > KnnVectorsFormat.DEFAULT_MAX_DIMENSIONS) {
           if (log.isWarnEnabled()) {
             log.warn(
@@ -209,18 +209,7 @@ public class DenseVectorField extends FloatPointField {
                 KnnVectorsFormat.DEFAULT_MAX_DIMENSIONS);
           }
         }
-        break;
-      case BYTE:
-        if (dimension > KnnVectorsFormat.DEFAULT_MAX_DIMENSIONS) {
-          if (log.isWarnEnabled()) {
-            log.warn(
-                "The vector dimension {} specified for field {} exceeds the current Lucene default max dimension of {}. It's un-tested territory, extra caution and benchmarks are recommended for production systems.",
-                dimension,
-                field.getName(),
-                KnnVectorsFormat.DEFAULT_MAX_DIMENSIONS);
-          }
-        }
-        break;
+      }
     }
   }
 
@@ -236,15 +225,13 @@ public class DenseVectorField extends FloatPointField {
       }
       if (field.stored()) {
         switch (vectorEncoding) {
-          case FLOAT32:
+          case FLOAT32 -> {
             fields.ensureCapacity(vectorBuilder.getFloatVector().length + 1);
             for (float vectorElement : vectorBuilder.getFloatVector()) {
               fields.add(getStoredField(field, vectorElement));
             }
-            break;
-          case BYTE:
-            fields.add(new StoredField(field.getName(), vectorBuilder.getByteVector()));
-            break;
+          }
+          case BYTE -> fields.add(new StoredField(field.getName(), vectorBuilder.getByteVector()));
         }
       }
       return fields;
@@ -262,18 +249,12 @@ public class DenseVectorField extends FloatPointField {
 
     if (vectorValue == null) return null;
     DenseVectorParser vectorBuilder = (DenseVectorParser) vectorValue;
-    switch (vectorEncoding) {
-      case BYTE:
-        return new KnnByteVectorField(
-            field.getName(), vectorBuilder.getByteVector(), denseVectorFieldType);
-      case FLOAT32:
-        return new KnnFloatVectorField(
-            field.getName(), vectorBuilder.getFloatVector(), denseVectorFieldType);
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR,
-            "Unexpected state. Vector Encoding: " + vectorEncoding);
-    }
+    return switch (vectorEncoding) {
+      case BYTE -> new KnnByteVectorField(
+          field.getName(), vectorBuilder.getByteVector(), denseVectorFieldType);
+      case FLOAT32 -> new KnnFloatVectorField(
+          field.getName(), vectorBuilder.getFloatVector(), denseVectorFieldType);
+    };
   }
 
   /**
@@ -332,16 +313,10 @@ public class DenseVectorField extends FloatPointField {
    */
   public DenseVectorParser getVectorBuilder(
       Object inputValue, DenseVectorParser.BuilderPhase phase) {
-    switch (vectorEncoding) {
-      case FLOAT32:
-        return new FloatDenseVectorParser(dimension, inputValue, phase);
-      case BYTE:
-        return new ByteDenseVectorParser(dimension, inputValue, phase);
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR,
-            "Unexpected state. Vector Encoding: " + vectorEncoding);
-    }
+    return switch (vectorEncoding) {
+      case FLOAT32 -> new FloatDenseVectorParser(dimension, inputValue, phase);
+      case BYTE -> new ByteDenseVectorParser(dimension, inputValue, phase);
+    };
   }
 
   @Override
@@ -351,16 +326,10 @@ public class DenseVectorField extends FloatPointField {
 
   @Override
   public ValueSource getValueSource(SchemaField field, QParser parser) {
-
-    switch (vectorEncoding) {
-      case FLOAT32:
-        return new FloatKnnVectorFieldSource(field.getName());
-      case BYTE:
-        return new ByteKnnVectorFieldSource(field.getName());
-    }
-
-    throw new SolrException(
-        SolrException.ErrorCode.BAD_REQUEST, "Vector encoding not supported for function queries.");
+    return switch (vectorEncoding) {
+      case FLOAT32 -> new FloatKnnVectorFieldSource(field.getName());
+      case BYTE -> new ByteKnnVectorFieldSource(field.getName());
+    };
   }
 
   public Query getKnnVectorQuery(
@@ -369,17 +338,12 @@ public class DenseVectorField extends FloatPointField {
     DenseVectorParser vectorBuilder =
         getVectorBuilder(vectorToSearch, DenseVectorParser.BuilderPhase.QUERY);
 
-    switch (vectorEncoding) {
-      case FLOAT32:
-        return new KnnFloatVectorQuery(
-            fieldName, vectorBuilder.getFloatVector(), topK, filterQuery);
-      case BYTE:
-        return new KnnByteVectorQuery(fieldName, vectorBuilder.getByteVector(), topK, filterQuery);
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR,
-            "Unexpected state. Vector Encoding: " + vectorEncoding);
-    }
+    return switch (vectorEncoding) {
+      case FLOAT32 -> new KnnFloatVectorQuery(
+          fieldName, vectorBuilder.getFloatVector(), topK, filterQuery);
+      case BYTE -> new KnnByteVectorQuery(
+          fieldName, vectorBuilder.getByteVector(), topK, filterQuery);
+    };
   }
 
   /**

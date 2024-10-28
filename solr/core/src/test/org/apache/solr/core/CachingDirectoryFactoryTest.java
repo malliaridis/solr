@@ -70,18 +70,13 @@ public class CachingDirectoryFactoryTest extends SolrTestCaseJ4 {
       BooleanSupplier removeAfter;
       boolean alwaysBefore = false;
       switch (r.nextInt(3)) {
-        case 0:
-          removeAfter = () -> true;
-          break;
-        case 1:
+        case 0 -> removeAfter = () -> true;
+        case 1 -> {
           removeAfter = () -> false;
           alwaysBefore = true;
-          break;
-        case 2:
-          removeAfter = r::nextBoolean;
-          break;
-        default:
-          throw new IllegalStateException();
+        }
+        case 2 -> removeAfter = r::nextBoolean;
+        default -> throw new IllegalStateException();
       }
       int i = 0;
       for (char c = 'a'; c <= 'z'; c++) {

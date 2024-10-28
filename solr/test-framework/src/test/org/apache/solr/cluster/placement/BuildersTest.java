@@ -67,14 +67,9 @@ public class BuildersTest extends SolrTestCaseJ4 {
           .forEachRemaining(
               r -> {
                 switch (r.getType()) {
-                  case NRT:
-                    counts[0]++;
-                    break;
-                  case TLOG:
-                    counts[1]++;
-                    break;
-                  case PULL:
-                    counts[2]++;
+                  case NRT -> counts[0]++;
+                  case TLOG -> counts[1]++;
+                  case PULL -> counts[2]++;
                 }
               });
       assertEquals("numNrt", NUM_NRT_REPLICAS, counts[0]);

@@ -106,16 +106,11 @@ public class DocValuesIteratorCache {
       return NONE; // Searcher doesn't have info about this field, hence ignore it.
     }
     final DocValuesType dvType = fi.getDocValuesType();
-    switch (dvType) {
-      case NUMERIC:
-      case BINARY:
-      case SORTED:
-      case SORTED_NUMERIC:
-      case SORTED_SET:
-        return new FieldDocValuesSupplier(schemaField, dvType, nLeaves);
-      default:
-        return NONE;
-    }
+    return switch (dvType) {
+      case NUMERIC, BINARY, SORTED, SORTED_NUMERIC, SORTED_SET -> new FieldDocValuesSupplier(
+          schemaField, dvType, nLeaves);
+      default -> NONE;
+    };
   }
 
   private interface IOBiFunction<T, U, R> {

@@ -98,17 +98,14 @@ public class ProfileResults {
   /** true if we care about this event */
   static boolean isInteresting(String mode, RecordedEvent event) {
     String name = event.getEventType().getName();
-    switch (mode) {
-      case "cpu":
-        return (name.equals("jdk.ExecutionSample") || name.equals("jdk.NativeMethodSample"))
-            && !isGradlePollThread(event.getThread("sampledThread"));
-      case "heap":
-        return (name.equals("jdk.ObjectAllocationInNewTLAB")
-                || name.equals("jdk.ObjectAllocationOutsideTLAB"))
-            && !isGradlePollThread(event.getThread("eventThread"));
-      default:
-        throw new UnsupportedOperationException(event.toString());
-    }
+    return switch (mode) {
+      case "cpu" -> (name.equals("jdk.ExecutionSample") || name.equals("jdk.NativeMethodSample"))
+          && !isGradlePollThread(event.getThread("sampledThread"));
+      case "heap" -> (name.equals("jdk.ObjectAllocationInNewTLAB")
+              || name.equals("jdk.ObjectAllocationOutsideTLAB"))
+          && !isGradlePollThread(event.getThread("eventThread"));
+      default -> throw new UnsupportedOperationException(event.toString());
+    };
   }
 
   /** true if the thread is gradle epoll thread (which we don't care about) */
@@ -118,18 +115,12 @@ public class ProfileResults {
 
   /** value we accumulate for this event */
   static long getValue(RecordedEvent event) {
-    switch (event.getEventType().getName()) {
-      case "jdk.ObjectAllocationInNewTLAB":
-        return event.getLong("tlabSize");
-      case "jdk.ObjectAllocationOutsideTLAB":
-        return event.getLong("allocationSize");
-      case "jdk.ExecutionSample":
-        return 1L;
-      case "jdk.NativeMethodSample":
-        return 1L;
-      default:
-        throw new UnsupportedOperationException(event.toString());
-    }
+    return switch (event.getEventType().getName()) {
+      case "jdk.ObjectAllocationInNewTLAB" -> event.getLong("tlabSize");
+      case "jdk.ObjectAllocationOutsideTLAB" -> event.getLong("allocationSize");
+      case "jdk.ExecutionSample", "jdk.NativeMethodSample" -> 1L;
+      default -> throw new UnsupportedOperationException(event.toString());
+    };
   }
 
   /** format a value, if its huge, we show millions */

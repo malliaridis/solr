@@ -94,14 +94,9 @@ public class DefaultPackageRepository extends PackageRepository {
     Path destination = tmpDirectory.resolve(fileName);
 
     switch (url.getProtocol()) {
-      case "http":
-      case "https":
-      case "ftp":
-        FileUtils.copyURLToFile(url, destination.toFile());
-        break;
-      default:
-        throw new SolrException(
-            ErrorCode.BAD_REQUEST, "URL protocol " + url.getProtocol() + " not supported");
+      case "http", "https", "ftp" -> FileUtils.copyURLToFile(url, destination.toFile());
+      default -> throw new SolrException(
+          ErrorCode.BAD_REQUEST, "URL protocol " + url.getProtocol() + " not supported");
     }
 
     return destination;

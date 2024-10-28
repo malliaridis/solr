@@ -655,71 +655,60 @@ public class PeerSync implements SolrMetricProducer {
           lastVersion = version;
 
           switch (oper) {
-            case UpdateLog.ADD:
-              {
-                // byte[] idBytes = (byte[]) entry.get(2);
-                SolrInputDocument sdoc = (SolrInputDocument) entry.get(entry.size() - 1);
-                AddUpdateCommand cmd = new AddUpdateCommand(req);
-                // cmd.setIndexedId(new BytesRef(idBytes));
-                cmd.solrDoc = sdoc;
-                cmd.setVersion(version);
-                cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
-                if (debug) {
-                  log.debug("{} add {} id {}", logPrefix, cmd, sdoc.getField(ID));
-                }
-                proc.processAdd(cmd);
-                break;
+            case UpdateLog.ADD -> {
+              // byte[] idBytes = (byte[]) entry.get(2);
+              SolrInputDocument sdoc = (SolrInputDocument) entry.get(entry.size() - 1);
+              AddUpdateCommand cmd = new AddUpdateCommand(req);
+              // cmd.setIndexedId(new BytesRef(idBytes));
+              cmd.solrDoc = sdoc;
+              cmd.setVersion(version);
+              cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
+              if (debug) {
+                log.debug("{} add {} id {}", logPrefix, cmd, sdoc.getField(ID));
               }
-            case UpdateLog.DELETE:
-              {
-                byte[] idBytes = (byte[]) entry.get(2);
-                DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
-                cmd.setIndexedId(new BytesRef(idBytes));
-                cmd.setVersion(version);
-                cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
-                if (debug) {
-                  if (log.isDebugEnabled()) {
-                    log.debug(
-                        "{} delete {} {}", logPrefix, cmd, new BytesRef(idBytes).utf8ToString());
-                  }
-                }
-                proc.processDelete(cmd);
-                break;
-              }
-
-            case UpdateLog.DELETE_BY_QUERY:
-              {
-                String query = (String) entry.get(2);
-                DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
-                cmd.query = query;
-                cmd.setVersion(version);
-                cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
-                if (debug) {
-                  log.debug("{} deleteByQuery {}", logPrefix, cmd);
-                }
-                proc.processDelete(cmd);
-                break;
-              }
-            case UpdateLog.UPDATE_INPLACE:
-              {
-                AddUpdateCommand cmd =
-                    UpdateLog.convertTlogEntryToAddUpdateCommand(req, entry, oper, version);
-                cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
-                if (debug) {
+              proc.processAdd(cmd);
+            }
+            case UpdateLog.DELETE -> {
+              byte[] idBytes = (byte[]) entry.get(2);
+              DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
+              cmd.setIndexedId(new BytesRef(idBytes));
+              cmd.setVersion(version);
+              cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
+              if (debug) {
+                if (log.isDebugEnabled()) {
                   log.debug(
-                      "{} inplace update {} prevVersion={} doc={}",
-                      logPrefix,
-                      cmd,
-                      cmd.prevVersion,
-                      cmd.solrDoc);
+                      "{} delete {} {}", logPrefix, cmd, new BytesRef(idBytes).utf8ToString());
                 }
-                proc.processAdd(cmd);
-                break;
               }
-
-            default:
-              throw new SolrException(
-                  SolrException.ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
+              proc.processDelete(cmd);
+            }
+            case UpdateLog.DELETE_BY_QUERY -> {
+              String query = (String) entry.get(2);
+              DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
+              cmd.query = query;
+              cmd.setVersion(version);
+              cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
+              if (debug) {
+                log.debug("{} deleteByQuery {}", logPrefix, cmd);
+              }
+              proc.processDelete(cmd);
+            }
+            case UpdateLog.UPDATE_INPLACE -> {
+              AddUpdateCommand cmd =
+                  UpdateLog.convertTlogEntryToAddUpdateCommand(req, entry, oper, version);
+              cmd.setFlags(UpdateCommand.PEER_SYNC | UpdateCommand.IGNORE_AUTOCOMMIT);
+              if (debug) {
+                log.debug(
+                    "{} inplace update {} prevVersion={} doc={}",
+                    logPrefix,
+                    cmd,
+                    cmd.prevVersion,
+                    cmd.solrDoc);
+              }
+              proc.processAdd(cmd);
+            }
+            default -> throw new SolrException(
+                SolrException.ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
           }
         }
 

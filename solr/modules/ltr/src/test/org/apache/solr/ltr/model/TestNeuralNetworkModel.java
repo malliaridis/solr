@@ -375,18 +375,8 @@ public class TestNeuralNetworkModel extends TestRerankBase {
       @Override
       public void setActivation(Object o) {
         super.setActivation(o);
-        switch (this.activationStr) {
-          case "answer":
-            this.activation =
-                new Activation() {
-                  @Override
-                  public float apply(float in) {
-                    return in * 42f;
-                  }
-                };
-            break;
-          default:
-            break;
+        if (this.activationStr.equals("answer")) {
+          this.activation = in -> in * 42f;
         }
       }
     }

@@ -155,43 +155,25 @@ public abstract class TestBaseStatsCacheCloud extends SolrCloudTestCase {
                   (name, value) -> {
                     long val = value instanceof Number ? ((Number) value).longValue() : 0;
                     switch (name) {
-                      case "lookups":
-                        statsCacheMetrics.lookups.add(val);
-                        break;
-                      case "returnLocalStats":
-                        statsCacheMetrics.returnLocalStats.add(val);
-                        break;
-                      case "mergeToGlobalStats":
-                        statsCacheMetrics.mergeToGlobalStats.add(val);
-                        break;
-                      case "missingGlobalFieldStats":
-                        statsCacheMetrics.missingGlobalFieldStats.add(val);
-                        break;
-                      case "missingGlobalTermStats":
-                        statsCacheMetrics.missingGlobalTermStats.add(val);
-                        break;
-                      case "receiveGlobalStats":
-                        statsCacheMetrics.receiveGlobalStats.add(val);
-                        break;
-                      case "retrieveStats":
-                        statsCacheMetrics.retrieveStats.add(val);
-                        break;
-                      case "sendGlobalStats":
-                        statsCacheMetrics.sendGlobalStats.add(val);
-                        break;
-                      case "useCachedGlobalStats":
-                        statsCacheMetrics.useCachedGlobalStats.add(val);
-                        break;
-                      case "statsCacheImpl":
-                        assertTrue(
-                            "incorrect cache impl, expected"
-                                + getImplementationName()
-                                + " but was "
-                                + value,
-                            getImplementationName().endsWith((String) value));
-                        break;
-                      default:
-                        fail("Unexpected cache metrics: key=" + name + ", value=" + value);
+                      case "lookups" -> statsCacheMetrics.lookups.add(val);
+                      case "returnLocalStats" -> statsCacheMetrics.returnLocalStats.add(val);
+                      case "mergeToGlobalStats" -> statsCacheMetrics.mergeToGlobalStats.add(val);
+                      case "missingGlobalFieldStats" -> statsCacheMetrics.missingGlobalFieldStats
+                          .add(val);
+                      case "missingGlobalTermStats" -> statsCacheMetrics.missingGlobalTermStats.add(
+                          val);
+                      case "receiveGlobalStats" -> statsCacheMetrics.receiveGlobalStats.add(val);
+                      case "retrieveStats" -> statsCacheMetrics.retrieveStats.add(val);
+                      case "sendGlobalStats" -> statsCacheMetrics.sendGlobalStats.add(val);
+                      case "useCachedGlobalStats" -> statsCacheMetrics.useCachedGlobalStats.add(
+                          val);
+                      case "statsCacheImpl" -> assertTrue(
+                          "incorrect cache impl, expected"
+                              + getImplementationName()
+                              + " but was "
+                              + value,
+                          getImplementationName().endsWith((String) value));
+                      default -> fail("Unexpected cache metrics: key=" + name + ", value=" + value);
                     }
                   });
             });

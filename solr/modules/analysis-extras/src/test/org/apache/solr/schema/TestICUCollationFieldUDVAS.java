@@ -49,20 +49,12 @@ public class TestICUCollationFieldUDVAS extends SolrTestCaseJ4 {
   @SuppressWarnings("fallthrough")
   public void testInitCore() throws Exception {
     final Mode mode = pickRandom(Mode.values());
-    Version useVersion;
-    switch (mode) {
-      case FAIL:
-        useVersion = ICUCollationField.UDVAS_FORBIDDEN_AS_OF;
-        break;
-      case WARN:
-        useVersion = WARN_CEILING;
-        break;
-      case OK:
-        useVersion = null;
-        break;
-      default:
-        throw new IllegalStateException();
-    }
+    Version useVersion =
+        switch (mode) {
+          case FAIL -> ICUCollationField.UDVAS_FORBIDDEN_AS_OF;
+          case WARN -> WARN_CEILING;
+          case OK -> null;
+        };
 
     final String restoreLuceneMatchVersion;
     if (mode == Mode.OK) {
@@ -77,18 +69,14 @@ public class TestICUCollationFieldUDVAS extends SolrTestCaseJ4 {
         LogListener.warn(XmlConfigFile.class).substring(ICUCollationField.UDVAS_MESSAGE)) {
       initCore("solrconfig.xml", "schema.xml", home);
       switch (mode) {
-        case FAIL:
-          fail("expected failure for version " + useVersion);
-          break;
-        case WARN:
+        case FAIL -> fail("expected failure for version " + useVersion);
+        case WARN -> {
           assertEquals("expected warning message was not logged", 2, warnLog.getCount());
           // Clear out the warnLog
           warnLog.pollMessage();
           warnLog.pollMessage();
-          break;
-        case OK:
-          assertEquals("unexpected warning message was logged", 0, warnLog.getCount());
-          break;
+        }
+        case OK -> assertEquals("unexpected warning message was logged", 0, warnLog.getCount());
       }
     } catch (SolrException ex) {
       assertSame("unexpected hard failure for " + useVersion + ": " + ex, mode, Mode.FAIL);

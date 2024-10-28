@@ -652,17 +652,14 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < size; i++) {
       switch (random().nextInt(4)) {
-        case 0: /* single byte */
-          sb.append('a');
-          break;
-        case 1: /* two bytes */
-          sb.append('\u0645');
-          break;
-        case 2: /* three bytes */
-          sb.append('\u092a');
-          break;
-        case 3: /* four bytes */
-          sb.appendCodePoint(0x29B05);
+        case 0 -> // single byte
+        sb.append('a');
+        case 1 -> // two bytes
+        sb.append('\u0645');
+        case 2 -> // three bytes
+        sb.append('\u092a');
+        case 3 -> // four bytes
+        sb.appendCodePoint(0x29B05);
       }
     }
     return sb.toString();
@@ -1994,18 +1991,10 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
         assertEquals(4, counts.size());
         for (Count count : counts) {
           switch (count.getValue()) {
-            case "0.0":
-              assertEquals(2, count.getCount());
-              break;
-            case "50.0":
-              assertEquals(0, count.getCount());
-              break;
-            case "100.0":
-              assertEquals(1, count.getCount());
-              break;
-            case "150.0":
-              assertEquals(0, count.getCount());
-              break;
+            case "0.0" -> assertEquals(2, count.getCount());
+            case "50.0" -> assertEquals(0, count.getCount());
+            case "100.0" -> assertEquals(1, count.getCount());
+            case "150.0" -> assertEquals(0, count.getCount());
           }
         }
       } else if (range.getName().equals("price2")) {
@@ -2018,18 +2007,10 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
         assertEquals(4, counts.size());
         for (Count count : counts) {
           switch (count.getValue()) {
-            case "0.0":
-              assertEquals(2, count.getCount());
-              break;
-            case "50.0":
-              assertEquals(0, count.getCount());
-              break;
-            case "100.0":
-              assertEquals(1, count.getCount());
-              break;
-            case "150.0":
-              assertEquals(0, count.getCount());
-              break;
+            case "0.0" -> assertEquals(2, count.getCount());
+            case "50.0" -> assertEquals(0, count.getCount());
+            case "100.0" -> assertEquals(1, count.getCount());
+            case "150.0" -> assertEquals(0, count.getCount());
           }
         }
       }
@@ -2050,18 +2031,10 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
         assertEquals(4, counts.size());
         for (Count count : counts) {
           switch (count.getValue()) {
-            case "0.0":
-              assertEquals(3, count.getCount());
-              break;
-            case "50.0":
-              assertEquals(1, count.getCount());
-              break;
-            case "100.0":
-              assertEquals(1, count.getCount());
-              break;
-            case "150.0":
-              assertEquals(0, count.getCount());
-              break;
+            case "0.0" -> assertEquals(3, count.getCount());
+            case "50.0" -> assertEquals(1, count.getCount());
+            case "100.0" -> assertEquals(1, count.getCount());
+            case "150.0" -> assertEquals(0, count.getCount());
           }
         }
       } else if (range.getName().equals("price2")) {
@@ -2074,18 +2047,10 @@ public abstract class SolrExampleTests extends SolrExampleTestsBase {
         assertEquals(4, counts.size());
         for (Count count : counts) {
           switch (count.getValue()) {
-            case "0.0":
-              assertEquals(3, count.getCount());
-              break;
-            case "50.0":
-              assertEquals(1, count.getCount());
-              break;
-            case "100.0":
-              assertEquals(1, count.getCount());
-              break;
-            case "150.0":
-              assertEquals(0, count.getCount());
-              break;
+            case "0.0" -> assertEquals(3, count.getCount());
+            case "50.0" -> assertEquals(1, count.getCount());
+            case "100.0" -> assertEquals(1, count.getCount());
+            case "150.0" -> assertEquals(0, count.getCount());
           }
         }
       }

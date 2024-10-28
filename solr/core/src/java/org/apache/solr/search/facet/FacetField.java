@@ -56,23 +56,16 @@ public class FacetField extends FacetRequestSorted {
 
     public static FacetMethod fromString(String method) {
       if (method == null || method.length() == 0) return DEFAULT_METHOD;
-      switch (method) {
-        case "dv":
-          return DV;
-        case "uif":
-          return UIF;
-        case "dvhash":
-          return DVHASH;
-        case "enum":
-          return ENUM;
-        case "stream":
-          return STREAM; // TODO replace with enum?
-        case "smart":
-          return SMART;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST, "Unknown FacetField method " + method);
-      }
+      return switch (method) {
+        case "dv" -> DV;
+        case "uif" -> UIF;
+        case "dvhash" -> DVHASH;
+        case "enum" -> ENUM;
+        case "stream" -> STREAM; // TODO replace with enum?
+        case "smart" -> SMART;
+        default -> throw new SolrException(
+            SolrException.ErrorCode.BAD_REQUEST, "Unknown FacetField method " + method);
+      };
     }
 
     static FacetMethod DEFAULT_METHOD = SMART; // non-final for tests to vary

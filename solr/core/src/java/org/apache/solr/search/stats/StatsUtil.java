@@ -189,14 +189,9 @@ public class StatsUtil {
     for (int i = 0; i < value.length(); i++) {
       char c = value.charAt(i);
       switch (c) {
-        case ESCAPE:
-          output.append(ESCAPE).append(ESCAPE);
-          break;
-        case ENTRY_SEPARATOR_CHAR:
-          output.append(ESCAPE).append(ESCAPE_ENTRY_SEPARATOR);
-          break;
-        default:
-          output.append(c);
+        case ESCAPE -> output.append(ESCAPE).append(ESCAPE);
+        case ENTRY_SEPARATOR_CHAR -> output.append(ESCAPE).append(ESCAPE_ENTRY_SEPARATOR);
+        default -> output.append(c);
       }
     }
     return URLEncoder.encode(output.toString(), StandardCharsets.UTF_8);

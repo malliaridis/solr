@@ -166,21 +166,20 @@ public class HttpShardHandlerFactory extends ShardHandlerFactory
         Entry<String, ?> e = iter.next();
         String key = e.getKey();
         switch (key) {
-          case ShardParams.REPLICA_RANDOM:
-            // Only positive assertion of default status (i.e., default=true) is supported.
-            // "random" is currently the implicit default, so explicitly configuring
-            // "random" as default would not currently be useful, but if the implicit default
-            // changes in the future, checkDefault could be relevant here.
-            defaultRouting =
-                checkDefaultReplicaListTransformer(getNamedList(e.getValue()), key, defaultRouting);
-            break;
-          case ShardParams.REPLICA_STABLE:
+          case ShardParams.REPLICA_RANDOM ->
+          // Only positive assertion of default status (i.e., default=true) is supported.
+          // "random" is currently the implicit default, so explicitly configuring
+          // "random" as default would not currently be useful, but if the implicit default
+          // changes in the future, checkDefault could be relevant here.
+          defaultRouting =
+              checkDefaultReplicaListTransformer(getNamedList(e.getValue()), key, defaultRouting);
+          case ShardParams.REPLICA_STABLE -> {
             NamedList<?> c = getNamedList(e.getValue());
             defaultRouting = checkDefaultReplicaListTransformer(c, key, defaultRouting);
             stableRltFactory = new AffinityReplicaListTransformerFactory(c);
-            break;
-          default:
-            throw new IllegalArgumentException("invalid replica routing spec name: " + key);
+          }
+          default -> throw new IllegalArgumentException(
+              "invalid replica routing spec name: " + key);
         }
       } while (iter.hasNext());
     }

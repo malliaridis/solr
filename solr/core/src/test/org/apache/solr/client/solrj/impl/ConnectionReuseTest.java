@@ -80,21 +80,20 @@ public class ConnectionReuseTest extends SolrCloudTestCase {
   }
 
   private SolrClient buildClient(CloseableHttpClient httpClient, URL url) {
-    switch (random().nextInt(3)) {
-      case 0:
-        // currently, only testing with 1 thread
-        return new ConcurrentUpdateSolrClient.Builder(url.toString())
-            .withDefaultCollection(COLLECTION)
-            .withHttpClient(httpClient)
-            .withQueueSize(6)
-            .withThreadCount(1)
-            .build();
-      case 1:
-        return new HttpSolrClient.Builder(url.toString())
-            .withDefaultCollection(COLLECTION)
-            .withHttpClient(httpClient)
-            .build();
-      case 2:
+    return switch (random().nextInt(3)) {
+      case 0 ->
+      // currently, only testing with 1 thread
+      new ConcurrentUpdateSolrClient.Builder(url.toString())
+          .withDefaultCollection(COLLECTION)
+          .withHttpClient(httpClient)
+          .withQueueSize(6)
+          .withThreadCount(1)
+          .build();
+      case 1 -> new HttpSolrClient.Builder(url.toString())
+          .withDefaultCollection(COLLECTION)
+          .withHttpClient(httpClient)
+          .build();
+      case 2 -> {
         var builder =
             new RandomizingCloudSolrClientBuilder(
                 Collections.singletonList(cluster.getZkServer().getZkAddress()), Optional.empty());
@@ -105,13 +104,14 @@ public class ConnectionReuseTest extends SolrCloudTestCase {
           builder.sendUpdatesToAllReplicasInShard();
         }
         builder.withDefaultCollection(COLLECTION);
-        return builder
+        yield builder
             .withHttpClient(httpClient)
             .withConnectionTimeout(30000)
             .withSocketTimeout(60000)
             .build();
-    }
-    throw new RuntimeException("impossible");
+      }
+      default -> throw new RuntimeException("impossible");
+    };
   }
 
   @Test

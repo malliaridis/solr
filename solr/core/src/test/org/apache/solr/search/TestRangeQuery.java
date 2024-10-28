@@ -668,32 +668,30 @@ public class TestRangeQuery extends SolrTestCaseJ4 {
       document.setField("id", i);
       for (Map.Entry<NumberType, String[]> entry : types.entrySet()) {
         NumberType type = entry.getKey();
-        String val = null;
-        List<String> vals = null;
-        switch (type) {
-          case DATE:
-            val = randomDate(cardinality);
-            vals = getRandomDates(random().nextInt(10), cardinality);
-            break;
-          case DOUBLE:
-            val = String.valueOf(randomDouble(cardinality));
-            vals = toStringList(getRandomDoubles(random().nextInt(10), cardinality));
-            break;
-          case FLOAT:
-            val = String.valueOf(randomFloat(cardinality));
-            vals = toStringList(getRandomFloats(random().nextInt(10), cardinality));
-            break;
-          case INTEGER:
-            val = String.valueOf(randomInt(cardinality));
-            vals = toStringList(getRandomInts(random().nextInt(10), cardinality));
-            break;
-          case LONG:
-            val = String.valueOf(randomLong(cardinality));
-            vals = toStringList(getRandomLongs(random().nextInt(10), cardinality));
-            break;
-          default:
-            throw new AssertionError();
-        }
+        String val;
+        List<String> vals =
+            switch (type) {
+              case DATE -> {
+                val = randomDate(cardinality);
+                yield getRandomDates(random().nextInt(10), cardinality);
+              }
+              case DOUBLE -> {
+                val = String.valueOf(randomDouble(cardinality));
+                yield toStringList(getRandomDoubles(random().nextInt(10), cardinality));
+              }
+              case FLOAT -> {
+                val = String.valueOf(randomFloat(cardinality));
+                yield toStringList(getRandomFloats(random().nextInt(10), cardinality));
+              }
+              case INTEGER -> {
+                val = String.valueOf(randomInt(cardinality));
+                yield toStringList(getRandomInts(random().nextInt(10), cardinality));
+              }
+              case LONG -> {
+                val = String.valueOf(randomLong(cardinality));
+                yield toStringList(getRandomLongs(random().nextInt(10), cardinality));
+              }
+            };
         // SingleValue
         for (String fieldSuffix : entry.getValue()) {
           document.setField("field_sv_" + fieldSuffix, val);
@@ -777,28 +775,27 @@ public class TestRangeQuery extends SolrTestCaseJ4 {
       Arrays.sort(values, (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2)));
     } else {
       switch (ft.getNumberType()) {
-        case DOUBLE:
+        case DOUBLE -> {
           values[0] = randomDouble(max);
           values[1] = randomDouble(max);
-          break;
-        case FLOAT:
+        }
+        case FLOAT -> {
           values[0] = randomFloat(max);
           values[1] = randomFloat(max);
-          break;
-        case INTEGER:
+        }
+        case INTEGER -> {
           values[0] = randomInt(max);
           values[1] = randomInt(max);
-          break;
-        case LONG:
+        }
+        case LONG -> {
           values[0] = randomLong(max);
           values[1] = randomLong(max);
-          break;
-        case DATE:
+        }
+        case DATE -> {
           values[0] = randomMs(max);
           values[1] = randomMs(max);
-          break;
-        default:
-          throw new AssertionError("Unexpected number type");
+        }
+        default -> throw new AssertionError("Unexpected number type");
       }
       if (random().nextInt(100) >= 1) { // sometimes don't sort the values. Should result in 0 hits
         Arrays.sort(values);

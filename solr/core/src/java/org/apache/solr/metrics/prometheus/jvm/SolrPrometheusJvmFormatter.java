@@ -44,18 +44,12 @@ public class SolrPrometheusJvmFormatter extends SolrPrometheusFormatter
     if (!Enums.getIfPresent(JvmCategory.class, metricCategory).isPresent()) {
       return new SolrNoOpMetric();
     }
-    switch (JvmCategory.valueOf(metricCategory)) {
-      case gc:
-        return new SolrJvmGcMetrics(dropwizardMetric, metricName);
-      case memory:
-        return new SolrJvmMemoryMetric(dropwizardMetric, metricName);
-      case os:
-      case threads:
-        return new SolrJvmOsMetric(dropwizardMetric, metricName);
-      case buffers:
-        return new SolrJvmBuffersMetric(dropwizardMetric, metricName);
-      default:
-        return new SolrNoOpMetric();
-    }
+    return switch (JvmCategory.valueOf(metricCategory)) {
+      case gc -> new SolrJvmGcMetrics(dropwizardMetric, metricName);
+      case memory -> new SolrJvmMemoryMetric(dropwizardMetric, metricName);
+      case os, threads -> new SolrJvmOsMetric(dropwizardMetric, metricName);
+      case buffers -> new SolrJvmBuffersMetric(dropwizardMetric, metricName);
+      default -> new SolrNoOpMetric();
+    };
   }
 }

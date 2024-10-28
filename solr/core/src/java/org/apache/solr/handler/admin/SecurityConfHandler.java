@@ -68,14 +68,11 @@ public abstract class SecurityConfHandler extends RequestHandlerBase
 
   @Override
   public PermissionNameProvider.Name getPermissionName(AuthorizationContext ctx) {
-    switch (ctx.getHttpMethod()) {
-      case "GET":
-        return PermissionNameProvider.Name.SECURITY_READ_PERM;
-      case "POST":
-        return PermissionNameProvider.Name.SECURITY_EDIT_PERM;
-      default:
-        return null;
-    }
+    return switch (ctx.getHttpMethod()) {
+      case "GET" -> Name.SECURITY_READ_PERM;
+      case "POST" -> Name.SECURITY_EDIT_PERM;
+      default -> null;
+    };
   }
 
   @Override

@@ -51,17 +51,11 @@ public class MockStreamingSolrClients extends StreamingSolrClients {
   }
 
   private Exception exception() {
-    switch (exp) {
-      case CONNECT_EXCEPTION:
-        return new ConnectException();
-      case SOCKET_EXCEPTION:
-        return new SocketException();
-      case BAD_REQUEST:
-        return new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Bad Request");
-      default:
-        break;
-    }
-    return null;
+    return switch (exp) {
+      case CONNECT_EXCEPTION -> new ConnectException();
+      case SOCKET_EXCEPTION -> new SocketException();
+      case BAD_REQUEST -> new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Bad Request");
+    };
   }
 
   class MockSolrClient extends SolrClient {

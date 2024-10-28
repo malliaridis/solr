@@ -308,23 +308,15 @@ public class TestFiltering extends SolrTestCaseJ4 {
     } else {
       if (random().nextBoolean()) {
         // try some different query structures - important for testing different code paths
-        switch (random().nextInt(5)) {
-          case 0:
-            q = q + " OR id:RAND" + random().nextInt();
-            break;
-          case 1:
-            q = "id:RAND" + random().nextInt() + " OR " + q;
-            break;
-          case 2:
-            q = "*:* AND " + q;
-            break;
-          case 3:
-            q = q + " AND " + q2;
-            break;
-          case 4:
-            q = q + " OR " + q2;
-            break;
-        }
+        q =
+            switch (random().nextInt(5)) {
+              case 0 -> q + " OR id:RAND" + random().nextInt();
+              case 1 -> "id:RAND" + random().nextInt() + " OR " + q;
+              case 2 -> "*:* AND " + q;
+              case 3 -> q + " AND " + q2;
+              case 4 -> q + " OR " + q2;
+              default -> q;
+            };
       }
     }
     return topLev + q;

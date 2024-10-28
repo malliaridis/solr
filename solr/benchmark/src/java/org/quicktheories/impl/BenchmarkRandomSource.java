@@ -59,16 +59,12 @@ public class BenchmarkRandomSource
 
   @Override
   public long next(long min, long max) {
-    switch (distribution) {
-      case UNIFORM:
-        return rdg.nextLong(min, max);
-      case ZIPFIAN:
-        return rdg.nextZipf((int) (max - min), 2) + min - 1;
-      case GAUSSIAN:
-        return (int) BenchmarkRandomSource.normalize(rdg.nextGaussian(.5, .125), min, max - 1.0d);
-      default:
-        throw new IllegalStateException("Unknown distribution: " + distribution);
-    }
+    return switch (distribution) {
+      case UNIFORM -> rdg.nextLong(min, max);
+      case ZIPFIAN -> rdg.nextZipf((int) (max - min), 2) + min - 1;
+      case GAUSSIAN -> (int)
+          BenchmarkRandomSource.normalize(rdg.nextGaussian(.5, .125), min, max - 1.0d);
+    };
   }
 
   @Override

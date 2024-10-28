@@ -174,16 +174,12 @@ public class TestNamedListCodec extends SolrTestCase {
 
   int rSz(int orderOfMagnitude) {
     int sz = r.nextInt(orderOfMagnitude);
-    switch (sz) {
-      case 0:
-        return r.nextInt(10);
-      case 1:
-        return r.nextInt(100);
-      case 2:
-        return r.nextInt(1000);
-      default:
-        return r.nextInt(10000);
-    }
+    return switch (sz) {
+      case 0 -> r.nextInt(10);
+      case 1 -> r.nextInt(100);
+      case 2 -> r.nextInt(1000);
+      default -> r.nextInt(10000);
+    };
   }
 
   public String rStr(int sz) {
@@ -221,30 +217,22 @@ public class TestNamedListCodec extends SolrTestCase {
   }
 
   public Object makeRandom(int lev) {
-    switch (r.nextInt(10)) {
-      case 0:
-        return rList(lev);
-      case 1:
-        return rNamedList(lev);
-      case 2:
-        return rStr(rSz(4));
-      case 3:
-        return r.nextInt();
-      case 4:
-        return r.nextLong();
-      case 5:
-        return r.nextBoolean();
-      case 6:
+    return switch (r.nextInt(10)) {
+      case 0 -> rList(lev);
+      case 1 -> rNamedList(lev);
+      case 2 -> rStr(rSz(4));
+      case 3 -> r.nextInt();
+      case 4 -> r.nextLong();
+      case 5 -> r.nextBoolean();
+      case 6 -> {
         byte[] arr = new byte[rSz(4)];
         r.nextBytes(arr);
-        return arr;
-      case 7:
-        return r.nextFloat();
-      case 8:
-        return r.nextDouble();
-      default:
-        return null;
-    }
+        yield arr;
+      }
+      case 7 -> r.nextFloat();
+      case 8 -> r.nextDouble();
+      default -> null;
+    };
   }
 
   @Test

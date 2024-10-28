@@ -187,31 +187,32 @@ public class JsonLoader extends ContentStreamLoader {
           case JSONParser.STRING:
             if (parser.wasKey()) {
               String v = parser.getString();
-              if (v.equals(UpdateRequestHandler.ADD)) {
-                int ev2 = parser.nextEvent();
-                if (ev2 == JSONParser.OBJECT_START) {
-                  processor.processAdd(parseAdd());
-                } else if (ev2 == JSONParser.ARRAY_START) {
-                  handleAdds();
-                } else {
-                  assertEvent(ev2, JSONParser.OBJECT_START);
+              switch (v) {
+                case UpdateRequestHandler.ADD -> {
+                  int ev2 = parser.nextEvent();
+                  if (ev2 == JSONParser.OBJECT_START) {
+                    processor.processAdd(parseAdd());
+                  } else if (ev2 == JSONParser.ARRAY_START) {
+                    handleAdds();
+                  } else {
+                    assertEvent(ev2, JSONParser.OBJECT_START);
+                  }
                 }
-              } else if (v.equals(UpdateRequestHandler.COMMIT)) {
-                CommitUpdateCommand cmd = new CommitUpdateCommand(req, false);
-                cmd.waitSearcher = true;
-                parseCommitOptions(cmd);
-                processor.processCommit(cmd);
-              } else if (v.equals(UpdateRequestHandler.OPTIMIZE)) {
-                CommitUpdateCommand cmd = new CommitUpdateCommand(req, true);
-                cmd.waitSearcher = true;
-                parseCommitOptions(cmd);
-                processor.processCommit(cmd);
-              } else if (v.equals(UpdateRequestHandler.DELETE)) {
-                handleDeleteCommand();
-              } else if (v.equals(UpdateRequestHandler.ROLLBACK)) {
-                processor.processRollback(parseRollback());
-              } else {
-                throw new SolrException(
+                case UpdateRequestHandler.COMMIT -> {
+                  CommitUpdateCommand cmd = new CommitUpdateCommand(req, false);
+                  cmd.waitSearcher = true;
+                  parseCommitOptions(cmd);
+                  processor.processCommit(cmd);
+                }
+                case UpdateRequestHandler.OPTIMIZE -> {
+                  CommitUpdateCommand cmd = new CommitUpdateCommand(req, true);
+                  cmd.waitSearcher = true;
+                  parseCommitOptions(cmd);
+                  processor.processCommit(cmd);
+                }
+                case UpdateRequestHandler.DELETE -> handleDeleteCommand();
+                case UpdateRequestHandler.ROLLBACK -> processor.processRollback(parseRollback());
+                default -> throw new SolrException(
                     SolrException.ErrorCode.BAD_REQUEST,
                     "Unknown command '" + v + "' at [" + parser.getPosition() + "]");
               }
@@ -338,39 +339,29 @@ public class JsonLoader extends ContentStreamLoader {
     void handleDeleteCommand() throws IOException {
       int ev = parser.nextEvent();
       switch (ev) {
-        case JSONParser.ARRAY_START:
-          handleDeleteArray(ev);
-          break;
-        case JSONParser.OBJECT_START:
-          handleDeleteMap(ev);
-          break;
-        default:
-          handleSingleDelete(ev);
+        case JSONParser.ARRAY_START -> handleDeleteArray(ev);
+        case JSONParser.OBJECT_START -> handleDeleteMap(ev);
+        default -> handleSingleDelete(ev);
       }
     }
 
     // returns the string value for a primitive value, or null for the null value
     String getString(int ev) throws IOException {
-      switch (ev) {
-        case JSONParser.STRING:
-          return parser.getString();
-        case JSONParser.BIGNUMBER:
-        case JSONParser.NUMBER:
-        case JSONParser.LONG:
-          return parser.getNumberChars().toString();
-        case JSONParser.BOOLEAN:
-          return Boolean.toString(parser.getBoolean());
-        case JSONParser.NULL:
-          return null;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST,
-              "Expected primitive JSON value but got: "
-                  + JSONParser.getEventString(ev)
-                  + " at ["
-                  + parser.getPosition()
-                  + "]");
-      }
+      return switch (ev) {
+        case JSONParser.STRING -> parser.getString();
+        case JSONParser.BIGNUMBER, JSONParser.NUMBER, JSONParser.LONG -> parser
+            .getNumberChars()
+            .toString();
+        case JSONParser.BOOLEAN -> Boolean.toString(parser.getBoolean());
+        case JSONParser.NULL -> null;
+        default -> throw new SolrException(
+            SolrException.ErrorCode.BAD_REQUEST,
+            "Expected primitive JSON value but got: "
+                + JSONParser.getEventString(ev)
+                + " at ["
+                + parser.getPosition()
+                + "]");
+      };
     }
 
     void handleSingleDelete(int ev) throws IOException {
@@ -606,35 +597,28 @@ public class JsonLoader extends ContentStreamLoader {
     }
 
     private Object parseFieldValue(int ev, String fieldName) throws IOException {
-      switch (ev) {
-        case JSONParser.STRING:
-          return parser.getString();
-        case JSONParser.LONG:
-          return parser.getLong();
-        case JSONParser.NUMBER:
-          return parser.getDouble();
-        case JSONParser.BIGNUMBER:
-          return parser.getNumberChars().toString();
-        case JSONParser.BOOLEAN:
-          return parser.getBoolean();
-        case JSONParser.NULL:
+      return switch (ev) {
+        case JSONParser.STRING -> parser.getString();
+        case JSONParser.LONG -> parser.getLong();
+        case JSONParser.NUMBER -> parser.getDouble();
+        case JSONParser.BIGNUMBER -> parser.getNumberChars().toString();
+        case JSONParser.BOOLEAN -> parser.getBoolean();
+        case JSONParser.NULL -> {
           parser.getNull();
-          return null;
-        case JSONParser.ARRAY_START:
-          return parseArrayFieldValue(ev, fieldName);
-        case JSONParser.OBJECT_START:
-          return parseObjectFieldValue(ev, fieldName);
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST,
-              "Error parsing JSON field value. "
-                  + "Unexpected "
-                  + JSONParser.getEventString(ev)
-                  + " at ["
-                  + parser.getPosition()
-                  + "], field="
-                  + fieldName);
-      }
+          yield null;
+        }
+        case JSONParser.ARRAY_START -> parseArrayFieldValue(ev, fieldName);
+        case JSONParser.OBJECT_START -> parseObjectFieldValue(ev, fieldName);
+        default -> throw new SolrException(
+            SolrException.ErrorCode.BAD_REQUEST,
+            "Error parsing JSON field value. "
+                + "Unexpected "
+                + JSONParser.getEventString(ev)
+                + " at ["
+                + parser.getPosition()
+                + "], field="
+                + fieldName);
+      };
     }
 
     private List<Object> parseArrayFieldValue(int ev, String fieldName) throws IOException {

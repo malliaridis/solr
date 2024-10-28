@@ -95,7 +95,7 @@ public class ConfigSetsHandler extends RequestHandlerBase implements PermissionN
     }
 
     switch (action) {
-      case DELETE:
+      case DELETE -> {
         final DeleteConfigSetAPI deleteConfigSetAPI = new DeleteConfigSetAPI(coreContainer);
         final SolrQueryRequest v2DeleteReq =
             new DelegatingSolrQueryRequest(req) {
@@ -107,8 +107,8 @@ public class ConfigSetsHandler extends RequestHandlerBase implements PermissionN
               }
             };
         deleteConfigSetAPI.deleteConfigSet(v2DeleteReq, rsp);
-        break;
-      case UPLOAD:
+      }
+      case UPLOAD -> {
         final SolrQueryRequest v2UploadReq =
             new DelegatingSolrQueryRequest(req) {
               @Override
@@ -141,12 +141,12 @@ public class ConfigSetsHandler extends RequestHandlerBase implements PermissionN
         } else { // Uploading a single file
           new UploadConfigSetFileAPI(coreContainer).updateConfigSetFile(v2UploadReq, rsp);
         }
-        break;
-      case LIST:
+      }
+      case LIST -> {
         final ListConfigSets listConfigSetsAPI = new ListConfigSets(coreContainer);
         V2ApiUtils.squashIntoSolrResponseWithoutHeader(rsp, listConfigSetsAPI.listConfigSet());
-        break;
-      case CREATE:
+      }
+      case CREATE -> {
         final String newConfigSetName = req.getParams().get(NAME);
         if (newConfigSetName == null || newConfigSetName.length() == 0) {
           throw new SolrException(ErrorCode.BAD_REQUEST, "ConfigSet name not specified");
@@ -171,9 +171,8 @@ public class ConfigSetsHandler extends RequestHandlerBase implements PermissionN
                 });
         final CreateConfigSetAPI createConfigSetAPI = new CreateConfigSetAPI(coreContainer);
         createConfigSetAPI.create(new PayloadObj<>("create", null, createPayload, req, rsp));
-        break;
-      default:
-        throw new IllegalStateException("Unexpected ConfigSetAction detected: " + action);
+      }
+      default -> throw new IllegalStateException("Unexpected ConfigSetAction detected: " + action);
     }
     rsp.setHttpCaching(false);
   }

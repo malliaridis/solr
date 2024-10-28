@@ -319,22 +319,22 @@ public class FacetHeatmap extends FacetRequest {
       return null;
     }
 
-    switch (format) {
-      case FORMAT_INTS2D:
-        // A List of List of Integers. Good for small heatmaps and ease of consumption
-        return asInts2D(columns, rows, counts);
-      case FORMAT_PNG:
-        // A PNG graphic; compressed. Good for large & dense heatmaps; hard to consume.
-        return asPngBytes(columns, rows, counts, debugInfo);
+    return switch (format) {
+      case FORMAT_INTS2D -> // A List of List of Integers. Good for small heatmaps and ease of
+      // consumption
+      asInts2D(columns, rows, counts);
+      case FORMAT_PNG -> // A PNG graphic; compressed. Good for large & dense heatmaps; hard to
+      // consume.
+      asPngBytes(columns, rows, counts, debugInfo);
 
         // TODO case UTFGRID  https://github.com/mapbox/utfgrid-spec
         // TODO case skipList: //A sequence of values; negative values are actually how many 0's to
         // insert. Good for small or large but sparse heatmaps.
         // TODO auto choose png or skipList; use skipList when < ~25% full or <= ~512 cells remember
         // to augment error list below when we add more formats.
-      default:
-        throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Unknown format: " + format);
-    }
+      default -> throw new SolrException(
+          SolrException.ErrorCode.BAD_REQUEST, "Unknown format: " + format);
+    };
   }
 
   @Override

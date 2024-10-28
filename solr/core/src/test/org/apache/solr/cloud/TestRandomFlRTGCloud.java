@@ -392,35 +392,27 @@ public class TestRandomFlRTGCloud extends SolrCloudTestCase {
   }
 
   private String makeJson(String s) {
-    switch (random().nextInt(3)) {
-      case 0:
-        // simple string
-        return '"' + s + '"';
-      case 1:
-        // array
-        return "[\"" + s + "\", \"" + s + "\"]";
-      case 2:
-        // map
-        return "{\"" + s + "\":\"" + s + "\"}";
-      default:
-        throw new IllegalStateException();
-    }
+    return switch (random().nextInt(3)) {
+      case 0 -> // simple string
+      '"' + s + '"';
+      case 1 -> // array
+      "[\"" + s + "\", \"" + s + "\"]";
+      case 2 -> // map
+      "{\"" + s + "\":\"" + s + "\"}";
+      default -> throw new IllegalStateException();
+    };
   }
 
   private String makeXml(String s) {
-    switch (random().nextInt(3)) {
-      case 0:
-        // simple string
-        return s;
-      case 1:
-        // simple element
-        return "<root>" + s + "</root>";
-      case 2:
-        // slightly more complex
-        return "<root><inner1>" + s + "</inner1><inner2>" + s + "</inner2></root>";
-      default:
-        throw new IllegalStateException();
-    }
+    return switch (random().nextInt(3)) {
+      case 0 -> // simple string
+      s;
+      case 1 -> // simple element
+      "<root>" + s + "</root>";
+      case 2 -> // slightly more complex
+      "<root><inner1>" + s + "</inner1><inner2>" + s + "</inner2></root>";
+      default -> throw new IllegalStateException();
+    };
   }
 
   private static final ResponseParser RAW_XML_RESPONSE_PARSER = new NoOpResponseParser();
@@ -437,14 +429,9 @@ public class TestRandomFlRTGCloud extends SolrCloudTestCase {
     HttpSolrClient.Builder builder =
         new HttpSolrClient.Builder(jettyBaseUrl).withDefaultCollection(COLLECTION_NAME);
     switch (wt) {
-      case "xml":
-        builder.withResponseParser(RAW_XML_RESPONSE_PARSER);
-        break;
-      case "json":
-        builder.withResponseParser(RAW_JSON_RESPONSE_PARSER);
-        break;
-      default:
-        break;
+      case "xml" -> builder.withResponseParser(RAW_XML_RESPONSE_PARSER);
+      case "json" -> builder.withResponseParser(RAW_JSON_RESPONSE_PARSER);
+      default -> {}
     }
     return builder.build();
   }
@@ -533,16 +520,12 @@ public class TestRandomFlRTGCloud extends SolrCloudTestCase {
       assertNotNull(params.toString(), nlRsp);
       rsp = nlRsp;
       final String textResult = (String) nlRsp.get("response");
-      switch (wt) {
-        case "json":
-          docs = getDocsFromJsonResponse(askForList, textResult);
-          break;
-        case "xml":
-          docs = getDocsFromXmlResponse(askForList, textResult);
-          break;
-        default:
-          throw new IllegalStateException();
-      }
+      docs =
+          switch (wt) {
+            case "json" -> getDocsFromJsonResponse(askForList, textResult);
+            case "xml" -> getDocsFromXmlResponse(askForList, textResult);
+            default -> throw new IllegalStateException();
+          };
     }
 
     assertNotNull(params + " => " + rsp, docs);
@@ -943,20 +926,18 @@ public class TestRandomFlRTGCloud extends SolrCloudTestCase {
       for (; ; ) {
         int elementType = parser.next();
         switch (elementType) {
-          case XMLStreamConstants.START_ELEMENT:
+          case XMLStreamConstants.START_ELEMENT -> {
             depth++;
             sb.append("START:").append(parser.getLocalName()).append(';');
-            break;
-          case XMLStreamConstants.END_ELEMENT:
+          }
+          case XMLStreamConstants.END_ELEMENT -> {
             if (--depth < 0) {
               // exiting raw element
               return sb.toString();
             }
             sb.append("END:").append(parser.getLocalName()).append(';');
-            break;
-          case XMLStreamConstants.CHARACTERS:
-            sb.append(parser.getText());
-            break;
+          }
+          case XMLStreamConstants.CHARACTERS -> sb.append(parser.getText());
         }
       }
     }

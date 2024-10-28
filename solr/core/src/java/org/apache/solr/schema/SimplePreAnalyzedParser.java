@@ -299,7 +299,7 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
       if (c == ' ') {
         // collect leftovers
         switch (s) {
-          case VALUE:
+          case VALUE -> {
             if (attVal.length() == 0) {
               throw new IOException(
                   "Unexpected character '"
@@ -311,8 +311,8 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
             if (attName.length() > 0) {
               tok.attr.put(attName.toString(), attVal.toString());
             }
-            break;
-          case NAME: // attr name without a value ?
+          }
+          case NAME -> {
             if (attName.length() > 0) {
               throw new IOException(
                   "Unexpected character '"
@@ -323,10 +323,10 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
             } else {
               // accept missing att name and value
             }
-            break;
-          case TOKEN:
-          case UNDEF:
+          }
+          case TOKEN, UNDEF -> {
             // do nothing, advance to next token
+          }
         }
         attName.setLength(0);
         attVal.setLength(0);
@@ -343,18 +343,13 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
       }
       StringBuilder tgt = null;
       switch (s) {
-        case TOKEN:
-          tgt = tok.token;
-          break;
-        case NAME:
-          tgt = attName;
-          break;
-        case VALUE:
-          tgt = attVal;
-          break;
-        case UNDEF:
+        case TOKEN -> tgt = tok.token;
+        case NAME -> tgt = attName;
+        case VALUE -> tgt = attVal;
+        case UNDEF -> {
           tgt = tok.token;
           s = S.TOKEN;
+        }
       }
       if (c == '\\') {
         if (s == S.TOKEN) lastPos++;
@@ -365,25 +360,15 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
         } else {
           c = val.charAt(++i);
           switch (c) {
-            case '\\':
-            case '=':
-            case ',':
-            case ' ':
-              tgt.append(c);
-              break;
-            case 'n':
-              tgt.append('\n');
-              break;
-            case 'r':
-              tgt.append('\r');
-              break;
-            case 't':
-              tgt.append('\t');
-              break;
-            default:
+            case '\\', '=', ',', ' ' -> tgt.append(c);
+            case 'n' -> tgt.append('\n');
+            case 'r' -> tgt.append('\r');
+            case 't' -> tgt.append('\t');
+            default -> {
               tgt.append('\\');
               tgt.append(c);
               lastPos++;
+            }
           }
         }
       } else {
@@ -584,27 +569,23 @@ public final class SimplePreAnalyzedParser implements PreAnalyzedParser {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < len; i++) {
       switch (val[i]) {
-        case '\\':
-        case '=':
-        case ',':
-        case ' ':
+        case '\\', '=', ',', ' ' -> {
           sb.append('\\');
           sb.append(val[i]);
-          break;
-        case '\n':
+        }
+        case '\n' -> {
           sb.append('\\');
           sb.append('n');
-          break;
-        case '\r':
+        }
+        case '\r' -> {
           sb.append('\\');
           sb.append('r');
-          break;
-        case '\t':
+        }
+        case '\t' -> {
           sb.append('\\');
           sb.append('t');
-          break;
-        default:
-          sb.append(val[i]);
+        }
+        default -> sb.append(val[i]);
       }
     }
     return sb.toString();

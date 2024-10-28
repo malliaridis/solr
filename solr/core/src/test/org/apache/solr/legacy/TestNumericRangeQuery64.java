@@ -179,16 +179,17 @@ public class TestNumericRangeQuery64 extends SolrTestCase {
           TopFieldCollector.create(Sort.INDEXORDER, noDocs, Integer.MAX_VALUE);
       String type;
       switch (i) {
-        case 0:
+        case 0 -> {
           type = " (constant score filter rewrite)";
           q.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_REWRITE);
-          break;
-        case 1:
+        }
+        case 1 -> {
           type = " (constant score boolean rewrite)";
           q.setRewriteMethod(MultiTermQuery.CONSTANT_SCORE_BOOLEAN_REWRITE);
-          break;
-        default:
+        }
+        default -> {
           return;
+        }
       }
       searcher.search(q, collector);
       TopDocs topDocs = collector.topDocs();

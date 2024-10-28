@@ -92,42 +92,33 @@ public class TestFieldCacheWithThreads extends SolrTestCase {
                 for (int iter = 0; iter < iters; iter++) {
                   int docID = threadRandom.nextInt(numDocs);
                   switch (threadRandom.nextInt(4)) {
-                    case 0:
-                      {
-                        NumericDocValues values =
-                            FieldCache.DEFAULT.getNumerics(
-                                ar, "number", FieldCache.INT_POINT_PARSER);
-                        assertEquals(docID, values.advance(docID));
-                        assertEquals(numbers.get(docID).longValue(), values.longValue());
-                      }
-                      break;
-                    case 1:
-                      {
-                        NumericDocValues values =
-                            FieldCache.DEFAULT.getNumerics(
-                                ar, "number", FieldCache.LONG_POINT_PARSER);
-                        assertEquals(docID, values.advance(docID));
-                        assertEquals(numbers.get(docID).longValue(), values.longValue());
-                      }
-                      break;
-                    case 2:
-                      {
-                        NumericDocValues values =
-                            FieldCache.DEFAULT.getNumerics(
-                                ar, "number", FieldCache.FLOAT_POINT_PARSER);
-                        assertEquals(docID, values.advance(docID));
-                        assertEquals(numbers.get(docID).longValue(), values.longValue());
-                      }
-                      break;
-                    case 3:
-                      {
-                        NumericDocValues values =
-                            FieldCache.DEFAULT.getNumerics(
-                                ar, "number", FieldCache.DOUBLE_POINT_PARSER);
-                        assertEquals(docID, values.advance(docID));
-                        assertEquals(numbers.get(docID).longValue(), values.longValue());
-                      }
-                      break;
+                    case 0 -> {
+                      NumericDocValues values =
+                          FieldCache.DEFAULT.getNumerics(ar, "number", FieldCache.INT_POINT_PARSER);
+                      assertEquals(docID, values.advance(docID));
+                      assertEquals(numbers.get(docID).longValue(), values.longValue());
+                    }
+                    case 1 -> {
+                      NumericDocValues values =
+                          FieldCache.DEFAULT.getNumerics(
+                              ar, "number", FieldCache.LONG_POINT_PARSER);
+                      assertEquals(docID, values.advance(docID));
+                      assertEquals(numbers.get(docID).longValue(), values.longValue());
+                    }
+                    case 2 -> {
+                      NumericDocValues values =
+                          FieldCache.DEFAULT.getNumerics(
+                              ar, "number", FieldCache.FLOAT_POINT_PARSER);
+                      assertEquals(docID, values.advance(docID));
+                      assertEquals(numbers.get(docID).longValue(), values.longValue());
+                    }
+                    case 3 -> {
+                      NumericDocValues values =
+                          FieldCache.DEFAULT.getNumerics(
+                              ar, "number", FieldCache.DOUBLE_POINT_PARSER);
+                      assertEquals(docID, values.advance(docID));
+                      assertEquals(numbers.get(docID).longValue(), values.longValue());
+                    }
                   }
                   BinaryDocValues bdv = FieldCache.DEFAULT.getTerms(ar, "bytes");
                   assertEquals(docID, bdv.advance(docID));

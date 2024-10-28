@@ -136,18 +136,10 @@ public class ColStatus {
             continue;
           }
           switch (r.getState()) {
-            case ACTIVE:
-              activeReplicas++;
-              break;
-            case DOWN:
-              downReplicas++;
-              break;
-            case RECOVERING:
-              recoveringReplicas++;
-              break;
-            case RECOVERY_FAILED:
-              recoveryFailedReplicas++;
-              break;
+            case ACTIVE -> activeReplicas++;
+            case DOWN -> downReplicas++;
+            case RECOVERING -> recoveringReplicas++;
+            case RECOVERY_FAILED -> recoveryFailedReplicas++;
           }
         }
         replicaMap.add("total", totalReplicas);

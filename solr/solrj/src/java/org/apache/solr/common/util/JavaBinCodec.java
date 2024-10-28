@@ -290,67 +290,38 @@ public class JavaBinCodec implements PushWriter {
     // if top 3 bits are clear, this is a normal tag
 
     // OK, try type + size in single byte
-    switch (tagByte >>> 5) {
-      case STR >>> 5:
-        return readStr(dis, stringCache, readStringAsCharSeq);
-      case SINT >>> 5:
-        return readSmallInt(dis);
-      case SLONG >>> 5:
-        return readSmallLong(dis);
-      case ARR >>> 5:
-        return readArray(dis);
-      case ORDERED_MAP >>> 5:
-        return readOrderedMap(dis);
-      case NAMED_LST >>> 5:
-        return readNamedList(dis);
-      case EXTERN_STRING >>> 5:
-        return readExternString(dis);
-    }
-
-    switch (tagByte) {
-      case NULL:
-        return null;
-      case DATE:
-        return new Date(dis.readLong());
-      case INT:
-        return dis.readInt();
-      case BOOL_TRUE:
-        return Boolean.TRUE;
-      case BOOL_FALSE:
-        return Boolean.FALSE;
-      case FLOAT:
-        return dis.readFloat();
-      case DOUBLE:
-        return dis.readDouble();
-      case LONG:
-        return dis.readLong();
-      case BYTE:
-        return dis.readByte();
-      case SHORT:
-        return dis.readShort();
-      case MAP:
-        return readMap(dis);
-      case SOLRDOC:
-        return readSolrDocument(dis);
-      case SOLRDOCLST:
-        return readSolrDocumentList(dis);
-      case BYTEARR:
-        return readByteArray(dis);
-      case ITERATOR:
-        return readIterator(dis);
-      case END:
-        return END_OBJ;
-      case SOLRINPUTDOC:
-        return readSolrInputDocument(dis);
-      case ENUM_FIELD_VALUE:
-        return readEnumFieldValue(dis);
-      case MAP_ENTRY:
-        return readMapEntry(dis);
-      case MAP_ENTRY_ITER:
-        return readMapIter(dis);
-    }
-
-    throw new RuntimeException("Unknown type " + tagByte);
+    return switch (tagByte >>> 5) {
+      case STR >>> 5 -> readStr(dis, stringCache, readStringAsCharSeq);
+      case SINT >>> 5 -> readSmallInt(dis);
+      case SLONG >>> 5 -> readSmallLong(dis);
+      case ARR >>> 5 -> readArray(dis);
+      case ORDERED_MAP >>> 5 -> readOrderedMap(dis);
+      case NAMED_LST >>> 5 -> readNamedList(dis);
+      case EXTERN_STRING >>> 5 -> readExternString(dis);
+      default -> switch (tagByte) {
+        case NULL -> null;
+        case DATE -> new Date(dis.readLong());
+        case INT -> dis.readInt();
+        case BOOL_TRUE -> Boolean.TRUE;
+        case BOOL_FALSE -> Boolean.FALSE;
+        case FLOAT -> dis.readFloat();
+        case DOUBLE -> dis.readDouble();
+        case LONG -> dis.readLong();
+        case BYTE -> dis.readByte();
+        case SHORT -> dis.readShort();
+        case MAP -> readMap(dis);
+        case SOLRDOC -> readSolrDocument(dis);
+        case SOLRDOCLST -> readSolrDocumentList(dis);
+        case BYTEARR -> readByteArray(dis);
+        case ITERATOR -> readIterator(dis);
+        case END -> END_OBJ;
+        case SOLRINPUTDOC -> readSolrInputDocument(dis);
+        case ENUM_FIELD_VALUE -> readEnumFieldValue(dis);
+        case MAP_ENTRY -> readMapEntry(dis);
+        case MAP_ENTRY_ITER -> readMapIter(dis);
+        default -> throw new RuntimeException("Unknown type " + tagByte);
+      };
+    };
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})

@@ -37,12 +37,10 @@ public interface Interleaving {
   InterleavingResult interleave(ScoreDoc[] rerankedA, ScoreDoc[] rerankedB);
 
   static Interleaving getImplementation(String algorithm) {
-    switch (algorithm) {
-      case TEAM_DRAFT:
-        return new TeamDraftInterleaving();
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.BAD_REQUEST, "Unknown Interleaving algorithm: " + algorithm);
-    }
+    return switch (algorithm) {
+      case TEAM_DRAFT -> new TeamDraftInterleaving();
+      default -> throw new SolrException(
+          SolrException.ErrorCode.BAD_REQUEST, "Unknown Interleaving algorithm: " + algorithm);
+    };
   }
 }

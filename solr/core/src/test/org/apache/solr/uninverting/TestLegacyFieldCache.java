@@ -417,21 +417,13 @@ public class TestLegacyFieldCache extends SolrTestCase {
     final long[] values = new long[TestUtil.nextInt(random(), 1, 10)];
     Set<Integer> missing = new HashSet<>();
     for (int i = 0; i < values.length; ++i) {
-      final long v;
-      switch (random().nextInt(10)) {
-        case 0:
-          v = Long.MIN_VALUE;
-          break;
-        case 1:
-          v = 0;
-          break;
-        case 2:
-          v = Long.MAX_VALUE;
-          break;
-        default:
-          v = TestUtil.nextLong(random(), -10, 10);
-          break;
-      }
+      final long v =
+          switch (random().nextInt(10)) {
+            case 0 -> Long.MIN_VALUE;
+            case 1 -> 0;
+            case 2 -> Long.MAX_VALUE;
+            default -> TestUtil.nextLong(random(), -10, 10);
+          };
       values[i] = v;
       if (v == 0 && random().nextBoolean()) {
         // missing
@@ -471,21 +463,13 @@ public class TestLegacyFieldCache extends SolrTestCase {
     final int[] values = new int[TestUtil.nextInt(random(), 1, 10)];
     Set<Integer> missing = new HashSet<>();
     for (int i = 0; i < values.length; ++i) {
-      final int v;
-      switch (random().nextInt(10)) {
-        case 0:
-          v = Integer.MIN_VALUE;
-          break;
-        case 1:
-          v = 0;
-          break;
-        case 2:
-          v = Integer.MAX_VALUE;
-          break;
-        default:
-          v = TestUtil.nextInt(random(), -10, 10);
-          break;
-      }
+      final int v =
+          switch (random().nextInt(10)) {
+            case 0 -> Integer.MIN_VALUE;
+            case 1 -> 0;
+            case 2 -> Integer.MAX_VALUE;
+            default -> TestUtil.nextInt(random(), -10, 10);
+          };
       values[i] = v;
       if (v == 0 && random().nextBoolean()) {
         // missing

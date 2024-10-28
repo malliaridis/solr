@@ -162,40 +162,23 @@ public final class EngineParameters implements Cloneable {
         .forEachOrdered(
             e -> {
               switch (e.getKey()) {
-                case PARAM_MAX_LABELS:
-                  maxLabels = params.getInt(PARAM_MAX_LABELS);
-                  break;
-                case PARAM_INCLUDE_SUBCLUSTERS:
-                  includeSubclusters = params.getBool(PARAM_INCLUDE_SUBCLUSTERS);
-                  break;
-                case PARAM_INCLUDE_OTHER_TOPICS:
-                  includeOtherTopics = params.getBool(PARAM_INCLUDE_OTHER_TOPICS);
-                  break;
-                case PARAM_ALGORITHM:
-                  algorithmName = params.get(PARAM_ALGORITHM);
-                  break;
-                case PARAM_RESOURCES:
-                  resources = params.get(PARAM_RESOURCES);
-                  break;
-                case PARAM_LANGUAGE:
-                  language = params.get(PARAM_LANGUAGE);
-                  break;
-                case PARAM_LANGUAGE_FIELD:
-                  languageField = params.get(PARAM_LANGUAGE_FIELD);
-                  break;
-                case PARAM_PREFER_QUERY_CONTEXT:
-                  preferQueryContext = params.getBool(PARAM_PREFER_QUERY_CONTEXT);
-                  break;
-                case PARAM_CONTEXT_COUNT:
-                  contextCount = params.getPrimitiveInt(PARAM_CONTEXT_COUNT);
-                  break;
-                case PARAM_CONTEXT_SIZE:
-                  contextSize = params.getPrimitiveInt(PARAM_CONTEXT_SIZE);
-                  break;
-                case PARAM_FIELDS:
-                  fields.addAll(Arrays.asList(params.get(PARAM_FIELDS).split("[,]\\s*")));
-                  break;
-                default:
+                case PARAM_MAX_LABELS -> maxLabels = params.getInt(PARAM_MAX_LABELS);
+                case PARAM_INCLUDE_SUBCLUSTERS -> includeSubclusters =
+                    params.getBool(PARAM_INCLUDE_SUBCLUSTERS);
+                case PARAM_INCLUDE_OTHER_TOPICS -> includeOtherTopics =
+                    params.getBool(PARAM_INCLUDE_OTHER_TOPICS);
+                case PARAM_ALGORITHM -> algorithmName = params.get(PARAM_ALGORITHM);
+                case PARAM_RESOURCES -> resources = params.get(PARAM_RESOURCES);
+                case PARAM_LANGUAGE -> language = params.get(PARAM_LANGUAGE);
+                case PARAM_LANGUAGE_FIELD -> languageField = params.get(PARAM_LANGUAGE_FIELD);
+                case PARAM_PREFER_QUERY_CONTEXT -> preferQueryContext =
+                    params.getBool(PARAM_PREFER_QUERY_CONTEXT);
+                case PARAM_CONTEXT_COUNT -> contextCount =
+                    params.getPrimitiveInt(PARAM_CONTEXT_COUNT);
+                case PARAM_CONTEXT_SIZE -> contextSize = params.getPrimitiveInt(PARAM_CONTEXT_SIZE);
+                case PARAM_FIELDS -> fields.addAll(
+                    Arrays.asList(params.get(PARAM_FIELDS).split("[,]\\s*")));
+                default -> {
                   // Unrecognized parameter. Preserve it.
                   String[] value = e.getValue();
                   if (value != null) {
@@ -205,7 +188,7 @@ public final class EngineParameters implements Cloneable {
                       otherParameters.put(e.getKey(), String.join(", ", value));
                     }
                   }
-                  break;
+                }
               }
             });
     return this;

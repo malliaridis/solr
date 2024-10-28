@@ -245,21 +245,19 @@ public class HadoopAuthPlugin extends AuthenticationPlugin {
     authFilter.doFilter(request, response, filterChain);
 
     switch (response.getStatus()) {
-      case HttpServletResponse.SC_UNAUTHORIZED:
-        // Cannot tell whether the 401 is due to wrong or missing credentials
-        numWrongCredentials.inc();
-        break;
-
-      case HttpServletResponse.SC_FORBIDDEN:
-        // Are there other status codes which should also translate to error?
-        numErrors.mark();
-        break;
-      default:
+      case HttpServletResponse.SC_UNAUTHORIZED ->
+      // Cannot tell whether the 401 is due to wrong or missing credentials
+      numWrongCredentials.inc();
+      case HttpServletResponse.SC_FORBIDDEN ->
+      // Are there other status codes which should also translate to error?
+      numErrors.mark();
+      default -> {
         if (response.getStatus() >= 200 && response.getStatus() <= 299) {
           numAuthenticated.inc();
         } else {
           numErrors.mark();
         }
+      }
     }
 
     if (TRACE_HTTP) {

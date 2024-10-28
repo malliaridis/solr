@@ -180,17 +180,13 @@ public class CollapsingQParserPlugin extends QParserPlugin {
       if (StrUtils.isNullOrEmpty(nullPolicy)) {
         return DEFAULT_POLICY;
       }
-      switch (nullPolicy) {
-        case "ignore":
-          return IGNORE;
-        case "collapse":
-          return COLLAPSE;
-        case "expand":
-          return EXPAND;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST, "Invalid nullPolicy: " + nullPolicy);
-      }
+      return switch (nullPolicy) {
+        case "ignore" -> IGNORE;
+        case "collapse" -> COLLAPSE;
+        case "expand" -> EXPAND;
+        default -> throw new SolrException(
+            SolrException.ErrorCode.BAD_REQUEST, "Invalid nullPolicy: " + nullPolicy);
+      };
     }
 
     static final NullPolicy DEFAULT_POLICY = IGNORE;
@@ -1099,51 +1095,36 @@ public class CollapsingQParserPlugin extends QParserPlugin {
               "min/max must be either Int/Long/Float based field types");
         }
         switch (numType) {
-          case INTEGER:
-            {
-              this.collapseStrategy =
-                  new OrdIntStrategy(
-                      maxDoc,
-                      nullPolicy,
-                      valueCount,
-                      groupHeadSelector,
-                      this.needsScores,
-                      boostedDocsCollector,
-                      collapseValues);
-              break;
-            }
-          case FLOAT:
-            {
-              this.collapseStrategy =
-                  new OrdFloatStrategy(
-                      maxDoc,
-                      nullPolicy,
-                      valueCount,
-                      groupHeadSelector,
-                      this.needsScores,
-                      boostedDocsCollector,
-                      collapseValues);
-              break;
-            }
-          case LONG:
-            {
-              this.collapseStrategy =
-                  new OrdLongStrategy(
-                      maxDoc,
-                      nullPolicy,
-                      valueCount,
-                      groupHeadSelector,
-                      this.needsScores,
-                      boostedDocsCollector,
-                      collapseValues);
-              break;
-            }
-          default:
-            {
-              throw new SolrException(
-                  SolrException.ErrorCode.BAD_REQUEST,
-                  "min/max must be either Int/Long/Float field types");
-            }
+          case INTEGER -> this.collapseStrategy =
+              new OrdIntStrategy(
+                  maxDoc,
+                  nullPolicy,
+                  valueCount,
+                  groupHeadSelector,
+                  this.needsScores,
+                  boostedDocsCollector,
+                  collapseValues);
+          case FLOAT -> this.collapseStrategy =
+              new OrdFloatStrategy(
+                  maxDoc,
+                  nullPolicy,
+                  valueCount,
+                  groupHeadSelector,
+                  this.needsScores,
+                  boostedDocsCollector,
+                  collapseValues);
+          case LONG -> this.collapseStrategy =
+              new OrdLongStrategy(
+                  maxDoc,
+                  nullPolicy,
+                  valueCount,
+                  groupHeadSelector,
+                  this.needsScores,
+                  boostedDocsCollector,
+                  collapseValues);
+          default -> throw new SolrException(
+              SolrException.ErrorCode.BAD_REQUEST,
+              "min/max must be either Int/Long/Float field types");
         }
       }
     }
@@ -1368,38 +1349,27 @@ public class CollapsingQParserPlugin extends QParserPlugin {
         NumberType numType = fieldType.getNumberType();
         assert null != numType; // shouldn't make it here for non-numeric types
         switch (numType) {
-          case INTEGER:
-            {
-              this.collapseStrategy =
-                  new IntIntStrategy(
-                      maxDoc,
-                      size,
-                      collapseField,
-                      nullPolicy,
-                      groupHeadSelector,
-                      this.needsScores,
-                      boostedDocsCollector);
-              break;
-            }
-          case FLOAT:
-            {
-              this.collapseStrategy =
-                  new IntFloatStrategy(
-                      maxDoc,
-                      size,
-                      collapseField,
-                      nullPolicy,
-                      groupHeadSelector,
-                      this.needsScores,
-                      boostedDocsCollector);
-              break;
-            }
-          default:
-            {
-              throw new SolrException(
-                  SolrException.ErrorCode.BAD_REQUEST,
-                  "min/max must be Int or Float field types when collapsing on numeric fields");
-            }
+          case INTEGER -> this.collapseStrategy =
+              new IntIntStrategy(
+                  maxDoc,
+                  size,
+                  collapseField,
+                  nullPolicy,
+                  groupHeadSelector,
+                  this.needsScores,
+                  boostedDocsCollector);
+          case FLOAT -> this.collapseStrategy =
+              new IntFloatStrategy(
+                  maxDoc,
+                  size,
+                  collapseField,
+                  nullPolicy,
+                  groupHeadSelector,
+                  this.needsScores,
+                  boostedDocsCollector);
+          default -> throw new SolrException(
+              SolrException.ErrorCode.BAD_REQUEST,
+              "min/max must be Int or Float field types when collapsing on numeric fields");
         }
       }
     }

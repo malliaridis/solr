@@ -50,25 +50,17 @@ public class SolrPrometheusCoreFormatter extends SolrPrometheusFormatter
         .isPresent()) {
       return new SolrNoOpMetric();
     }
-    switch (CoreCategory.valueOf(metricCategory)) {
-      case ADMIN:
-      case QUERY:
-      case UPDATE:
-      case REPLICATION:
-        return new SolrCoreHandlerMetric(dropwizardMetric, coreName, metricName, cloudMode);
-      case TLOG:
-        return new SolrCoreTlogMetric(dropwizardMetric, coreName, metricName, cloudMode);
-      case CACHE:
-        return new SolrCoreCacheMetric(dropwizardMetric, coreName, metricName, cloudMode);
-      case SEARCHER:
-        return new SolrCoreSearcherMetric(dropwizardMetric, coreName, metricName, cloudMode);
-      case HIGHLIGHTER:
-        return new SolrCoreHighlighterMetric(dropwizardMetric, coreName, metricName, cloudMode);
-      case INDEX:
-        return new SolrCoreIndexMetric(dropwizardMetric, coreName, metricName, cloudMode);
-      case CORE:
-      default:
-        return new SolrNoOpMetric();
-    }
+    return switch (CoreCategory.valueOf(metricCategory)) {
+      case ADMIN, QUERY, UPDATE, REPLICATION -> new SolrCoreHandlerMetric(
+          dropwizardMetric, coreName, metricName, cloudMode);
+      case TLOG -> new SolrCoreTlogMetric(dropwizardMetric, coreName, metricName, cloudMode);
+      case CACHE -> new SolrCoreCacheMetric(dropwizardMetric, coreName, metricName, cloudMode);
+      case SEARCHER -> new SolrCoreSearcherMetric(
+          dropwizardMetric, coreName, metricName, cloudMode);
+      case HIGHLIGHTER -> new SolrCoreHighlighterMetric(
+          dropwizardMetric, coreName, metricName, cloudMode);
+      case INDEX -> new SolrCoreIndexMetric(dropwizardMetric, coreName, metricName, cloudMode);
+      default -> new SolrNoOpMetric();
+    };
   }
 }

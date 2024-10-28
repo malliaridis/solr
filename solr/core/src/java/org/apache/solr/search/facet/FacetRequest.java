@@ -102,15 +102,12 @@ public abstract class FacetRequest {
         throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, "Missing Sort direction");
       }
 
-      switch (direction.toString()) {
-        case "asc":
-          return asc;
-        case "desc":
-          return desc;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST, "Unknown Sort direction '" + direction + "'");
-      }
+      return switch (direction.toString()) {
+        case "asc" -> asc;
+        case "desc" -> desc;
+        default -> throw new SolrException(
+            SolrException.ErrorCode.BAD_REQUEST, "Unknown Sort direction '" + direction + "'");
+      };
     }
 
     // asc==-1, desc==1

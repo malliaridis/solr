@@ -161,31 +161,18 @@ public class AtomicUpdateDocumentMerger {
           String key = entry.getKey();
           Object fieldVal = entry.getValue();
           switch (key) {
-            case "add":
-              doAdd(toDoc, sif, fieldVal);
-              break;
-            case "set":
-              doSet(toDoc, sif, fieldVal);
-              break;
-            case "remove":
-              doRemove(toDoc, sif, fieldVal);
-              break;
-            case "removeregex":
-              doRemoveRegex(toDoc, sif, fieldVal);
-              break;
-            case "inc":
-              doInc(toDoc, sif, fieldVal);
-              break;
-            case "add-distinct":
-              doAddDistinct(toDoc, sif, fieldVal);
-              break;
-            default:
-              throw new SolrException(
-                  ErrorCode.BAD_REQUEST,
-                  "Error:"
-                      + getID(toDoc, schema)
-                      + " Unknown operation for the an atomic update: "
-                      + key);
+            case "add" -> doAdd(toDoc, sif, fieldVal);
+            case "set" -> doSet(toDoc, sif, fieldVal);
+            case "remove" -> doRemove(toDoc, sif, fieldVal);
+            case "removeregex" -> doRemoveRegex(toDoc, sif, fieldVal);
+            case "inc" -> doInc(toDoc, sif, fieldVal);
+            case "add-distinct" -> doAddDistinct(toDoc, sif, fieldVal);
+            default -> throw new SolrException(
+                ErrorCode.BAD_REQUEST,
+                "Error:"
+                    + getID(toDoc, schema)
+                    + " Unknown operation for the an atomic update: "
+                    + key);
           }
           // validate that the field being modified is not the id field.
           if (idField.getName().equals(sif.getName())) {

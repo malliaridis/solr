@@ -128,25 +128,11 @@ public class TestDocSet extends SolrTestCase {
   }
 
   public DocSet getDocSet(FixedBitSet bs) {
-    switch (rand.nextInt(9)) {
-      case 0:
-      case 1:
-      case 2:
-      case 3:
-        return getBitDocSet(bs);
-
-      case 4:
-        return getIntDocSet(bs);
-      case 5:
-        return getIntDocSet(bs);
-      case 6:
-        return getIntDocSet(bs);
-      case 7:
-        return getIntDocSet(bs);
-      case 8:
-        return getIntDocSet(bs);
-    }
-    return null;
+    return switch (rand.nextInt(9)) {
+      case 0, 1, 2, 3 -> getBitDocSet(bs);
+      case 4, 5, 6, 7, 8 -> getIntDocSet(bs);
+      default -> null;
+    };
   }
 
   public void checkEqual(FixedBitSet bs, DocSet set) {

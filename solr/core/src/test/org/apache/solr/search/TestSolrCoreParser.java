@@ -146,14 +146,9 @@ public class TestSolrCoreParser extends SolrTestCaseJ4 {
     for (int ii = 0; ii < bq.clauses().size(); ++ii) {
       final Query clauseQuery = bq.clauses().get(ii).getQuery();
       switch (ii) {
-        case 0:
-          assertTrue(clauseQuery instanceof SpanOrQuery);
-          break;
-        case 1:
-          assertTrue(clauseQuery instanceof SpanNearQuery);
-          break;
-        default:
-          fail("unexpected clause index " + ii);
+        case 0 -> assertTrue(clauseQuery instanceof SpanOrQuery);
+        case 1 -> assertTrue(clauseQuery instanceof SpanNearQuery);
+        default -> fail("unexpected clause index " + ii);
       }
     }
   }

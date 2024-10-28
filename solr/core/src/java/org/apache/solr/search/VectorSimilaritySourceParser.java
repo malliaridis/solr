@@ -134,16 +134,11 @@ public class VectorSimilaritySourceParser extends ValueSourceParser {
       VectorSimilarityFunction functionName,
       VectorEncoding vectorEncoding,
       ValueSource v1,
-      ValueSource v2)
-      throws SyntaxError {
-    switch (vectorEncoding) {
-      case FLOAT32:
-        return new FloatVectorSimilarityFunction(functionName, v1, v2);
-      case BYTE:
-        return new ByteVectorSimilarityFunction(functionName, v1, v2);
-      default:
-        throw new SyntaxError("Invalid vector encoding: " + vectorEncoding);
-    }
+      ValueSource v2) {
+    return switch (vectorEncoding) {
+      case FLOAT32 -> new FloatVectorSimilarityFunction(functionName, v1, v2);
+      case BYTE -> new ByteVectorSimilarityFunction(functionName, v1, v2);
+    };
   }
 
   private DenseVectorField requireVectorType(final SchemaField field) throws SyntaxError {

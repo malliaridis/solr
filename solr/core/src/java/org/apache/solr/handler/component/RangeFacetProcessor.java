@@ -179,7 +179,7 @@ public class RangeFacetProcessor extends SimpleFacets {
     for (RangeFacetRequest.FacetRange range : rfr.getFacetRanges()) {
       if (range.other != null) {
         switch (range.other) {
-          case BEFORE:
+          case BEFORE -> {
             assert range.lower == null;
             intervals.set(
                 0,
@@ -190,8 +190,8 @@ public class RangeFacetProcessor extends SimpleFacets {
                     range.includeLower,
                     range.includeUpper,
                     FacetRangeOther.BEFORE.toString()));
-            break;
-          case AFTER:
+          }
+          case AFTER -> {
             assert range.upper == null;
             after =
                 new IntervalFacets.FacetInterval(
@@ -201,21 +201,17 @@ public class RangeFacetProcessor extends SimpleFacets {
                     range.includeLower,
                     range.includeUpper,
                     FacetRangeOther.AFTER.toString());
-            break;
-          case BETWEEN:
-            intervals.set(
-                includeBefore ? 1 : 0,
-                new IntervalFacets.FacetInterval(
-                    sf,
-                    range.lower,
-                    range.upper,
-                    range.includeLower,
-                    range.includeUpper,
-                    FacetRangeOther.BETWEEN.toString()));
-            break;
-          case ALL:
-          case NONE:
-            break;
+          }
+          case BETWEEN -> intervals.set(
+              includeBefore ? 1 : 0,
+              new IntervalFacets.FacetInterval(
+                  sf,
+                  range.lower,
+                  range.upper,
+                  range.includeLower,
+                  range.includeUpper,
+                  FacetRangeOther.BETWEEN.toString()));
+          case ALL, NONE -> {}
         }
       } else {
         intervals.add(

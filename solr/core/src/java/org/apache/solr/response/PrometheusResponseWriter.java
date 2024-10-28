@@ -128,8 +128,8 @@ public class PrometheusResponseWriter extends RawResponseWriter {
     boolean cloudMode = false;
     String[] parsedRegistry = registryName.split("\\.");
 
-    switch (parsedRegistry[1]) {
-      case "core":
+    return switch (parsedRegistry[1]) {
+      case "core" -> {
         if (parsedRegistry.length == 3) {
           coreName = parsedRegistry[2];
         } else if (parsedRegistry.length == 5) {
@@ -138,15 +138,12 @@ public class PrometheusResponseWriter extends RawResponseWriter {
         } else {
           coreName = registryName;
         }
-        return new SolrPrometheusCoreFormatter(coreName, cloudMode);
-      case "jvm":
-        return new SolrPrometheusJvmFormatter();
-      case "jetty":
-        return new SolrPrometheusJettyFormatter();
-      case "node":
-        return new SolrPrometheusNodeFormatter();
-      default:
-        return null;
-    }
+        yield new SolrPrometheusCoreFormatter(coreName, cloudMode);
+      }
+      case "jvm" -> new SolrPrometheusJvmFormatter();
+      case "jetty" -> new SolrPrometheusJettyFormatter();
+      case "node" -> new SolrPrometheusNodeFormatter();
+      default -> null;
+    };
   }
 }

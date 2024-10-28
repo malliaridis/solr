@@ -85,18 +85,10 @@ public class TestRerankBase extends RestTestBase {
 
   protected static void chooseDefaultFeatureFormat() throws Exception {
     switch (random().nextInt(3)) {
-      case 0:
-        defaultFeatureFormat = null;
-        break;
-      case 1:
-        defaultFeatureFormat = "dense";
-        break;
-      case 2:
-        defaultFeatureFormat = "sparse";
-        break;
-      default:
-        fail("unexpected feature format choice");
-        break;
+      case 0 -> defaultFeatureFormat = null;
+      case 1 -> defaultFeatureFormat = "dense";
+      case 2 -> defaultFeatureFormat = "sparse";
+      default -> fail("unexpected feature format choice");
     }
     if (defaultFeatureFormat != null) {
       System.setProperty(
@@ -425,28 +417,16 @@ public class TestRerankBase extends RestTestBase {
     final LinkedHashMap<String, Object> paramsA = new LinkedHashMap<String, Object>();
     final Object defaultValue;
     switch (random().nextInt(6)) {
-      case 0:
-        defaultValue = null;
-        break;
-      case 1:
-        defaultValue = "1.2";
-        break;
-      case 2:
-        defaultValue = Double.valueOf(3.4d);
-        break;
-      case 3:
-        defaultValue = Float.valueOf(0.5f);
-        break;
-      case 4:
-        defaultValue = Integer.valueOf(67);
-        break;
-      case 5:
-        defaultValue = Long.valueOf(89);
-        break;
-      default:
+      case 0 -> defaultValue = null;
+      case 1 -> defaultValue = "1.2";
+      case 2 -> defaultValue = Double.valueOf(3.4d);
+      case 3 -> defaultValue = Float.valueOf(0.5f);
+      case 4 -> defaultValue = Integer.valueOf(67);
+      case 5 -> defaultValue = Long.valueOf(89);
+      default -> {
         defaultValue = null;
         fail("unexpected defaultValue choice");
-        break;
+      }
     }
     if (defaultValue != null) {
       paramsA.put("defaultValue", defaultValue);

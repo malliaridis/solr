@@ -135,30 +135,18 @@ public class PivotFacetValue {
       PivotListEntry entry = PivotListEntry.get(key);
 
       switch (entry) {
-        case VALUE:
-          pivotVal = (Comparable) value;
-          break;
-        case FIELD:
+        case VALUE -> pivotVal = (Comparable) value;
+        case FIELD -> {
           assert parentField.field.equals(value)
               : "Parent Field mismatch: " + parentField.field + "!=" + value;
-          break;
-        case COUNT:
-          pivotCount = (Integer) value;
-          break;
-        case PIVOT:
-          childPivotData = (List<NamedList<Object>>) value;
-          break;
-        case STATS:
-          statsValues = (NamedList<NamedList<NamedList<?>>>) value;
-          break;
-        case QUERIES:
-          queryCounts = (NamedList<Number>) value;
-          break;
-        case RANGES:
-          ranges = (SimpleOrderedMap<SimpleOrderedMap<Object>>) value;
-          break;
-        default:
-          throw new RuntimeException("PivotListEntry contains unaccounted for item: " + entry);
+        }
+        case COUNT -> pivotCount = (Integer) value;
+        case PIVOT -> childPivotData = (List<NamedList<Object>>) value;
+        case STATS -> statsValues = (NamedList<NamedList<NamedList<?>>>) value;
+        case QUERIES -> queryCounts = (NamedList<Number>) value;
+        case RANGES -> ranges = (SimpleOrderedMap<SimpleOrderedMap<Object>>) value;
+        default -> throw new RuntimeException(
+            "PivotListEntry contains unaccounted for item: " + entry);
       }
     }
 

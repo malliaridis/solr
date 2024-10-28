@@ -205,21 +205,11 @@ public class HttpJdkSolrClient extends HttpSolrClientBase {
     PreparedRequest pReq = null;
     try {
       switch (solrRequest.getMethod()) {
-        case GET:
-          {
-            pReq = prepareGet(url, reqb, solrRequest, queryParams);
-            break;
-          }
-        case POST:
-        case PUT:
-          {
-            pReq = preparePutOrPost(url, solrRequest.getMethod(), reqb, solrRequest, queryParams);
-            break;
-          }
-        default:
-          {
-            throw new IllegalStateException("Unsupported method: " + solrRequest.getMethod());
-          }
+        case GET -> pReq = prepareGet(url, reqb, solrRequest, queryParams);
+        case POST, PUT -> pReq =
+            preparePutOrPost(url, solrRequest.getMethod(), reqb, solrRequest, queryParams);
+        default -> throw new IllegalStateException(
+            "Unsupported method: " + solrRequest.getMethod());
       }
     } catch (URISyntaxException | RuntimeException re) {
       throw new SolrServerException(re);

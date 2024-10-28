@@ -218,17 +218,13 @@ public class AttributeFetcherImpl implements AttributeFetcher {
   }
 
   private static SolrInfoBean.Group getGroupFromMetricRegistry(NodeMetric.Registry registry) {
-    switch (registry) {
-      case SOLR_JVM:
-        return SolrInfoBean.Group.jvm;
-      case SOLR_NODE:
-        return SolrInfoBean.Group.node;
-      case SOLR_JETTY:
-        return SolrInfoBean.Group.jetty;
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR, "Unsupported registry value " + registry);
-    }
+    return switch (registry) {
+      case SOLR_JVM -> SolrInfoBean.Group.jvm;
+      case SOLR_NODE -> SolrInfoBean.Group.node;
+      case SOLR_JETTY -> SolrInfoBean.Group.jetty;
+      default -> throw new SolrException(
+          SolrException.ErrorCode.SERVER_ERROR, "Unsupported registry value " + registry);
+    };
   }
 
   public static String getMetricTag(NodeMetric<?> metric) {

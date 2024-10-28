@@ -82,22 +82,17 @@ public class AffinityReplicaListTransformerFactory implements ReplicaListTransfo
               defaultDividendParam, defaultHashParam, requestParams);
     } else {
       String[] parts = configSpec.split(":", 2);
-      switch (parts[0]) {
-        case ShardParams.ROUTING_DIVIDEND:
-          rlt =
-              AffinityReplicaListTransformer.getInstance(
-                  parts.length == 1 ? defaultDividendParam : parts[1],
-                  defaultHashParam,
-                  requestParams);
-          break;
-        case ShardParams.ROUTING_HASH:
-          rlt =
-              AffinityReplicaListTransformer.getInstance(
-                  null, parts.length == 1 ? defaultHashParam : parts[1], requestParams);
-          break;
-        default:
-          throw new IllegalArgumentException("Invalid routing spec: \"" + configSpec + '"');
-      }
+      rlt =
+          switch (parts[0]) {
+            case ShardParams.ROUTING_DIVIDEND -> AffinityReplicaListTransformer.getInstance(
+                parts.length == 1 ? defaultDividendParam : parts[1],
+                defaultHashParam,
+                requestParams);
+            case ShardParams.ROUTING_HASH -> AffinityReplicaListTransformer.getInstance(
+                null, parts.length == 1 ? defaultHashParam : parts[1], requestParams);
+            default -> throw new IllegalArgumentException(
+                "Invalid routing spec: \"" + configSpec + '"');
+          };
     }
     return rlt != null ? rlt : fallback.getInstance(null, requestParams, null);
   }

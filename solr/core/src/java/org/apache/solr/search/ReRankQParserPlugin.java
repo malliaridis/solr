@@ -161,18 +161,13 @@ public class ReRankQParserPlugin extends QParserPlugin {
         Query reRankQuery, double reRankWeight, ReRankOperator reRankOperator) {
       super(reRankQuery);
       switch (reRankOperator) {
-        case ADD:
-          scoreCombiner = (score, second) -> (float) (score + reRankWeight * second);
-          break;
-        case MULTIPLY:
-          scoreCombiner = (score, second) -> (float) (score * reRankWeight * second);
-          break;
-        case REPLACE:
-          scoreCombiner = (score, second) -> (float) (reRankWeight * second);
-          break;
-        default:
+        case ADD -> scoreCombiner = (score, second) -> (float) (score + reRankWeight * second);
+        case MULTIPLY -> scoreCombiner = (score, second) -> (float) (score * reRankWeight * second);
+        case REPLACE -> scoreCombiner = (score, second) -> (float) (reRankWeight * second);
+        default -> {
           scoreCombiner = null;
           throw new IllegalArgumentException("Unexpected: reRankOperator=" + reRankOperator);
+        }
       }
     }
 

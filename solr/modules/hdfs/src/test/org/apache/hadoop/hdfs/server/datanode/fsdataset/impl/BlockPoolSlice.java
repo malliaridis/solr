@@ -820,16 +820,12 @@ public class BlockPoolSlice {
 
       for (BlockReportReplica replica : blocksList) {
         switch (replica.getState()) {
-          case FINALIZED:
-            addReplicaToReplicasMap(replica, tmpReplicaMap, lazyWriteReplicaMap, true);
-            break;
-          case RUR:
-          case RBW:
-          case RWR:
-            addReplicaToReplicasMap(replica, tmpReplicaMap, lazyWriteReplicaMap, false);
-            break;
-          default:
-            break;
+          case FINALIZED ->
+              addReplicaToReplicasMap(replica, tmpReplicaMap, lazyWriteReplicaMap, true);
+          case RUR, RBW, RWR ->
+              addReplicaToReplicasMap(replica, tmpReplicaMap, lazyWriteReplicaMap, false);
+          default -> {
+          }
         }
       }
       // Now it is safe to add the replica into volumeMap

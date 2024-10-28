@@ -153,78 +153,80 @@ public class XMLLoader extends ContentStreamLoader {
     while (true) {
       int event = parser.next();
       switch (event) {
-        case XMLStreamConstants.END_DOCUMENT:
+        case XMLStreamConstants.END_DOCUMENT -> {
           parser.close();
           return;
-
-        case XMLStreamConstants.START_ELEMENT:
+        }
+        case XMLStreamConstants.START_ELEMENT -> {
           String currTag = parser.getLocalName();
-          if (currTag.equals(UpdateRequestHandler.ADD)) {
-            log.trace("SolrCore.update(add)");
+          switch (currTag) {
+            case UpdateRequestHandler.ADD -> {
+              log.trace("SolrCore.update(add)");
 
-            addCmd = new AddUpdateCommand(req);
+              addCmd = new AddUpdateCommand(req);
 
-            // First look for commitWithin parameter on the request, will be overwritten for
-            // individual <add>'s
-            addCmd.commitWithin = params.getInt(UpdateParams.COMMIT_WITHIN, -1);
-            addCmd.overwrite = params.getBool(UpdateParams.OVERWRITE, true);
+              // First look for commitWithin parameter on the request, will be overwritten for
+              // individual <add>'s
+              addCmd.commitWithin = params.getInt(UpdateParams.COMMIT_WITHIN, -1);
+              addCmd.overwrite = params.getBool(UpdateParams.OVERWRITE, true);
 
-            for (int i = 0; i < parser.getAttributeCount(); i++) {
-              String attrName = parser.getAttributeLocalName(i);
-              String attrVal = parser.getAttributeValue(i);
-              if (UpdateRequestHandler.OVERWRITE.equals(attrName)) {
-                addCmd.overwrite = StrUtils.parseBoolean(attrVal);
-              } else if (UpdateRequestHandler.COMMIT_WITHIN.equals(attrName)) {
-                addCmd.commitWithin = Integer.parseInt(attrVal);
-              } else {
-                log.warn("XML element <add> has invalid XML attr: {}", attrName);
+              for (int i = 0; i < parser.getAttributeCount(); i++) {
+                String attrName = parser.getAttributeLocalName(i);
+                String attrVal = parser.getAttributeValue(i);
+                if (UpdateRequestHandler.OVERWRITE.equals(attrName)) {
+                  addCmd.overwrite = StrUtils.parseBoolean(attrVal);
+                } else if (UpdateRequestHandler.COMMIT_WITHIN.equals(attrName)) {
+                  addCmd.commitWithin = Integer.parseInt(attrVal);
+                } else {
+                  log.warn("XML element <add> has invalid XML attr: {}", attrName);
+                }
               }
             }
-
-          } else if ("doc".equals(currTag)) {
-            if (addCmd != null) {
-              log.trace("adding doc...");
-              addCmd.clear();
-              addCmd.solrDoc = readDoc(parser);
-              processor.processAdd(addCmd);
-            } else {
-              throw new SolrException(
-                  SolrException.ErrorCode.BAD_REQUEST,
-                  "Unexpected <doc> tag without an <add> tag surrounding it.");
+            case "doc" -> {
+              if (addCmd != null) {
+                log.trace("adding doc...");
+                addCmd.clear();
+                addCmd.solrDoc = readDoc(parser);
+                processor.processAdd(addCmd);
+              } else {
+                throw new SolrException(
+                    SolrException.ErrorCode.BAD_REQUEST,
+                    "Unexpected <doc> tag without an <add> tag surrounding it.");
+              }
             }
-          } else if (UpdateRequestHandler.COMMIT.equals(currTag)
-              || UpdateRequestHandler.OPTIMIZE.equals(currTag)) {
-            log.trace("parsing {}", currTag);
+            case UpdateRequestHandler.COMMIT, UpdateRequestHandler.OPTIMIZE -> {
+              log.trace("parsing {}", currTag);
 
-            CommitUpdateCommand cmd =
-                new CommitUpdateCommand(req, UpdateRequestHandler.OPTIMIZE.equals(currTag));
-            ModifiableSolrParams mp = new ModifiableSolrParams();
+              CommitUpdateCommand cmd =
+                  new CommitUpdateCommand(req, UpdateRequestHandler.OPTIMIZE.equals(currTag));
+              ModifiableSolrParams mp = new ModifiableSolrParams();
 
-            for (int i = 0; i < parser.getAttributeCount(); i++) {
-              String attrName = parser.getAttributeLocalName(i);
-              String attrVal = parser.getAttributeValue(i);
-              mp.set(attrName, attrVal);
+              for (int i = 0; i < parser.getAttributeCount(); i++) {
+                String attrName = parser.getAttributeLocalName(i);
+                String attrVal = parser.getAttributeValue(i);
+                mp.set(attrName, attrVal);
+              }
+
+              RequestHandlerUtils.validateCommitParams(mp);
+              // default to the normal request params for commit options
+              SolrParams p = SolrParams.wrapDefaults(mp, req.getParams());
+              RequestHandlerUtils.updateCommit(cmd, p);
+
+              processor.processCommit(cmd);
             }
+            case UpdateRequestHandler.ROLLBACK -> {
+              log.trace("parsing rollback");
 
-            RequestHandlerUtils.validateCommitParams(mp);
-            // default to the normal request params for commit options
-            SolrParams p = SolrParams.wrapDefaults(mp, req.getParams());
-            RequestHandlerUtils.updateCommit(cmd, p);
+              RollbackUpdateCommand cmd = new RollbackUpdateCommand(req);
 
-            processor.processCommit(cmd);
-          } // end commit
-          else if (UpdateRequestHandler.ROLLBACK.equals(currTag)) {
-            log.trace("parsing rollback");
-
-            RollbackUpdateCommand cmd = new RollbackUpdateCommand(req);
-
-            processor.processRollback(cmd);
-          } // end rollback
-          else if (UpdateRequestHandler.DELETE.equals(currTag)) {
-            log.trace("parsing delete");
-            processDelete(req, processor, parser);
-          } // end delete
-          break;
+              processor.processRollback(cmd);
+            }
+            case UpdateRequestHandler.DELETE -> {
+              log.trace("parsing delete");
+              processDelete(req, processor, parser);
+            }
+          }
+        }
       }
     }
   }
@@ -260,7 +262,7 @@ public class XMLLoader extends ContentStreamLoader {
     while (true) {
       int event = parser.next();
       switch (event) {
-        case XMLStreamConstants.START_ELEMENT:
+        case XMLStreamConstants.START_ELEMENT -> {
           String mode = parser.getLocalName();
           if (!(ID.equals(mode) || "query".equals(mode))) {
             String msg = "XML element <delete> has invalid XML child element: " + mode;
@@ -281,9 +283,8 @@ public class XMLLoader extends ContentStreamLoader {
               }
             }
           }
-          break;
-
-        case XMLStreamConstants.END_ELEMENT:
+        }
+        case XMLStreamConstants.END_ELEMENT -> {
           String currTag = parser.getLocalName();
           if (ID.equals(currTag)) {
             deleteCmd.setId(text.toString());
@@ -298,14 +299,12 @@ public class XMLLoader extends ContentStreamLoader {
           }
           processor.processDelete(deleteCmd);
           deleteCmd.clear();
-          break;
+        }
 
           // Add everything to the text
-        case XMLStreamConstants.SPACE:
-        case XMLStreamConstants.CDATA:
-        case XMLStreamConstants.CHARACTERS:
-          text.append(parser.getText());
-          break;
+        case XMLStreamConstants.SPACE,
+            XMLStreamConstants.CDATA,
+            XMLStreamConstants.CHARACTERS -> text.append(parser.getText());
       }
     }
   }
@@ -357,20 +356,16 @@ public class XMLLoader extends ContentStreamLoader {
       int event = parser.next();
       switch (event) {
           // Add everything to the text
-        case XMLStreamConstants.SPACE:
-        case XMLStreamConstants.CDATA:
-        case XMLStreamConstants.CHARACTERS:
-          text.append(parser.getText());
-          break;
-
-        case XMLStreamConstants.END_ELEMENT:
+        case XMLStreamConstants.SPACE,
+            XMLStreamConstants.CDATA,
+            XMLStreamConstants.CHARACTERS -> text.append(parser.getText());
+        case XMLStreamConstants.END_ELEMENT -> {
           if ("doc".equals(parser.getLocalName())) {
             if (subDocs != null && !subDocs.isEmpty()) {
               doc.addChildDocuments(subDocs);
               subDocs = null;
             }
             complete = true;
-            break;
           } else if ("field".equals(parser.getLocalName())) {
             // should I warn in some text has been found too
             Object v = isNull ? null : text.toString();
@@ -406,9 +401,8 @@ public class XMLLoader extends ContentStreamLoader {
             // field is over
             currentFieldName = null;
           }
-          break;
-
-        case XMLStreamConstants.START_ELEMENT:
+        }
+        case XMLStreamConstants.START_ELEMENT -> {
           text.setLength(0);
           String localName = parser.getLocalName();
           if ("doc".equals(localName)) {
@@ -465,7 +459,7 @@ public class XMLLoader extends ContentStreamLoader {
               }
             }
           }
-          break;
+        }
       }
     }
 

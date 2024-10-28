@@ -513,15 +513,10 @@ public class DistributedCollectionConfigSetCommandRunner {
         log.debug("ConfigSetCommandRunner. Lock acquired. Calling: {}, {}", action, message);
 
         switch (action) {
-          case CREATE:
-            ConfigSetCmds.createConfigSet(message, coreContainer);
-            break;
-          case DELETE:
-            ConfigSetCmds.deleteConfigSet(message, coreContainer);
-            break;
-          default:
-            throw new SolrException(
-                SolrException.ErrorCode.BAD_REQUEST, "Bug! Unknown Config Set action: " + action);
+          case CREATE -> ConfigSetCmds.createConfigSet(message, coreContainer);
+          case DELETE -> ConfigSetCmds.deleteConfigSet(message, coreContainer);
+          default -> throw new SolrException(
+              SolrException.ErrorCode.BAD_REQUEST, "Bug! Unknown Config Set action: " + action);
         }
       } finally {
         lock.release();

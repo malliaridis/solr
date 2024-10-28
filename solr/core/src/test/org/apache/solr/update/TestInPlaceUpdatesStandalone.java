@@ -1113,60 +1113,36 @@ public class TestInPlaceUpdatesStandalone extends SolrTestCaseJ4 {
       final RandomUpdate update = RandomUpdate.pick(random());
 
       switch (update) {
-        case HARD_COMMIT:
-          cmds[iter] = HARDCOMMIT;
-          break;
-
-        case SOFT_COMMIT:
-          cmds[iter] = SOFTCOMMIT;
-          break;
-
-        case ATOMIC_NOT_INPLACE:
-          // atomic update on non_inplaceField, w/o any value specified for inplaceField
-          cmds[iter] = sdoc("id", id, not_inplaceField, map("inc", random().nextInt()));
-          break;
-
-        case ATOMIC_INPLACE_AND_NOT_INPLACE:
-          // atomic update of a doc w/ inc on both inplaceField and not_inplaceField
-          cmds[iter] =
-              sdoc(
-                  "id",
-                  id,
-                  inplaceField,
-                  map("inc", random().nextInt()),
-                  not_inplaceField,
-                  map("inc", random().nextInt()));
-          break;
-
-        case ATOMIC_INPLACE_SET:
-          // atomic update of a doc w/ set inplaceField
-          cmds[iter] = sdoc("id", id, inplaceField, map("set", random().nextLong()));
-          break;
-
-        case ATOMIC_INPLACE_INC:
-          // atomic update of a doc w/ inc inplaceField
-          cmds[iter] = sdoc("id", id, inplaceField, map("inc", random().nextInt()));
-          break;
-
-        case ADD_NO_INPLACE_VALUE:
-          // regular add of doc w/o the inplaceField, but does include non_inplaceField
-          cmds[iter] = sdoc("id", id, not_inplaceField, random().nextLong());
-          break;
-
-        case ADD_INPLACE_VALUE:
-          // a non-atomic update of a doc w/ new inplaceField value
-          cmds[iter] =
-              sdoc(
-                  "id",
-                  id,
-                  inplaceField,
-                  random().nextLong(),
-                  not_inplaceField,
-                  random().nextLong());
-          break;
-
-        default:
-          fail("WTF is this? ... " + update);
+        case HARD_COMMIT -> cmds[iter] = HARDCOMMIT;
+        case SOFT_COMMIT -> cmds[iter] = SOFTCOMMIT;
+        case ATOMIC_NOT_INPLACE ->
+        // atomic update on non_inplaceField, w/o any value specified for inplaceField
+        cmds[iter] = sdoc("id", id, not_inplaceField, map("inc", random().nextInt()));
+        case ATOMIC_INPLACE_AND_NOT_INPLACE ->
+        // atomic update of a doc w/ inc on both inplaceField and not_inplaceField
+        cmds[iter] =
+            sdoc(
+                "id",
+                id,
+                inplaceField,
+                map("inc", random().nextInt()),
+                not_inplaceField,
+                map("inc", random().nextInt()));
+        case ATOMIC_INPLACE_SET ->
+        // atomic update of a doc w/ set inplaceField
+        cmds[iter] = sdoc("id", id, inplaceField, map("set", random().nextLong()));
+        case ATOMIC_INPLACE_INC ->
+        // atomic update of a doc w/ inc inplaceField
+        cmds[iter] = sdoc("id", id, inplaceField, map("inc", random().nextInt()));
+        case ADD_NO_INPLACE_VALUE ->
+        // regular add of doc w/o the inplaceField, but does include non_inplaceField
+        cmds[iter] = sdoc("id", id, not_inplaceField, random().nextLong());
+        case ADD_INPLACE_VALUE ->
+        // a non-atomic update of a doc w/ new inplaceField value
+        cmds[iter] =
+            sdoc(
+                "id", id, inplaceField, random().nextLong(), not_inplaceField, random().nextLong());
+        default -> fail("WTF is this? ... " + update);
       }
 
       assertNotNull(cmds[iter]); // sanity check switch

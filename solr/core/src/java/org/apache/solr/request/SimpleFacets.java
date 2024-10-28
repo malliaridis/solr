@@ -521,7 +521,7 @@ public class SimpleFacets {
     } else {
       assert appliedFacetMethod != null;
       switch (appliedFacetMethod) {
-        case ENUM:
+        case ENUM -> {
           assert TrieField.getMainValuePrefix(ft) == null;
           counts =
               getFacetTermEnumCounts(
@@ -536,8 +536,8 @@ public class SimpleFacets {
                   prefix,
                   termFilter,
                   exists);
-          break;
-        case FCS:
+        }
+        case FCS -> {
           assert ft.isPointField() || !multiToken;
           if (ft.isPointField() || (ft.getNumberType() != null && !sf.multiValued())) {
             if (prefix != null) {
@@ -595,8 +595,8 @@ public class SimpleFacets {
             ps.setNumThreads(threads);
             counts = ps.getFacetCounts(executor);
           }
-          break;
-        case UIF:
+        }
+        case UIF -> {
           // Emulate the JSON Faceting structure so we can use the same parsing classes
           Map<String, Object> jsonFacet = CollectionUtil.newHashMap(13);
           jsonFacet.put("type", "terms");
@@ -645,24 +645,21 @@ public class SimpleFacets {
               counts.add(null, ((Number) missingCounts.get("count")).intValue());
             }
           }
-          break;
-        case FC:
-          counts =
-              DocValuesFacets.getCounts(
-                  searcher,
-                  docs,
-                  field,
-                  offset,
-                  limit,
-                  mincount,
-                  missing,
-                  sort,
-                  prefix,
-                  termFilter,
-                  fdebug);
-          break;
-        default:
-          throw new AssertionError();
+        }
+        case FC -> counts =
+            DocValuesFacets.getCounts(
+                searcher,
+                docs,
+                field,
+                offset,
+                limit,
+                mincount,
+                missing,
+                sort,
+                prefix,
+                termFilter,
+                fdebug);
+        default -> throw new AssertionError();
       }
     }
 

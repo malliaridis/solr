@@ -77,7 +77,7 @@ class ClassificationUpdateProcessor extends UpdateRequestProcessor {
       field2analyzer.put(fieldName, indexAnalyzer);
     }
     switch (classificationAlgorithm) {
-      case KNN:
+      case KNN -> {
         try {
           classifier =
               new KNearestNeighborDocumentClassifier(
@@ -96,12 +96,10 @@ class ClassificationUpdateProcessor extends UpdateRequestProcessor {
               "IOException occurred while instantiating KNearestNeighborDocumentClassifier",
               e);
         }
-        break;
-      case BAYES:
-        classifier =
-            new SimpleNaiveBayesDocumentClassifier(
-                indexReader, null, trainingClassField, field2analyzer, inputFieldNamesWithBoost);
-        break;
+      }
+      case BAYES -> classifier =
+          new SimpleNaiveBayesDocumentClassifier(
+              indexReader, null, trainingClassField, field2analyzer, inputFieldNamesWithBoost);
     }
   }
 

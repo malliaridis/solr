@@ -302,29 +302,19 @@ public class StrParser {
         if (pos >= end) break;
         ch = val.charAt(pos);
         switch (ch) {
-          case 'n':
-            ch = '\n';
-            break;
-          case 't':
-            ch = '\t';
-            break;
-          case 'r':
-            ch = '\r';
-            break;
-          case 'b':
-            ch = '\b';
-            break;
-          case 'f':
-            ch = '\f';
-            break;
-          case 'u':
+          case 'n' -> ch = '\n';
+          case 't' -> ch = '\t';
+          case 'r' -> ch = '\r';
+          case 'b' -> ch = '\b';
+          case 'f' -> ch = '\f';
+          case 'u' -> {
             if (pos + 4 >= end) {
               throw new SyntaxError(
                   "bad unicode escape \\uxxxx at pos" + (val_start - 1) + " str='" + val + "'");
             }
             ch = (char) Integer.parseInt(val.substring(pos + 1, pos + 5), 16);
             pos += 4;
-            break;
+          }
         }
       } else if (ch == delim) {
         pos++; // skip over the quote

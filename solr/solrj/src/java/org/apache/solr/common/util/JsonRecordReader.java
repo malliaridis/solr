@@ -553,33 +553,28 @@ public class JsonRecordReader {
 
   public static Object parseSingleFieldValue(int ev, JSONParser parser, MethodFrameWrapper runnable)
       throws IOException {
-    switch (ev) {
-      case STRING:
-        return parser.getString();
-      case LONG:
-        return parser.getLong();
-      case NUMBER:
-        return parser.getDouble();
-      case BIGNUMBER:
-        return parser.getNumberChars().toString();
-      case BOOLEAN:
-        return parser.getBoolean();
-      case NULL:
+    return switch (ev) {
+      case STRING -> parser.getString();
+      case LONG -> parser.getLong();
+      case NUMBER -> parser.getDouble();
+      case BIGNUMBER -> parser.getNumberChars().toString();
+      case BOOLEAN -> parser.getBoolean();
+      case NULL -> {
         parser.getNull();
-        return null;
-      case ARRAY_START:
-        return parseArrayFieldValue(ev, parser, runnable);
-      case OBJECT_START:
+        yield null;
+      }
+      case ARRAY_START -> parseArrayFieldValue(ev, parser, runnable);
+      case OBJECT_START -> {
         if (runnable != null) {
           runnable.walk(OBJECT_START);
-          return null;
+          yield null;
         }
         consumeTillMatchingEnd(parser, 1, 0);
-        return null;
-      default:
-        throw new RuntimeException(
-            "Error parsing JSON field value. Unexpected " + JSONParser.getEventString(ev));
-    }
+        yield null;
+      }
+      default -> throw new RuntimeException(
+          "Error parsing JSON field value. Unexpected " + JSONParser.getEventString(ev));
+    };
   }
 
   abstract static class MethodFrameWrapper {

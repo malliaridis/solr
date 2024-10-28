@@ -53,30 +53,25 @@ public class TestSafeXMLParsing extends SolrTestCase {
         new ResourceLoader() {
           @Override
           public InputStream openResource(String resource) throws IOException {
-            switch (resource) {
-              case "source1.xml":
-                return getStringStream(
-                    "<!DOCTYPE test [\n"
-                        + "<!ENTITY externalTerm SYSTEM \"foo://bar.xyz/external\">\n"
-                        + "]>\n"
-                        + "<test>&externalTerm;</test>");
-              case "source2.xml":
-                return getStringStream(
-                    "<!DOCTYPE test [\n"
-                        + "<!ENTITY externalTerm SYSTEM \"./include1.xml\">\n"
-                        + "]>\n"
-                        + "<test>&externalTerm;</test>");
-              case "source3.xml":
-                return getStringStream(
-                    "<foo xmlns:xi=\"http://www.w3.org/2001/XInclude\">\n"
-                        + "  <xi:include href=\"./include2.xml\"/>\n"
-                        + "</foo>");
-              case "include1.xml":
-                return getStringStream("Make XML Great Again!™");
-              case "include2.xml":
-                return getStringStream("<bar>Make XML Great Again!™</bar>");
-            }
-            throw new IOException("Resource not found: " + resource);
+            return switch (resource) {
+              case "source1.xml" -> getStringStream(
+                  "<!DOCTYPE test [\n"
+                      + "<!ENTITY externalTerm SYSTEM \"foo://bar.xyz/external\">\n"
+                      + "]>\n"
+                      + "<test>&externalTerm;</test>");
+              case "source2.xml" -> getStringStream(
+                  "<!DOCTYPE test [\n"
+                      + "<!ENTITY externalTerm SYSTEM \"./include1.xml\">\n"
+                      + "]>\n"
+                      + "<test>&externalTerm;</test>");
+              case "source3.xml" -> getStringStream(
+                  "<foo xmlns:xi=\"http://www.w3.org/2001/XInclude\">\n"
+                      + "  <xi:include href=\"./include2.xml\"/>\n"
+                      + "</foo>");
+              case "include1.xml" -> getStringStream("Make XML Great Again!™");
+              case "include2.xml" -> getStringStream("<bar>Make XML Great Again!™</bar>");
+              default -> throw new IOException("Resource not found: " + resource);
+            };
           }
 
           @Override

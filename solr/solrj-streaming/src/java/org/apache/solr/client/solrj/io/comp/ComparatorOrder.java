@@ -24,23 +24,16 @@ public enum ComparatorOrder {
   DESCENDING;
 
   public static ComparatorOrder fromString(String order) {
-    switch (order.toLowerCase(Locale.ROOT)) {
-      case "asc":
-        return ComparatorOrder.ASCENDING;
-      case "desc":
-        return ComparatorOrder.DESCENDING;
-      default:
-        throw new IllegalArgumentException(String.format(Locale.ROOT, "Unknown order '%s'", order));
-    }
+    return switch (order.toLowerCase(Locale.ROOT)) {
+      case "asc" -> ComparatorOrder.ASCENDING;
+      case "desc" -> ComparatorOrder.DESCENDING;
+      default -> throw new IllegalArgumentException(
+          String.format(Locale.ROOT, "Unknown order '%s'", order));
+    };
   }
 
   @Override
   public String toString() {
-    switch (this) {
-      case DESCENDING:
-        return "desc";
-      default:
-        return "asc";
-    }
+    return this == ComparatorOrder.DESCENDING ? "desc" : "asc";
   }
 }

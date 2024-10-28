@@ -56,19 +56,12 @@ public class SortedNumericStatsValues implements StatsValues {
   }
 
   private Number toCorrectType(long value) {
-    switch (numberType) {
-      case INTEGER:
-        return (int) value;
-      case DATE:
-      case LONG:
-        return value;
-      case FLOAT:
-        return NumericUtils.sortableIntToFloat((int) value);
-      case DOUBLE:
-        return NumericUtils.sortableLongToDouble(value);
-      default:
-        throw new AssertionError("Unsupported number type");
-    }
+    return switch (numberType) {
+      case INTEGER -> (int) value;
+      case DATE, LONG -> value;
+      case FLOAT -> NumericUtils.sortableIntToFloat((int) value);
+      case DOUBLE -> NumericUtils.sortableLongToDouble(value);
+    };
   }
 
   @Override

@@ -420,27 +420,17 @@ class SolrFilter extends Filter implements SolrRel {
       Pair<String, RexLiteral> binaryTranslated = getFieldValuePair(node);
       final String key = binaryTranslated.getKey();
       RexLiteral value = binaryTranslated.getValue();
-      switch (kind) {
-        case EQUALS:
-          return toEqualsClause(key, value);
-        case NOT_EQUALS:
-          return "-" + toEqualsClause(key, value);
-        case LESS_THAN:
-          return "(" + key + ": [ * TO " + toSolrLiteral(key, value) + " })";
-        case LESS_THAN_OR_EQUAL:
-          return "(" + key + ": [ * TO " + toSolrLiteral(key, value) + " ])";
-        case GREATER_THAN:
-          return "(" + key + ": { " + toSolrLiteral(key, value) + " TO * ])";
-        case GREATER_THAN_OR_EQUAL:
-          return "(" + key + ": [ " + toSolrLiteral(key, value) + " TO * ])";
-        case LIKE:
-          return translateLike(node);
-        case IS_NOT_NULL:
-        case IS_NULL:
-          return translateIsNullOrIsNotNull(node);
-        default:
-          throw new AssertionError("cannot translate " + node);
-      }
+      return switch (kind) {
+        case EQUALS -> toEqualsClause(key, value);
+        case NOT_EQUALS -> "-" + toEqualsClause(key, value);
+        case LESS_THAN -> "(" + key + ": [ * TO " + toSolrLiteral(key, value) + " })";
+        case LESS_THAN_OR_EQUAL -> "(" + key + ": [ * TO " + toSolrLiteral(key, value) + " ])";
+        case GREATER_THAN -> "(" + key + ": { " + toSolrLiteral(key, value) + " TO * ])";
+        case GREATER_THAN_OR_EQUAL -> "(" + key + ": [ " + toSolrLiteral(key, value) + " TO * ])";
+        case LIKE -> translateLike(node);
+        case IS_NOT_NULL, IS_NULL -> translateIsNullOrIsNotNull(node);
+        default -> throw new AssertionError("cannot translate " + node);
+      };
     }
 
     private String toEqualsClause(String key, RexLiteral value) {
@@ -628,21 +618,22 @@ class SolrFilter extends Filter implements SolrRel {
       }
 
       final RexLiteral rightLiteral = (RexLiteral) right;
-      switch (left.getKind()) {
-        case INPUT_REF:
+      return switch (left.getKind()) {
+        case INPUT_REF -> {
           final RexInputRef left1 = (RexInputRef) left;
           String name = fieldNames.get(left1.getIndex());
-          return new Pair<>(name, rightLiteral);
-        case CAST:
-          return translateBinary2(((RexCall) left).getOperands().get(0), right);
-          //        case OTHER_FUNCTION:
-          //          String itemName = SolrRules.isItem((RexCall) left);
-          //          if (itemName != null) {
-          //            return translateOp2(op, itemName, rightLiteral);
-          //          }
-        default:
-          return null;
-      }
+          yield new Pair<>(name, rightLiteral);
+        }
+        case CAST -> translateBinary2(((RexCall) left).getOperands().get(0), right);
+          // case OTHER_FUNCTION -> {
+          //  String itemName = SolrRules.isItem((RexCall) left);
+          //  if (itemName != null) {
+          //    translateOp2(op, itemName, rightLiteral);
+          //  }
+          //  null;
+          // }
+        default -> null;
+      };
     }
 
     /** A search node can be an IN or NOT IN clause or a BETWEEN */
@@ -825,23 +816,38 @@ class SolrFilter extends Filter implements SolrRel {
     @Override
     protected String translateComparison(RexNode node) {
       Pair<String, RexLiteral> binaryTranslated = getFieldValuePair(node);
-      switch (node.getKind()) {
-        case EQUALS:
+      return switch (node.getKind()) {
+        case EQUALS -> {
           String terms = binaryTranslated.getValue().getValue2().toString().trim();
-          return "eq(" + binaryTranslated.getKey() + "," + terms + ")";
-        case NOT_EQUALS:
-          return "not(eq(" + binaryTranslated.getKey() + "," + binaryTranslated.getValue() + "))";
-        case LESS_THAN:
-          return "lt(" + binaryTranslated.getKey() + "," + binaryTranslated.getValue() + ")";
-        case LESS_THAN_OR_EQUAL:
-          return "lteq(" + binaryTranslated.getKey() + "," + binaryTranslated.getValue() + ")";
-        case GREATER_THAN:
-          return "gt(" + binaryTranslated.getKey() + "," + binaryTranslated.getValue() + ")";
-        case GREATER_THAN_OR_EQUAL:
-          return "gteq(" + binaryTranslated.getKey() + "," + binaryTranslated.getValue() + ")";
-        default:
-          throw new AssertionError("cannot translate " + node);
-      }
+          yield "eq(" + binaryTranslated.getKey() + "," + terms + ")";
+        }
+        case NOT_EQUALS -> "not(eq("
+            + binaryTranslated.getKey()
+            + ","
+            + binaryTranslated.getValue()
+            + "))";
+        case LESS_THAN -> "lt("
+            + binaryTranslated.getKey()
+            + ","
+            + binaryTranslated.getValue()
+            + ")";
+        case LESS_THAN_OR_EQUAL -> "lteq("
+            + binaryTranslated.getKey()
+            + ","
+            + binaryTranslated.getValue()
+            + ")";
+        case GREATER_THAN -> "gt("
+            + binaryTranslated.getKey()
+            + ","
+            + binaryTranslated.getValue()
+            + ")";
+        case GREATER_THAN_OR_EQUAL -> "gteq("
+            + binaryTranslated.getKey()
+            + ","
+            + binaryTranslated.getValue()
+            + ")";
+        default -> throw new AssertionError("cannot translate " + node);
+      };
     }
   }
 }

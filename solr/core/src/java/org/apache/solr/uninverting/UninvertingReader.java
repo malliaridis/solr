@@ -250,33 +250,24 @@ public class UninvertingReader extends FilterLeafReader {
               continue;
             }
           }
-          switch (t) {
-            case INTEGER_POINT:
-            case LONG_POINT:
-            case FLOAT_POINT:
-            case DOUBLE_POINT:
-            case LEGACY_INTEGER:
-            case LEGACY_LONG:
-            case LEGACY_FLOAT:
-            case LEGACY_DOUBLE:
-              type = DocValuesType.NUMERIC;
-              break;
-            case BINARY:
-              type = DocValuesType.BINARY;
-              break;
-            case SORTED:
-              type = DocValuesType.SORTED;
-              break;
-            case SORTED_SET_BINARY:
-            case SORTED_SET_INTEGER:
-            case SORTED_SET_FLOAT:
-            case SORTED_SET_LONG:
-            case SORTED_SET_DOUBLE:
-              type = DocValuesType.SORTED_SET;
-              break;
-            default:
-              throw new AssertionError();
-          }
+          type =
+              switch (t) {
+                case INTEGER_POINT,
+                    LONG_POINT,
+                    FLOAT_POINT,
+                    DOUBLE_POINT,
+                    LEGACY_INTEGER,
+                    LEGACY_LONG,
+                    LEGACY_FLOAT,
+                    LEGACY_DOUBLE -> DocValuesType.NUMERIC;
+                case BINARY -> DocValuesType.BINARY;
+                case SORTED -> DocValuesType.SORTED;
+                case SORTED_SET_BINARY,
+                    SORTED_SET_INTEGER,
+                    SORTED_SET_FLOAT,
+                    SORTED_SET_LONG,
+                    SORTED_SET_DOUBLE -> DocValuesType.SORTED_SET;
+              };
         }
       }
       if (type != fi.getDocValuesType()) { // we changed it

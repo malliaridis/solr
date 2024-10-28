@@ -235,16 +235,12 @@ public class AuditEvent {
     UNKNOWN;
 
     static RequestType convertType(AuthorizationContext.RequestType ctxReqType) {
-      switch (ctxReqType) {
-        case ADMIN:
-          return RequestType.ADMIN;
-        case READ:
-          return RequestType.SEARCH;
-        case WRITE:
-          return RequestType.UPDATE;
-        default:
-          return RequestType.UNKNOWN;
-      }
+      return switch (ctxReqType) {
+        case ADMIN -> RequestType.ADMIN;
+        case READ -> RequestType.SEARCH;
+        case WRITE -> RequestType.UPDATE;
+        default -> RequestType.UNKNOWN;
+      };
     }
   }
 

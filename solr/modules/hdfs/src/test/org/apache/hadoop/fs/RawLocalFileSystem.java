@@ -259,12 +259,7 @@ public class RawLocalFileSystem extends FileSystem {
     public boolean hasCapability(String capability) {
       // a bit inefficient, but intended to make it easier to add
       // new capabilities.
-      switch (capability.toLowerCase(Locale.ENGLISH)) {
-        case StreamCapabilities.IOSTATISTICS:
-          return true;
-        default:
-          return false;
-      }
+      return capability.toLowerCase(Locale.ENGLISH).equals(StreamCapabilities.IOSTATISTICS);
     }
 
     @Override
@@ -384,12 +379,10 @@ public class RawLocalFileSystem extends FileSystem {
     public boolean hasCapability(String capability) {
       // a bit inefficient, but intended to make it easier to add
       // new capabilities.
-      switch (capability.toLowerCase(Locale.ENGLISH)) {
-        case StreamCapabilities.IOSTATISTICS:
-          return true;
-        default:
-          return StoreImplementationUtils.isProbeForSyncable(capability);
-      }
+      return switch (capability.toLowerCase(Locale.ENGLISH)) {
+        case StreamCapabilities.IOSTATISTICS -> true;
+        default -> StoreImplementationUtils.isProbeForSyncable(capability);
+      };
     }
 
     @Override
@@ -1162,17 +1155,12 @@ public class RawLocalFileSystem extends FileSystem {
   @Override
   public boolean hasPathCapability(final Path path, final String capability)
       throws IOException {
-    switch (validatePathCapabilityArgs(makeQualified(path), capability)) {
-      case CommonPathCapabilities.FS_APPEND:
-      case CommonPathCapabilities.FS_CONCAT:
-      case CommonPathCapabilities.FS_PATHHANDLES:
-      case CommonPathCapabilities.FS_PERMISSIONS:
-      case CommonPathCapabilities.FS_TRUNCATE:
-        return true;
-      case CommonPathCapabilities.FS_SYMLINKS:
-        return FileSystem.areSymlinksEnabled();
-      default:
-        return super.hasPathCapability(path, capability);
-    }
+    return switch (validatePathCapabilityArgs(makeQualified(path), capability)) {
+      case CommonPathCapabilities.FS_APPEND, CommonPathCapabilities.FS_CONCAT,
+           CommonPathCapabilities.FS_PATHHANDLES, CommonPathCapabilities.FS_PERMISSIONS,
+           CommonPathCapabilities.FS_TRUNCATE -> true;
+      case CommonPathCapabilities.FS_SYMLINKS -> FileSystem.areSymlinksEnabled();
+      default -> super.hasPathCapability(path, capability);
+    };
   }
 }

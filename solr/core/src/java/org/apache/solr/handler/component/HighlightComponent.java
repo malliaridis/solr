@@ -176,20 +176,24 @@ public class HighlightComponent extends SearchComponent
     HighlightMethod method = HighlightMethod.parse(params.get(HighlightParams.METHOD, "unified"));
 
     switch (method) {
-      case UNIFIED:
+      case UNIFIED -> {
         if (solrConfigHighlighter instanceof UnifiedSolrHighlighter) {
           return solrConfigHighlighter;
         }
         return new UnifiedSolrHighlighter(); // cheap
-      case FAST_VECTOR: // fall-through
-      case ORIGINAL:
+      } // fall-through
+      case FAST_VECTOR, ORIGINAL -> {
         // The configured highlighter might not actually be the original highlighter if
         //  someone specified class= something custom.
         // Perhaps we shouldn't even support custom SolrHighlighter impls, and instead
         //  we ask users to subclass HighlightComponent instead?
         return solrConfigHighlighter;
-      default:
-        throw new AssertionError();
+        // The configured highlighter might not actually be the original highlighter if
+        //  someone specified class= something custom.
+        // Perhaps we shouldn't even support custom SolrHighlighter impls, and instead
+        //  we ask users to subclass HighlightComponent instead?
+      }
+      default -> throw new AssertionError();
     }
   }
 

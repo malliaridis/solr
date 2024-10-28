@@ -35,7 +35,6 @@ import org.apache.solr.common.cloud.Aliases;
 import org.apache.solr.common.cloud.CompositeIdRouter;
 import org.apache.solr.common.cloud.DocCollection;
 import org.apache.solr.common.cloud.DocRouter;
-import org.apache.solr.common.cloud.ImplicitDocRouter;
 import org.apache.solr.common.cloud.PlainIdRouter;
 import org.apache.solr.common.cloud.Replica;
 import org.apache.solr.common.cloud.Slice;
@@ -466,23 +465,22 @@ public class ScoreJoinQParserPlugin extends QParserPlugin {
     String routerName = checkRouters(toCollection, fromCollection);
     boolean checkFromRouterField = false;
     switch (routerName) {
-      case PlainIdRouter.NAME: // mandatory field check
+      case PlainIdRouter.NAME -> {
         checkFromRouterField = true;
         checkRouterField(() -> toCore, toCollection, toField);
-        break;
-      case CompositeIdRouter.NAME: // let you shoot your legs
+      }
+      case CompositeIdRouter.NAME -> {
         if (localParams.getBool(CHECK_ROUTER_FIELD, true)) {
           checkFromRouterField = true;
           checkRouterField(() -> toCore, toCollection, toField);
         }
-        break;
-      case ImplicitDocRouter.NAME: // don't check field, you know what you do
-      default:
+      }
+      default -> {
         // if router field is not set, "to" may fallback to uniqueKey
         if (localParams.getBool(CHECK_ROUTER_FIELD, true)) {
           checkRouterField(() -> toCore, toCollection, toField);
         }
-        break;
+      }
     }
     return checkFromRouterField;
   }

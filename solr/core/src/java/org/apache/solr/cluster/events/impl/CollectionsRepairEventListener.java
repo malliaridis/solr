@@ -107,11 +107,8 @@ public class CollectionsRepairEventListener
       return;
     }
     switch (event.getType()) {
-      case NODES_DOWN:
-        handleNodesDown((NodesDownEvent) event);
-        break;
-      default:
-        log.warn("Unsupported event {}, ignoring...", event);
+      case NODES_DOWN -> handleNodesDown((NodesDownEvent) event);
+      default -> log.warn("Unsupported event {}, ignoring...", event);
     }
   }
 

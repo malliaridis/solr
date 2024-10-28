@@ -483,8 +483,8 @@ public class JWTAuthPlugin extends AuthenticationPlugin
       }
     }
 
-    switch (authResponse.getAuthCode()) {
-      case AUTHENTICATED:
+    return switch (authResponse.getAuthCode()) {
+      case AUTHENTICATED -> {
         final Principal principal = authResponse.getPrincipal();
         request = wrapWithPrincipal(request, principal);
         if (!(principal instanceof JWTPrincipal)) {
@@ -498,18 +498,17 @@ public class JWTAuthPlugin extends AuthenticationPlugin
         }
         numAuthenticated.inc();
         filterChain.doFilter(request, response);
-        return true;
-
-      case PASS_THROUGH:
+        yield true;
+      }
+      case PASS_THROUGH -> {
         if (log.isDebugEnabled())
           log.debug("Unknown user, but allow due to {}=false", PARAM_BLOCK_UNKNOWN);
         numPassThrough.inc();
         request.setAttribute(AuthenticationPlugin.class.getName(), getPromptHeaders(null, null));
         filterChain.doFilter(request, response);
-        return true;
-
-      case AUTZ_HEADER_PROBLEM:
-      case JWT_PARSE_ERROR:
+        yield true;
+      }
+      case AUTZ_HEADER_PROBLEM, JWT_PARSE_ERROR -> {
         log.warn(
             "Authentication failed. {}, {}",
             authResponse.getAuthCode(),
@@ -520,12 +519,9 @@ public class JWTAuthPlugin extends AuthenticationPlugin
             authResponse.getAuthCode().getMsg(),
             HttpServletResponse.SC_BAD_REQUEST,
             BearerWwwAuthErrorCode.invalid_request);
-        return false;
-
-      case CLAIM_MISMATCH:
-      case JWT_EXPIRED:
-      case JWT_VALIDATION_EXCEPTION:
-      case PRINCIPAL_MISSING:
+        yield false;
+      }
+      case CLAIM_MISMATCH, JWT_EXPIRED, JWT_VALIDATION_EXCEPTION, PRINCIPAL_MISSING -> {
         log.warn("Authentication failed. {}, {}", authResponse.getAuthCode(), exceptionMessage);
         numWrongCredentials.inc();
         authenticationFailure(
@@ -533,9 +529,9 @@ public class JWTAuthPlugin extends AuthenticationPlugin
             authResponse.getAuthCode().getMsg(),
             HttpServletResponse.SC_UNAUTHORIZED,
             BearerWwwAuthErrorCode.invalid_token);
-        return false;
-
-      case SIGNATURE_INVALID:
+        yield false;
+      }
+      case SIGNATURE_INVALID -> {
         log.warn("Signature validation failed: {}", exceptionMessage);
         numWrongCredentials.inc();
         authenticationFailure(
@@ -543,27 +539,27 @@ public class JWTAuthPlugin extends AuthenticationPlugin
             authResponse.getAuthCode().getMsg(),
             HttpServletResponse.SC_UNAUTHORIZED,
             BearerWwwAuthErrorCode.invalid_token);
-        return false;
-
-      case SCOPE_MISSING:
+        yield false;
+      }
+      case SCOPE_MISSING -> {
         numWrongCredentials.inc();
         authenticationFailure(
             response,
             authResponse.getAuthCode().getMsg(),
             HttpServletResponse.SC_UNAUTHORIZED,
             BearerWwwAuthErrorCode.insufficient_scope);
-        return false;
-
-      case NO_AUTZ_HEADER:
-      default:
+        yield false;
+      }
+      default -> {
         numMissingCredentials.inc();
         authenticationFailure(
             response,
             authResponse.getAuthCode().getMsg(),
             HttpServletResponse.SC_UNAUTHORIZED,
             null);
-        return false;
-    }
+        yield false;
+      }
+    };
   }
 
   /**

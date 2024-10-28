@@ -135,44 +135,35 @@ public class JavabinTupleStreamParser extends JavaBinCodec implements TupleStrea
     }
     if (onlyJsonTypes) {
       switch (tagByte >>> 5) {
-        case SINT >>> 5:
+        case SINT >>> 5 -> {
           int i = readSmallInt(dis);
           return (long) i;
-        case ORDERED_MAP >>> 5:
-        case NAMED_LST >>> 5:
+        }
+        case ORDERED_MAP >>> 5, NAMED_LST >>> 5 -> {
           return readAsMap(dis);
+        }
       }
 
-      switch (tagByte) {
-        case INT:
-          {
-            int i = dis.readInt();
-            return (long) i;
-          }
-        case FLOAT:
-          {
-            float v = dis.readFloat();
-            return (double) v;
-          }
-        case BYTE:
-          {
-            byte b = dis.readByte();
-            return (long) b;
-          }
-        case SHORT:
-          {
-            short s = dis.readShort();
-            return (long) s;
-          }
-
-        case DATE:
-          {
-            return Instant.ofEpochMilli(dis.readLong()).toString();
-          }
-
-        default:
-          return super.readObject(dis);
-      }
+      return switch (tagByte) {
+        case INT -> {
+          int i = dis.readInt();
+          yield (long) i;
+        }
+        case FLOAT -> {
+          float v = dis.readFloat();
+          yield (double) v;
+        }
+        case BYTE -> {
+          byte b = dis.readByte();
+          yield (long) b;
+        }
+        case SHORT -> {
+          short s = dis.readShort();
+          yield (long) s;
+        }
+        case DATE -> Instant.ofEpochMilli(dis.readLong()).toString();
+        default -> super.readObject(dis);
+      };
     } else return super.readObject(dis);
   }
 

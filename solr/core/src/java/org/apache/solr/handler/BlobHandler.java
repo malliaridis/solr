@@ -362,13 +362,10 @@ public class BlobHandler extends RequestHandlerBase
 
   @Override
   public Name getPermissionName(AuthorizationContext ctx) {
-    switch (ctx.getHttpMethod()) {
-      case "GET":
-        return Name.READ_PERM;
-      case "POST":
-        return Name.UPDATE_PERM;
-      default:
-        return null;
-    }
+    return switch (ctx.getHttpMethod()) {
+      case "GET" -> Name.READ_PERM;
+      case "POST" -> Name.UPDATE_PERM;
+      default -> null;
+    };
   }
 }

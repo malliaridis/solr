@@ -61,19 +61,14 @@ public class StandardDirectoryFactory extends CachingDirectoryFactory {
       log.warn("No lockType configured, assuming '{}'.", rawLockType);
     }
     final String lockType = rawLockType.toLowerCase(Locale.ROOT).trim();
-    switch (lockType) {
-      case DirectoryFactory.LOCK_TYPE_SIMPLE:
-        return SimpleFSLockFactory.INSTANCE;
-      case DirectoryFactory.LOCK_TYPE_NATIVE:
-        return NativeFSLockFactory.INSTANCE;
-      case DirectoryFactory.LOCK_TYPE_SINGLE:
-        return new SingleInstanceLockFactory();
-      case DirectoryFactory.LOCK_TYPE_NONE:
-        return NoLockFactory.INSTANCE;
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR, "Unrecognized lockType: " + rawLockType);
-    }
+    return switch (lockType) {
+      case DirectoryFactory.LOCK_TYPE_SIMPLE -> SimpleFSLockFactory.INSTANCE;
+      case DirectoryFactory.LOCK_TYPE_NATIVE -> NativeFSLockFactory.INSTANCE;
+      case DirectoryFactory.LOCK_TYPE_SINGLE -> new SingleInstanceLockFactory();
+      case DirectoryFactory.LOCK_TYPE_NONE -> NoLockFactory.INSTANCE;
+      default -> throw new SolrException(
+          SolrException.ErrorCode.SERVER_ERROR, "Unrecognized lockType: " + rawLockType);
+    };
   }
 
   @Override

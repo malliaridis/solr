@@ -218,33 +218,26 @@ public class IntervalFacets implements Iterable<FacetInterval> {
         } while (ctx == null || doc >= ctx.docBase + ctx.reader().maxDoc());
         assert doc >= ctx.docBase;
         switch (numericType) {
-          case LONG:
-          case DATE:
-          case INTEGER:
-            longs = DocValues.getNumeric(ctx.reader(), fieldName);
-            break;
-          case FLOAT:
-            // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
-            longs =
-                new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
-                  @Override
-                  public long longValue() throws IOException {
-                    return NumericUtils.sortableFloatBits((int) super.longValue());
-                  }
-                };
-            break;
-          case DOUBLE:
-            // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
-            longs =
-                new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
-                  @Override
-                  public long longValue() throws IOException {
-                    return NumericUtils.sortableDoubleBits(super.longValue());
-                  }
-                };
-            break;
-          default:
-            throw new AssertionError();
+          case LONG, DATE, INTEGER -> longs = DocValues.getNumeric(ctx.reader(), fieldName);
+          case FLOAT ->
+          // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
+          longs =
+              new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
+                @Override
+                public long longValue() throws IOException {
+                  return NumericUtils.sortableFloatBits((int) super.longValue());
+                }
+              };
+          case DOUBLE ->
+          // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
+          longs =
+              new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
+                @Override
+                public long longValue() throws IOException {
+                  return NumericUtils.sortableDoubleBits(super.longValue());
+                }
+              };
+          default -> throw new AssertionError();
         }
       }
       int valuesDocID = longs.docID();
@@ -329,27 +322,25 @@ public class IntervalFacets implements Iterable<FacetInterval> {
       while (evaluateNextInterval && currentInterval < intervals.length) {
         IntervalCompareResult result = intervals[currentInterval].includes(value);
         switch (result) {
-          case INCLUDED:
+          case INCLUDED -> {
             /*
              * Increment the current interval and move to the next one using
              * the same value
              */
             intervals[currentInterval].incCount();
             currentInterval++;
-            break;
-          case LOWER_THAN_START:
-            /*
-             * None of the next intervals will match this value (all of them have
-             * higher start value). Move to the next value for this document.
-             */
-            evaluateNextInterval = false;
-            break;
-          case GREATER_THAN_END:
-            /*
-             * Next interval may match this value
-             */
-            currentInterval++;
-            break;
+          }
+          case LOWER_THAN_START ->
+          /*
+           * None of the next intervals will match this value (all of them have
+           * higher start value). Move to the next value for this document.
+           */
+          evaluateNextInterval = false;
+          case GREATER_THAN_END ->
+          /*
+           * Next interval may match this value
+           */
+          currentInterval++;
         }
         // Maybe return if currentInterval == intervals.length?
       }
@@ -376,27 +367,25 @@ public class IntervalFacets implements Iterable<FacetInterval> {
           while (evaluateNextInterval && currentInterval < intervals.length) {
             IntervalCompareResult result = intervals[currentInterval].includes(currOrd);
             switch (result) {
-              case INCLUDED:
+              case INCLUDED -> {
                 /*
                  * Increment the current interval and move to the next one using
                  * the same value
                  */
                 intervals[currentInterval].incCount();
                 currentInterval++;
-                break;
-              case LOWER_THAN_START:
-                /*
-                 * None of the next intervals will match this value (all of them have
-                 * higher start value). Move to the next value for this document.
-                 */
-                evaluateNextInterval = false;
-                break;
-              case GREATER_THAN_END:
-                /*
-                 * Next interval may match this value
-                 */
-                currentInterval++;
-                break;
+              }
+              case LOWER_THAN_START ->
+              /*
+               * None of the next intervals will match this value (all of them have
+               * higher start value). Move to the next value for this document.
+               */
+              evaluateNextInterval = false;
+              case GREATER_THAN_END ->
+              /*
+               * Next interval may match this value
+               */
+              currentInterval++;
             }
           }
         }
@@ -636,27 +625,18 @@ public class IntervalFacets implements Iterable<FacetInterval> {
         startLimit = Long.MIN_VALUE;
       } else {
         switch (schemaField.getType().getNumberType()) {
-          case LONG:
-            startLimit = (long) schemaField.getType().toObject(schemaField, start);
-            break;
-          case DATE:
-            startLimit = ((Date) schemaField.getType().toObject(schemaField, start)).getTime();
-            break;
-          case INTEGER:
-            startLimit = ((Integer) schemaField.getType().toObject(schemaField, start)).longValue();
-            break;
-          case FLOAT:
-            startLimit =
-                NumericUtils.floatToSortableInt(
-                    (float) schemaField.getType().toObject(schemaField, start));
-            break;
-          case DOUBLE:
-            startLimit =
-                NumericUtils.doubleToSortableLong(
-                    (double) schemaField.getType().toObject(schemaField, start));
-            break;
-          default:
-            throw new AssertionError();
+          case LONG -> startLimit = (long) schemaField.getType().toObject(schemaField, start);
+          case DATE -> startLimit =
+              ((Date) schemaField.getType().toObject(schemaField, start)).getTime();
+          case INTEGER -> startLimit =
+              ((Integer) schemaField.getType().toObject(schemaField, start)).longValue();
+          case FLOAT -> startLimit =
+              NumericUtils.floatToSortableInt(
+                  (float) schemaField.getType().toObject(schemaField, start));
+          case DOUBLE -> startLimit =
+              NumericUtils.doubleToSortableLong(
+                  (double) schemaField.getType().toObject(schemaField, start));
+          default -> throw new AssertionError();
         }
         if (startOpen) {
           if (startLimit == Long.MAX_VALUE) {
@@ -674,27 +654,18 @@ public class IntervalFacets implements Iterable<FacetInterval> {
         endLimit = Long.MAX_VALUE;
       } else {
         switch (schemaField.getType().getNumberType()) {
-          case LONG:
-            endLimit = (long) schemaField.getType().toObject(schemaField, end);
-            break;
-          case DATE:
-            endLimit = ((Date) schemaField.getType().toObject(schemaField, end)).getTime();
-            break;
-          case INTEGER:
-            endLimit = ((Integer) schemaField.getType().toObject(schemaField, end)).longValue();
-            break;
-          case FLOAT:
-            endLimit =
-                NumericUtils.floatToSortableInt(
-                    (float) schemaField.getType().toObject(schemaField, end));
-            break;
-          case DOUBLE:
-            endLimit =
-                NumericUtils.doubleToSortableLong(
-                    (double) schemaField.getType().toObject(schemaField, end));
-            break;
-          default:
-            throw new AssertionError();
+          case LONG -> endLimit = (long) schemaField.getType().toObject(schemaField, end);
+          case DATE -> endLimit =
+              ((Date) schemaField.getType().toObject(schemaField, end)).getTime();
+          case INTEGER -> endLimit =
+              ((Integer) schemaField.getType().toObject(schemaField, end)).longValue();
+          case FLOAT -> endLimit =
+              NumericUtils.floatToSortableInt(
+                  (float) schemaField.getType().toObject(schemaField, end));
+          case DOUBLE -> endLimit =
+              NumericUtils.doubleToSortableLong(
+                  (double) schemaField.getType().toObject(schemaField, end));
+          default -> throw new AssertionError();
         }
         if (endOpen) {
           if (endLimit == Long.MIN_VALUE) {

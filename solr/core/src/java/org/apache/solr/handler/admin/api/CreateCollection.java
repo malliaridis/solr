@@ -361,32 +361,29 @@ public class CreateCollection extends AdminAPIBase implements CreateCollectionAp
     final Set<String> v2Keys = v2MapVals.keySet().stream().collect(Collectors.toSet());
     for (String key : v2Keys) {
       switch (key) {
-        case V2ApiConstants.PROPERTIES_KEY:
+        case V2ApiConstants.PROPERTIES_KEY -> {
           final Map<String, Object> propertiesMap =
               (Map<String, Object>) v2MapVals.remove(V2ApiConstants.PROPERTIES_KEY);
           flattenMapWithPrefix(propertiesMap, v2MapVals, CollectionAdminParams.PROPERTY_PREFIX);
-          break;
-        case ROUTER_KEY:
+        }
+        case ROUTER_KEY -> {
           final var routerProperties =
               (CreateCollectionRouterProperties) v2MapVals.remove(ROUTER_KEY);
           final Map<String, Object> routerPropertiesAsMap = Utils.reflectToMap(routerProperties);
           flattenMapWithPrefix(
               routerPropertiesAsMap, v2MapVals, CollectionAdminParams.ROUTER_PREFIX);
-          break;
-        case V2ApiConstants.CONFIG:
-          v2MapVals.put(CollectionAdminParams.COLL_CONF, v2MapVals.remove(V2ApiConstants.CONFIG));
-          break;
-        case SHARD_NAMES:
+        }
+        case V2ApiConstants.CONFIG -> v2MapVals.put(
+            CollectionAdminParams.COLL_CONF, v2MapVals.remove(V2ApiConstants.CONFIG));
+        case SHARD_NAMES -> {
           final String shardsValue =
               String.join(",", (Collection<String>) v2MapVals.remove(SHARD_NAMES));
           v2MapVals.put(SHARDS_PROP, shardsValue);
-          break;
-        case V2ApiConstants.SHUFFLE_NODES:
-          v2MapVals.put(
-              CollectionAdminParams.CREATE_NODE_SET_SHUFFLE_PARAM,
-              v2MapVals.remove(V2ApiConstants.SHUFFLE_NODES));
-          break;
-        case V2ApiConstants.NODE_SET:
+        }
+        case V2ApiConstants.SHUFFLE_NODES -> v2MapVals.put(
+            CollectionAdminParams.CREATE_NODE_SET_SHUFFLE_PARAM,
+            v2MapVals.remove(V2ApiConstants.SHUFFLE_NODES));
+        case V2ApiConstants.NODE_SET -> {
           final Object nodeSetValUncast = v2MapVals.remove(V2ApiConstants.NODE_SET);
           if (nodeSetValUncast instanceof String) {
             v2MapVals.put(CollectionAdminParams.CREATE_NODE_SET_PARAM, nodeSetValUncast);
@@ -395,9 +392,8 @@ public class CreateCollection extends AdminAPIBase implements CreateCollectionAp
             final String nodeSetStr = String.join(",", nodeSetList);
             v2MapVals.put(CollectionAdminParams.CREATE_NODE_SET_PARAM, nodeSetStr);
           }
-          break;
-        default:
-          break;
+        }
+        default -> {}
       }
     }
   }

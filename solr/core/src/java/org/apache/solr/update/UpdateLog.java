@@ -1515,40 +1515,30 @@ public class UpdateLog implements PluginInfoInitialized, SolrMetricProducer {
           long version = (Long) entry.get(1);
           if (Math.abs(version) > commitVersion) {
             switch (oper) {
-              case UpdateLog.UPDATE_INPLACE:
-              case UpdateLog.ADD:
-                {
-                  AddUpdateCommand cmd =
-                      convertTlogEntryToAddUpdateCommand(req, entry, oper, version);
-                  cmd.setFlags(UpdateCommand.IGNORE_AUTOCOMMIT);
-                  add(cmd);
-                  break;
-                }
-              case UpdateLog.DELETE:
-                {
-                  byte[] idBytes = (byte[]) entry.get(2);
-                  DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
-                  cmd.setIndexedId(new BytesRef(idBytes));
-                  cmd.setVersion(version);
-                  cmd.setFlags(UpdateCommand.IGNORE_AUTOCOMMIT);
-                  delete(cmd);
-                  break;
-                }
-
-              case UpdateLog.DELETE_BY_QUERY:
-                {
-                  String query = (String) entry.get(2);
-                  DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
-                  cmd.query = query;
-                  cmd.setVersion(version);
-                  cmd.setFlags(UpdateCommand.IGNORE_AUTOCOMMIT);
-                  deleteByQuery(cmd);
-                  break;
-                }
-
-              default:
-                throw new SolrException(
-                    SolrException.ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
+              case UpdateLog.UPDATE_INPLACE, UpdateLog.ADD -> {
+                AddUpdateCommand cmd =
+                    convertTlogEntryToAddUpdateCommand(req, entry, oper, version);
+                cmd.setFlags(UpdateCommand.IGNORE_AUTOCOMMIT);
+                add(cmd);
+              }
+              case UpdateLog.DELETE -> {
+                byte[] idBytes = (byte[]) entry.get(2);
+                DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
+                cmd.setIndexedId(new BytesRef(idBytes));
+                cmd.setVersion(version);
+                cmd.setFlags(UpdateCommand.IGNORE_AUTOCOMMIT);
+                delete(cmd);
+              }
+              case UpdateLog.DELETE_BY_QUERY -> {
+                String query = (String) entry.get(2);
+                DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
+                cmd.query = query;
+                cmd.setVersion(version);
+                cmd.setFlags(UpdateCommand.IGNORE_AUTOCOMMIT);
+                deleteByQuery(cmd);
+              }
+              default -> throw new SolrException(
+                  ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
             }
           }
         } catch (ClassCastException e) {
@@ -1790,10 +1780,10 @@ public class UpdateLog implements PluginInfoInitialized, SolrMetricProducer {
               if (oldLog.isBuffer) bufferUpdates.add(version);
 
               switch (oper) {
-                case UpdateLog.ADD:
-                case UpdateLog.UPDATE_INPLACE:
-                case UpdateLog.DELETE:
-                case UpdateLog.DELETE_BY_QUERY:
+                case UpdateLog.ADD,
+                    UpdateLog.UPDATE_INPLACE,
+                    UpdateLog.DELETE,
+                    UpdateLog.DELETE_BY_QUERY -> {
                   Update update = new Update();
                   update.log = oldLog;
                   update.pointer = reader.position();
@@ -1812,14 +1802,10 @@ public class UpdateLog implements PluginInfoInitialized, SolrMetricProducer {
                   } else if (oper == UpdateLog.DELETE) {
                     deleteList.add(new DeleteUpdate(version, (byte[]) entry.get(2)));
                   }
-
-                  break;
-
-                case UpdateLog.COMMIT:
-                  break;
-                default:
-                  throw new SolrException(
-                      SolrException.ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
+                }
+                case UpdateLog.COMMIT -> {}
+                default -> throw new SolrException(
+                    ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
               }
             } catch (ClassCastException cl) {
               log.warn("Unexpected log entry or corrupt log.  Entry={}", o, cl);
@@ -2191,54 +2177,42 @@ public class UpdateLog implements PluginInfoInitialized, SolrMetricProducer {
             int oper = operationAndFlags & OPERATION_MASK;
             long version = (Long) entry.get(UpdateLog.VERSION_IDX);
 
-            switch (oper) {
-              case UpdateLog.UPDATE_INPLACE: // fall through to ADD
-              case UpdateLog.ADD:
-                {
-                  recoveryInfo.adds++;
-                  AddUpdateCommand cmd =
-                      convertTlogEntryToAddUpdateCommand(req, entry, oper, version);
-                  cmd.setFlags(UpdateCommand.REPLAY | UpdateCommand.IGNORE_AUTOCOMMIT);
-                  if (debug) log.debug("{} {}", oper == ADD ? "add" : "update", cmd);
-                  execute(cmd, executor, pendingTasks, procThreadLocal, exceptionOnExecuteUpdate);
-                  break;
-                }
-              case UpdateLog.DELETE:
-                {
-                  recoveryInfo.deletes++;
-                  byte[] idBytes = (byte[]) entry.get(2);
-                  DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
-                  cmd.setIndexedId(new BytesRef(idBytes));
-                  cmd.setVersion(version);
-                  cmd.setFlags(UpdateCommand.REPLAY | UpdateCommand.IGNORE_AUTOCOMMIT);
-                  if (debug) log.debug("delete {}", cmd);
-                  execute(cmd, executor, pendingTasks, procThreadLocal, exceptionOnExecuteUpdate);
-                  break;
-                }
-
-              case UpdateLog.DELETE_BY_QUERY:
-                {
-                  recoveryInfo.deleteByQuery++;
-                  String query = (String) entry.get(2);
-                  DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
-                  cmd.query = query;
-                  cmd.setVersion(version);
-                  cmd.setFlags(UpdateCommand.REPLAY | UpdateCommand.IGNORE_AUTOCOMMIT);
-                  if (debug) log.debug("deleteByQuery {}", cmd);
-                  waitForAllUpdatesGetExecuted(pendingTasks);
-                  // DBQ will be executed in the same thread
-                  execute(cmd, null, pendingTasks, procThreadLocal, exceptionOnExecuteUpdate);
-                  break;
-                }
-              case UpdateLog.COMMIT:
-                {
-                  commitVersion = version;
-                  break;
-                }
-
-              default:
-                throw new SolrException(
-                    SolrException.ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
+            switch (oper) { // fall through to ADD
+              case UpdateLog.UPDATE_INPLACE, UpdateLog.ADD -> {
+                recoveryInfo.adds++;
+                AddUpdateCommand cmd =
+                    convertTlogEntryToAddUpdateCommand(req, entry, oper, version);
+                cmd.setFlags(UpdateCommand.REPLAY | UpdateCommand.IGNORE_AUTOCOMMIT);
+                if (debug) log.debug("{} {}", oper == ADD ? "add" : "update", cmd);
+                execute(cmd, executor, pendingTasks, procThreadLocal, exceptionOnExecuteUpdate);
+              }
+              case UpdateLog.DELETE -> {
+                recoveryInfo.deletes++;
+                byte[] idBytes = (byte[]) entry.get(2);
+                DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
+                cmd.setIndexedId(new BytesRef(idBytes));
+                cmd.setVersion(version);
+                cmd.setFlags(UpdateCommand.REPLAY | UpdateCommand.IGNORE_AUTOCOMMIT);
+                if (debug) log.debug("delete {}", cmd);
+                execute(cmd, executor, pendingTasks, procThreadLocal, exceptionOnExecuteUpdate);
+              }
+              case UpdateLog.DELETE_BY_QUERY -> {
+                recoveryInfo.deleteByQuery++;
+                String query = (String) entry.get(2);
+                DeleteUpdateCommand cmd = new DeleteUpdateCommand(req);
+                cmd.query = query;
+                cmd.setVersion(version);
+                cmd.setFlags(UpdateCommand.REPLAY | UpdateCommand.IGNORE_AUTOCOMMIT);
+                if (debug) log.debug("deleteByQuery {}", cmd);
+                waitForAllUpdatesGetExecuted(pendingTasks);
+                // DBQ will be executed in the same thread
+                execute(cmd, null, pendingTasks, procThreadLocal, exceptionOnExecuteUpdate);
+              }
+              case UpdateLog.COMMIT -> {
+                commitVersion = version;
+              }
+              default -> throw new SolrException(
+                  ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
             }
 
             if (rsp.getException() != null) {

@@ -82,20 +82,15 @@ public class NodePreferenceRulesComparator implements Comparator<Object> {
       }
       String[] parts = lastRule.value.split(":", 2);
       switch (parts[0]) {
-        case ShardParams.REPLICA_RANDOM:
-          this.baseReplicaListTransformer =
-              RequestReplicaListTransformerGenerator.RANDOM_RLTF.getInstance(
-                  parts.length == 1 ? null : parts[1], requestParams, null);
-          break;
-        case ShardParams.REPLICA_STABLE:
-          this.baseReplicaListTransformer =
-              stableRltFactory.getInstance(
-                  parts.length == 1 ? null : parts[1],
-                  requestParams,
-                  RequestReplicaListTransformerGenerator.RANDOM_RLTF);
-          break;
-        default:
-          throw new IllegalArgumentException("Invalid base replica order spec");
+        case ShardParams.REPLICA_RANDOM -> this.baseReplicaListTransformer =
+            RequestReplicaListTransformerGenerator.RANDOM_RLTF.getInstance(
+                parts.length == 1 ? null : parts[1], requestParams, null);
+        case ShardParams.REPLICA_STABLE -> this.baseReplicaListTransformer =
+            stableRltFactory.getInstance(
+                parts.length == 1 ? null : parts[1],
+                requestParams,
+                RequestReplicaListTransformerGenerator.RANDOM_RLTF);
+        default -> throw new IllegalArgumentException("Invalid base replica order spec");
       }
     }
   }
@@ -125,19 +120,19 @@ public class NodePreferenceRulesComparator implements Comparator<Object> {
         final boolean lhs;
         final boolean rhs;
         switch (preferenceRule.name) {
-          case ShardParams.SHARDS_PREFERENCE_REPLICA_TYPE:
+          case ShardParams.SHARDS_PREFERENCE_REPLICA_TYPE -> {
             lhs = hasReplicaType(left, preferenceRule.value);
             rhs = hasReplicaType(right, preferenceRule.value);
-            break;
-          case ShardParams.SHARDS_PREFERENCE_REPLICA_LOCATION:
+          }
+          case ShardParams.SHARDS_PREFERENCE_REPLICA_LOCATION -> {
             lhs = hasCoreUrlPrefix(left, preferenceRule.value);
             rhs = hasCoreUrlPrefix(right, preferenceRule.value);
-            break;
-          case ShardParams.SHARDS_PREFERENCE_REPLICA_LEADER:
+          }
+          case ShardParams.SHARDS_PREFERENCE_REPLICA_LEADER -> {
             lhs = hasLeaderStatus(left, preferenceRule.value);
             rhs = hasLeaderStatus(right, preferenceRule.value);
-            break;
-          case ShardParams.SHARDS_PREFERENCE_NODE_WITH_SAME_SYSPROP:
+          }
+          case ShardParams.SHARDS_PREFERENCE_NODE_WITH_SAME_SYSPROP -> {
             if (sysProps == null) {
               throw new IllegalArgumentException(
                   "Unable to get the NodesSysPropsCacher on sorting replicas by preference:"
@@ -145,15 +140,13 @@ public class NodePreferenceRulesComparator implements Comparator<Object> {
             }
             lhs = hasSameMetric(left, preferenceRule.value);
             rhs = hasSameMetric(right, preferenceRule.value);
-            break;
-          case ShardParams.SHARDS_PREFERENCE_REPLICA_BASE:
-            throw new IllegalArgumentException(
-                "only one base replica order may be specified in "
-                    + ShardParams.SHARDS_PREFERENCE
-                    + ", and it must be specified last");
-          default:
-            throw new IllegalArgumentException(
-                "Invalid " + ShardParams.SHARDS_PREFERENCE + " type: " + preferenceRule.name);
+          }
+          case ShardParams.SHARDS_PREFERENCE_REPLICA_BASE -> throw new IllegalArgumentException(
+              "only one base replica order may be specified in "
+                  + ShardParams.SHARDS_PREFERENCE
+                  + ", and it must be specified last");
+          default -> throw new IllegalArgumentException(
+              "Invalid " + ShardParams.SHARDS_PREFERENCE + " type: " + preferenceRule.name);
         }
         if (lhs != rhs) {
           return lhs ? -1 : +1;

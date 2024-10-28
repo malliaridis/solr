@@ -833,22 +833,17 @@ public class CollectionsHandler extends RequestHandlerBase implements Permission
                     .getAsyncTaskRequestStatus(requestId);
             final String message;
             switch (sr.first()) {
-              case COMPLETED:
+              case COMPLETED -> {
                 message = "found [" + requestId + "] in completed tasks";
                 rsp.getValues().addAll(sr.second().getResponse());
-                break;
-              case FAILED:
+              }
+              case FAILED -> {
                 message = "found [" + requestId + "] in failed tasks";
                 rsp.getValues().addAll(sr.second().getResponse());
-                break;
-              case RUNNING:
-                message = "found [" + requestId + "] in running tasks";
-                break;
-              case SUBMITTED:
-                message = "found [" + requestId + "] in submitted tasks";
-                break;
-              default:
-                message = "Did not find [" + requestId + "] in any tasks queue";
+              }
+              case RUNNING -> message = "found [" + requestId + "] in running tasks";
+              case SUBMITTED -> message = "found [" + requestId + "] in submitted tasks";
+              default -> message = "Did not find [" + requestId + "] in any tasks queue";
             }
             addStatusToResponse(status, sr.first(), message);
           }

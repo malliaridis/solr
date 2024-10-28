@@ -317,83 +317,37 @@ public class SolrXmlConfig {
           if (it.name().equals("null")) return;
           try {
             switch (it.attr(NAME)) {
-              case "adminHandler":
-                builder.setCoreAdminHandlerClass(it.txt());
-                break;
-              case "collectionsHandler":
-                builder.setCollectionsAdminHandlerClass(it.txt());
-                break;
-              case "healthCheckHandler":
-                builder.setHealthCheckHandlerClass(it.txt());
-                break;
-              case "infoHandler":
-                builder.setInfoHandlerClass(it.txt());
-                break;
-              case "configSetsHandler":
-                builder.setConfigSetsHandlerClass(it.txt());
-                break;
-              case "configSetService":
-                builder.setConfigSetServiceClass(it.txt());
-                break;
-              case "coresLocator":
-                builder.setCoresLocatorClass(it.txt());
-                break;
-              case "coreSorter":
-                builder.setCoreSorterClass(it.txt());
-                break;
-              case "coreRootDirectory":
-                builder.setCoreRootDirectory(it.txt());
-                break;
-              case "solrDataHome":
-                builder.setSolrDataHome(it.txt());
-                break;
-              case "maxBooleanClauses":
-                builder.setBooleanQueryMaxClauseCount(it.intVal(-1));
-                break;
-              case "managementPath":
-                builder.setManagementPath(it.txt());
-                break;
-              case "sharedLib":
-                builder.setSharedLibDirectory(it.txt());
-                break;
-              case "modules":
-                builder.setModules(it.txt());
-                break;
-              case "hiddenSysProps":
-                builder.setHiddenSysProps(it.txt());
-                break;
-              case "allowPaths":
-                builder.setAllowPaths(separatePaths(it.txt()));
-                break;
-              case "hideStackTrace":
-                builder.setHideStackTrace(it.boolVal(false));
-                break;
-              case "configSetBaseDir":
-                builder.setConfigSetBaseDirectory(it.txt());
-                break;
-              case "shareSchema":
-                builder.setUseSchemaCache(it.boolVal(false));
-                break;
-              case "coreLoadThreads":
-                builder.setCoreLoadThreads(it.intVal(-1));
-                break;
-              case "replayUpdatesThreads":
-                builder.setReplayUpdatesThreads(it.intVal(-1));
-                break;
-              case "indexSearcherExecutorThreads":
-                builder.setIndexSearcherExecutorThreads(it.intVal(-1));
-                break;
-              case "transientCacheSize":
+              case "adminHandler" -> builder.setCoreAdminHandlerClass(it.txt());
+              case "collectionsHandler" -> builder.setCollectionsAdminHandlerClass(it.txt());
+              case "healthCheckHandler" -> builder.setHealthCheckHandlerClass(it.txt());
+              case "infoHandler" -> builder.setInfoHandlerClass(it.txt());
+              case "configSetsHandler" -> builder.setConfigSetsHandlerClass(it.txt());
+              case "configSetService" -> builder.setConfigSetServiceClass(it.txt());
+              case "coresLocator" -> builder.setCoresLocatorClass(it.txt());
+              case "coreSorter" -> builder.setCoreSorterClass(it.txt());
+              case "coreRootDirectory" -> builder.setCoreRootDirectory(it.txt());
+              case "solrDataHome" -> builder.setSolrDataHome(it.txt());
+              case "maxBooleanClauses" -> builder.setBooleanQueryMaxClauseCount(it.intVal(-1));
+              case "managementPath" -> builder.setManagementPath(it.txt());
+              case "sharedLib" -> builder.setSharedLibDirectory(it.txt());
+              case "modules" -> builder.setModules(it.txt());
+              case "hiddenSysProps" -> builder.setHiddenSysProps(it.txt());
+              case "allowPaths" -> builder.setAllowPaths(separatePaths(it.txt()));
+              case "hideStackTrace" -> builder.setHideStackTrace(it.boolVal(false));
+              case "configSetBaseDir" -> builder.setConfigSetBaseDirectory(it.txt());
+              case "shareSchema" -> builder.setUseSchemaCache(it.boolVal(false));
+              case "coreLoadThreads" -> builder.setCoreLoadThreads(it.intVal(-1));
+              case "replayUpdatesThreads" -> builder.setReplayUpdatesThreads(it.intVal(-1));
+              case "indexSearcherExecutorThreads" -> builder.setIndexSearcherExecutorThreads(
+                  it.intVal(-1));
+              case "transientCacheSize" -> {
                 log.warn("solr.xml transientCacheSize -- transient cores is deprecated");
                 builder.setTransientCacheSize(it.intVal(-1));
-                break;
-              case "allowUrls":
-                builder.setAllowUrls(separateStrings(it.txt()));
-                break;
-              default:
-                throw new SolrException(
-                    SolrException.ErrorCode.SERVER_ERROR,
-                    "Unknown configuration value in solr.xml: " + it.attr(NAME));
+              }
+              case "allowUrls" -> builder.setAllowUrls(separateStrings(it.txt()));
+              default -> throw new SolrException(
+                  SolrException.ErrorCode.SERVER_ERROR,
+                  "Unknown configuration value in solr.xml: " + it.attr(NAME));
             }
           } catch (NumberFormatException e) {
             throw new SolrException(
@@ -527,58 +481,31 @@ public class SolrXmlConfig {
       if (entry.getValue() == null) continue;
       String value = entry.getValue().toString();
       switch (name) {
-        case "leaderVoteWait":
-          builder.setLeaderVoteWait(parseInt(name, value));
-          break;
-        case "leaderConflictResolveWait":
-          builder.setLeaderConflictResolveWait(parseInt(name, value));
-          break;
-        case "zkClientTimeout":
-          builder.setZkClientTimeout(parseInt(name, value));
-          break;
-        case "zkHost":
-          builder.setZkHost(value);
-          break;
-        case "genericCoreNodeNames":
-          builder.setUseGenericCoreNames(Boolean.parseBoolean(value));
-          break;
-        case "zkACLProvider":
-          builder.setZkACLProviderClass(value);
-          break;
-        case "zkCredentialsProvider":
-          builder.setZkCredentialsProviderClass(value);
-          break;
-        case "zkCredentialsInjector":
-          builder.setZkCredentialsInjectorClass(value);
-          break;
-        case "createCollectionWaitTimeTillActive":
-          builder.setCreateCollectionWaitTimeTillActive(parseInt(name, value));
-          break;
-        case "createCollectionCheckLeaderActive":
-          builder.setCreateCollectionCheckLeaderActive(Boolean.parseBoolean(value));
-          break;
-        case "pkiHandlerPrivateKeyPath":
-          builder.setPkiHandlerPrivateKeyPath(value);
-          break;
-        case "pkiHandlerPublicKeyPath":
-          builder.setPkiHandlerPublicKeyPath(value);
-          break;
-        case "distributedClusterStateUpdates":
-          builder.setUseDistributedClusterStateUpdates(Boolean.parseBoolean(value));
-          break;
-        case "distributedCollectionConfigSetExecution":
-          builder.setUseDistributedCollectionConfigSetExecution(Boolean.parseBoolean(value));
-          break;
-        case "minStateByteLenForCompression":
-          builder.setMinStateByteLenForCompression(parseInt(name, value));
-          break;
-        case "stateCompressor":
-          builder.setStateCompressorClass(value);
-          break;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.SERVER_ERROR,
-              "Unknown configuration parameter in <solrcloud> section of solr.xml: " + name);
+        case "leaderVoteWait" -> builder.setLeaderVoteWait(parseInt(name, value));
+        case "leaderConflictResolveWait" -> builder.setLeaderConflictResolveWait(
+            parseInt(name, value));
+        case "zkClientTimeout" -> builder.setZkClientTimeout(parseInt(name, value));
+        case "zkHost" -> builder.setZkHost(value);
+        case "genericCoreNodeNames" -> builder.setUseGenericCoreNames(Boolean.parseBoolean(value));
+        case "zkACLProvider" -> builder.setZkACLProviderClass(value);
+        case "zkCredentialsProvider" -> builder.setZkCredentialsProviderClass(value);
+        case "zkCredentialsInjector" -> builder.setZkCredentialsInjectorClass(value);
+        case "createCollectionWaitTimeTillActive" -> builder.setCreateCollectionWaitTimeTillActive(
+            parseInt(name, value));
+        case "createCollectionCheckLeaderActive" -> builder.setCreateCollectionCheckLeaderActive(
+            Boolean.parseBoolean(value));
+        case "pkiHandlerPrivateKeyPath" -> builder.setPkiHandlerPrivateKeyPath(value);
+        case "pkiHandlerPublicKeyPath" -> builder.setPkiHandlerPublicKeyPath(value);
+        case "distributedClusterStateUpdates" -> builder.setUseDistributedClusterStateUpdates(
+            Boolean.parseBoolean(value));
+        case "distributedCollectionConfigSetExecution" -> builder
+            .setUseDistributedCollectionConfigSetExecution(Boolean.parseBoolean(value));
+        case "minStateByteLenForCompression" -> builder.setMinStateByteLenForCompression(
+            parseInt(name, value));
+        case "stateCompressor" -> builder.setStateCompressorClass(value);
+        default -> throw new SolrException(
+            SolrException.ErrorCode.SERVER_ERROR,
+            "Unknown configuration parameter in <solrcloud> section of solr.xml: " + name);
       }
     }
 
@@ -596,15 +523,10 @@ public class SolrXmlConfig {
       String name = entry.getKey();
       String value = entry.getValue().toString();
       switch (name) {
-        case "class":
-          loggingClass = value;
-          break;
-        case "enabled":
-          enabled = Boolean.parseBoolean(value);
-          break;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.SERVER_ERROR, "Unknown value in logwatcher config: " + name);
+        case "class" -> loggingClass = value;
+        case "enabled" -> enabled = Boolean.parseBoolean(value);
+        default -> throw new SolrException(
+            SolrException.ErrorCode.SERVER_ERROR, "Unknown value in logwatcher config: " + name);
       }
     }
 
@@ -613,15 +535,10 @@ public class SolrXmlConfig {
       String name = entry.getKey();
       String value = entry.getValue().toString();
       switch (name) {
-        case "size":
-          watcherQueueSize = parseInt(name, value);
-          break;
-        case "threshold":
-          watcherThreshold = value;
-          break;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.SERVER_ERROR, "Unknown value in logwatcher config: " + name);
+        case "size" -> watcherQueueSize = parseInt(name, value);
+        case "threshold" -> watcherThreshold = value;
+        default -> throw new SolrException(
+            SolrException.ErrorCode.SERVER_ERROR, "Unknown value in logwatcher config: " + name);
       }
     }
 

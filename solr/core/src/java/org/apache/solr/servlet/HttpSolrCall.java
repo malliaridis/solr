@@ -548,16 +548,19 @@ public class HttpSolrCall {
 
       HttpServletResponse resp = response;
       switch (action) {
-        case ADMIN_OR_REMOTEQUERY:
+        case ADMIN_OR_REMOTEQUERY -> {
           handleAdminOrRemoteRequest();
           return RETURN;
-        case ADMIN:
+        }
+        case ADMIN -> {
           handleAdminRequest();
           return RETURN;
-        case REMOTEQUERY:
+        }
+        case REMOTEQUERY -> {
           sendRemoteQuery();
           return RETURN;
-        case PROCESS:
+        }
+        case PROCESS -> {
           final Method reqMethod = Method.getMethod(req.getMethod());
           HttpCacheHeaderUtil.setCacheControlHeader(config, resp, reqMethod);
           // unless we have been explicitly told not to, do cache validation
@@ -600,8 +603,10 @@ public class HttpSolrCall {
             writeResponse(solrRsp, responseWriter, reqMethod);
           }
           return RETURN;
-        default:
+        }
+        default -> {
           return action;
+        }
       }
     } catch (Throwable ex) {
       if (shouldAudit(EventType.ERROR)) {

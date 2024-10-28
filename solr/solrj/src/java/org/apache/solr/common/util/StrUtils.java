@@ -129,23 +129,15 @@ public class StrUtils {
         if (pos >= end) break; // ERROR, or let it go?
         ch = s.charAt(pos++);
         if (decode) {
-          switch (ch) {
-            case 'n':
-              ch = '\n';
-              break;
-            case 't':
-              ch = '\t';
-              break;
-            case 'r':
-              ch = '\r';
-              break;
-            case 'b':
-              ch = '\b';
-              break;
-            case 'f':
-              ch = '\f';
-              break;
-          }
+          ch =
+              switch (ch) {
+                case 'n' -> '\n';
+                case 't' -> '\t';
+                case 'r' -> '\r';
+                case 'b' -> '\b';
+                case 'f' -> '\f';
+                default -> ch;
+              };
         }
       }
 
@@ -217,23 +209,15 @@ public class StrUtils {
         if (pos >= end) break; // ERROR, or let it go?
         ch = s.charAt(pos++);
         if (decode) {
-          switch (ch) {
-            case 'n':
-              ch = '\n';
-              break;
-            case 't':
-              ch = '\t';
-              break;
-            case 'r':
-              ch = '\r';
-              break;
-            case 'b':
-              ch = '\b';
-              break;
-            case 'f':
-              ch = '\f';
-              break;
-          }
+          ch =
+              switch (ch) {
+                case 'n' -> '\n';
+                case 't' -> '\t';
+                case 'r' -> '\r';
+                case 'b' -> '\b';
+                case 'f' -> '\f';
+                default -> ch;
+              };
         }
       }
 
@@ -312,24 +296,12 @@ public class StrUtils {
         dest.append(Integer.toHexString(ch));
       } else {
         switch (ch) {
-          case ' ':
-            dest.append('+');
-            break;
-          case '&':
-            dest.append("%26");
-            break;
-          case '%':
-            dest.append("%25");
-            break;
-          case '=':
-            dest.append("%3D");
-            break;
-          case '+':
-            dest.append("%2B");
-            break;
-          default:
-            dest.append(ch);
-            break;
+          case ' ' -> dest.append('+');
+          case '&' -> dest.append("%26");
+          case '%' -> dest.append("%25");
+          case '=' -> dest.append("%3D");
+          case '+' -> dest.append("%2B");
+          default -> dest.append(ch);
         }
       }
     }

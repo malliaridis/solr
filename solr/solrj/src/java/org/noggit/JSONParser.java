@@ -101,31 +101,20 @@ public class JSONParser {
   }
 
   public static String getEventString(int e) {
-    switch (e) {
-      case STRING:
-        return "STRING";
-      case LONG:
-        return "LONG";
-      case NUMBER:
-        return "NUMBER";
-      case BIGNUMBER:
-        return "BIGNUMBER";
-      case BOOLEAN:
-        return "BOOLEAN";
-      case NULL:
-        return "NULL";
-      case OBJECT_START:
-        return "OBJECT_START";
-      case OBJECT_END:
-        return "OBJECT_END";
-      case ARRAY_START:
-        return "ARRAY_START";
-      case ARRAY_END:
-        return "ARRAY_END";
-      case EOF:
-        return "EOF";
-    }
-    return "Unknown: " + e;
+    return switch (e) {
+      case STRING -> "STRING";
+      case LONG -> "LONG";
+      case NUMBER -> "NUMBER";
+      case BIGNUMBER -> "BIGNUMBER";
+      case BOOLEAN -> "BOOLEAN";
+      case NULL -> "NULL";
+      case OBJECT_START -> "OBJECT_START";
+      case OBJECT_END -> "OBJECT_END";
+      case ARRAY_START -> "ARRAY_START";
+      case ARRAY_END -> "ARRAY_END";
+      case EOF -> "EOF";
+      default -> "Unknown: " + e;
+    };
   }
 
   private static final CharArr devNull = new CharArr.NullCharArr();
@@ -486,36 +475,29 @@ public class JSONParser {
       int ch = getChar();
       // TODO: is this switch faster as an if-then-else?
       switch (ch) {
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> {
           v = v * 10 - (ch - '0');
           out.unsafeWrite(ch);
-          continue;
-        case '.':
+        }
+        case '.' -> {
           out.unsafeWrite('.');
           valstate = readFrac(out, 22 - i);
           return 0;
-        case 'e':
-        case 'E':
+        }
+        case 'e', 'E' -> {
           out.unsafeWrite(ch);
           nstate = 0;
           valstate = readExp(out, 22 - i);
           return 0;
-        default:
+        }
+        default -> {
           // return the number, relying on nextEvent() to return an error
           // for invalid chars following the number.
           if (ch != -1) --start; // push back last char if not EOF
 
           valstate = LONG;
           return isNeg ? v : -v;
+        }
       }
     }
 
@@ -526,16 +508,7 @@ public class JSONParser {
     for (; i < 22; i++) {
       int ch = getChar();
       switch (ch) {
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> {
           if (v < (0x8000000000000000L / 10))
             overflow = true; // can't multiply by 10 w/o overflowing
           v *= 10;
@@ -543,24 +516,26 @@ public class JSONParser {
           if (v < maxval + digit) overflow = true; // can't add digit w/o overflowing
           v -= digit;
           out.unsafeWrite(ch);
-          continue;
-        case '.':
+        }
+        case '.' -> {
           out.unsafeWrite('.');
           valstate = readFrac(out, 22 - i);
           return 0;
-        case 'e':
-        case 'E':
+        }
+        case 'e', 'E' -> {
           out.unsafeWrite(ch);
           nstate = 0;
           valstate = readExp(out, 22 - i);
           return 0;
-        default:
+        }
+        default -> {
           // return the number, relying on nextEvent() to return an error
           // for invalid chars following the number.
           if (ch != -1) --start; // push back last char if not EOF
 
           valstate = overflow ? BIGNUMBER : LONG;
           return isNeg ? v : -v;
+        }
       }
     }
 

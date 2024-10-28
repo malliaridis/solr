@@ -157,51 +157,11 @@ public class RangeFacetRequest extends FacetComponent.FacetBase {
     FieldType ft = schemaField.getType();
 
     if (ft instanceof TrieField) {
-      switch (ft.getNumberType()) {
-        case FLOAT:
-          calc = new FloatRangeEndpointCalculator(this);
-          break;
-        case DOUBLE:
-          calc = new DoubleRangeEndpointCalculator(this);
-          break;
-        case INTEGER:
-          calc = new IntegerRangeEndpointCalculator(this);
-          break;
-        case LONG:
-          calc = new LongRangeEndpointCalculator(this);
-          break;
-        case DATE:
-          calc = new DateRangeEndpointCalculator(this, null);
-          break;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST,
-              "Unable to range facet on Trie field of unexpected type:" + this.facetOn);
-      }
+      calc = getRangeEndpointCalculator(ft);
     } else if (ft instanceof DateRangeField) {
       calc = new DateRangeEndpointCalculator(this, null);
     } else if (ft.isPointField()) {
-      switch (ft.getNumberType()) {
-        case FLOAT:
-          calc = new FloatRangeEndpointCalculator(this);
-          break;
-        case DOUBLE:
-          calc = new DoubleRangeEndpointCalculator(this);
-          break;
-        case INTEGER:
-          calc = new IntegerRangeEndpointCalculator(this);
-          break;
-        case LONG:
-          calc = new LongRangeEndpointCalculator(this);
-          break;
-        case DATE:
-          calc = new DateRangeEndpointCalculator(this, null);
-          break;
-        default:
-          throw new SolrException(
-              SolrException.ErrorCode.BAD_REQUEST,
-              "Unable to range facet on Point field of unexpected type:" + this.facetOn);
-      }
+      calc = getRangeEndpointCalculator(ft);
     } else if (ft instanceof CurrencyFieldType) {
       calc = new CurrencyRangeEndpointCalculator(this);
     } else {
@@ -210,6 +170,16 @@ public class RangeFacetRequest extends FacetComponent.FacetBase {
     }
 
     return calc;
+  }
+
+  private RangeFacetRequest.RangeEndpointCalculator<?> getRangeEndpointCalculator(FieldType ft) {
+    return switch (ft.getNumberType()) {
+          case FLOAT -> new FloatRangeEndpointCalculator(this);
+          case DOUBLE -> new DoubleRangeEndpointCalculator(this);
+          case INTEGER -> new IntegerRangeEndpointCalculator(this);
+          case LONG -> new LongRangeEndpointCalculator(this);
+          case DATE -> new DateRangeEndpointCalculator(this, null);
+        };
   }
 
   /**

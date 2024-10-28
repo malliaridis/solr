@@ -393,15 +393,13 @@ public class SpellCheckComponentTest extends SolrTestCaseJ4 {
       testsList.add("/spellcheck/collations/collation/collationQuery=='document brown'");
       testsList.add("/spellcheck/collations/collation/hits==0");
       switch (jsonNl) {
-        case "map":
+        case "map" -> {
           testsList.add(
               "/spellcheck/collations/collation/misspellingsAndCorrections/documemtsss=='document'");
           testsList.add(
               "/spellcheck/collations/collation/misspellingsAndCorrections/broens=='brown'");
-          break;
-        default:
-          fail("unexpected json.nl choice: " + jsonNl);
-          break;
+        }
+        default -> fail("unexpected json.nl choice: " + jsonNl);
       }
     } else {
       testsList.add("/spellcheck/collations/collation=='document brown'");

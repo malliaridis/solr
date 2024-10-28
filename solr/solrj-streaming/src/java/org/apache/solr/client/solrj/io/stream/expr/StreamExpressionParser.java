@@ -208,46 +208,43 @@ public class StreamExpressionParser {
         return idx;
       }
 
-      switch (c) {
-        case '\\':
-          // We invert to support situations where \\ exists
-          isEscaped = !isEscaped;
-          break;
-
-        case '"':
-          // if we're not in a non-escaped single quote state, then invert the double quote state
-          if (!isEscaped && !isSingleQuote) {
-            isDoubleQuote = !isDoubleQuote;
-          }
-          isEscaped = false;
-          break;
-
-        case '\'':
-          // if we're not in a non-escaped double quote state, then invert the single quote state
-          if (!isEscaped && !isDoubleQuote) {
-            isSingleQuote = !isSingleQuote;
-          }
-          isEscaped = false;
-          break;
-
-        case '(':
-          // if we're not in a non-escaped quote state, then increment the # of open parens
-          if (!isEscaped && !isSingleQuote && !isDoubleQuote) {
-            openParens += 1;
-          }
-          isEscaped = false;
-          break;
-
-        case ')':
-          // if we're not in a non-escaped quote state, then decrement the # of open parens
-          if (!isEscaped && !isSingleQuote && !isDoubleQuote) {
-            openParens -= 1;
-          }
-          isEscaped = false;
-          break;
-        default:
-          isEscaped = false;
-      }
+      isEscaped =
+          switch (c) {
+            case '\\' ->
+            // We invert to support situations where \\ exists
+            !isEscaped;
+            case '"' -> {
+              // if we're not in a non-escaped single quote state, then invert the double quote
+              // state
+              if (!isEscaped && !isSingleQuote) {
+                isDoubleQuote = !isDoubleQuote;
+              }
+              yield false;
+            }
+            case '\'' -> {
+              // if we're not in a non-escaped double quote state, then invert the single quote
+              // state
+              if (!isEscaped && !isDoubleQuote) {
+                isSingleQuote = !isSingleQuote;
+              }
+              yield false;
+            }
+            case '(' -> {
+              // if we're not in a non-escaped quote state, then increment the # of open parens
+              if (!isEscaped && !isSingleQuote && !isDoubleQuote) {
+                openParens += 1;
+              }
+              yield false;
+            }
+            case ')' -> {
+              // if we're not in a non-escaped quote state, then decrement the # of open parens
+              if (!isEscaped && !isSingleQuote && !isDoubleQuote) {
+                openParens -= 1;
+              }
+              yield false;
+            }
+            default -> false;
+          };
     }
 
     // Not found
@@ -296,36 +293,30 @@ public class StreamExpressionParser {
       char c = clause.charAt(idx);
 
       switch (c) {
-        case '\\':
-          // We invert to support situations where \\ exists
-          isEscaped = !isEscaped;
-          break;
-
-        case '"':
+        case '\\' -> // We invert to support situations where \\ exists
+        isEscaped = !isEscaped;
+        case '"' -> {
           // if we're not in a non-escaped single quote state, then invert the double quote state
           if (!isEscaped && !isSingleQuote) {
             isDoubleQuote = !isDoubleQuote;
           }
           isEscaped = false;
-          break;
-
-        case '\'':
+        }
+        case '\'' -> {
           // if we're not in a non-escaped double quote state, then invert the single quote state
           if (!isEscaped && !isDoubleQuote) {
             isSingleQuote = !isSingleQuote;
           }
           isEscaped = false;
-          break;
-
-        case '(':
+        }
+        case '(' -> {
           // if we're not in a non-escaped quote state, then increment the # of open parens
           if (!isEscaped && !isSingleQuote && !isDoubleQuote) {
             openParens += 1;
           }
           isEscaped = false;
-          break;
-
-        case ')':
+        }
+        case ')' -> {
           // if we're not in a non-escaped quote state, then decrement the # of open parens
           if (!isEscaped && !isSingleQuote && !isDoubleQuote) {
             openParens -= 1;
@@ -336,10 +327,8 @@ public class StreamExpressionParser {
             }
           }
           isEscaped = false;
-          break;
-
-        default:
-          isEscaped = false;
+        }
+        default -> isEscaped = false;
       }
     }
 

@@ -55,15 +55,11 @@ public class SolrPrometheusNodeFormatter extends SolrPrometheusFormatter
         .isPresent()) {
       return new SolrNoOpMetric();
     }
-    switch (NodeCategory.valueOf(metricCategory)) {
-      case ADMIN:
-      case UPDATE:
-        return new SolrNodeHandlerMetric(dropwizardMetric, metricName);
-      case CONTAINER:
-        return new SolrNodeContainerMetric(dropwizardMetric, metricName);
-      default:
-        return new SolrNoOpMetric();
-    }
+    return switch (NodeCategory.valueOf(metricCategory)) {
+      case ADMIN, UPDATE -> new SolrNodeHandlerMetric(dropwizardMetric, metricName);
+      case CONTAINER -> new SolrNodeContainerMetric(dropwizardMetric, metricName);
+      default -> new SolrNoOpMetric();
+    };
   }
 
   /*

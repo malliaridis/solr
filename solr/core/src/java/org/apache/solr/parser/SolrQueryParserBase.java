@@ -609,45 +609,42 @@ public abstract class SolrQueryParserBase extends QueryBuilder {
   @Override
   protected Query newGraphSynonymQuery(Iterator<Query> sidePathQueriesIterator) {
     switch (synonymQueryStyle) {
-      case PICK_BEST:
-        {
-          List<Query> sidePathSynonymQueries = new ArrayList<>();
-          sidePathQueriesIterator.forEachRemaining(sidePathSynonymQueries::add);
-          return new DisjunctionMaxQuery(sidePathSynonymQueries, 0.0f);
-        }
-      case AS_SAME_TERM:
-      case AS_DISTINCT_TERMS:
-        {
-          return super.newGraphSynonymQuery(sidePathQueriesIterator);
-        }
-      default:
-        throw new AssertionError(
-            "unrecognized synonymQueryStyle passed when creating newSynonymQuery");
+      case PICK_BEST -> {
+        List<Query> sidePathSynonymQueries = new ArrayList<>();
+        sidePathQueriesIterator.forEachRemaining(sidePathSynonymQueries::add);
+        return new DisjunctionMaxQuery(sidePathSynonymQueries, 0.0f);
+      }
+      case AS_SAME_TERM, AS_DISTINCT_TERMS -> {
+        return super.newGraphSynonymQuery(sidePathQueriesIterator);
+      }
+      default -> throw new AssertionError(
+          "unrecognized synonymQueryStyle passed when creating newSynonymQuery");
     }
   }
 
   @Override
   protected Query newSynonymQuery(String field, TermAndBoost[] terms) {
     switch (synonymQueryStyle) {
-      case PICK_BEST:
+      case PICK_BEST -> {
         List<Query> currPosnClauses = new ArrayList<>(terms.length);
         for (TermAndBoost term : terms) {
           currPosnClauses.add(newTermQuery(new Term(field, term.term), term.boost));
         }
-        DisjunctionMaxQuery dm = new DisjunctionMaxQuery(currPosnClauses, 0.0f);
-        return dm;
-      case AS_DISTINCT_TERMS:
+        return new DisjunctionMaxQuery(currPosnClauses, 0.0f);
+      }
+      case AS_DISTINCT_TERMS -> {
         BooleanQuery.Builder builder = new BooleanQuery.Builder();
         for (TermAndBoost term : terms) {
           builder.add(
               newTermQuery(new Term(field, term.term), term.boost), BooleanClause.Occur.SHOULD);
         }
         return builder.build();
-      case AS_SAME_TERM:
+      }
+      case AS_SAME_TERM -> {
         return super.newSynonymQuery(field, terms);
-      default:
-        throw new AssertionError(
-            "unrecognized synonymQueryStyle passed when creating newSynonymQuery");
+      }
+      default -> throw new AssertionError(
+          "unrecognized synonymQueryStyle passed when creating newSynonymQuery");
     }
   }
 

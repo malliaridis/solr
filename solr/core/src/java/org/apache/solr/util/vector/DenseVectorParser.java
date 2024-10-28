@@ -41,12 +41,8 @@ public abstract class DenseVectorParser {
 
   protected void parseVector() {
     switch (builderPhase) {
-      case INDEX:
-        parseIndexVector();
-        break;
-      case QUERY:
-        parseQueryVector();
-        break;
+      case INDEX -> parseIndexVector();
+      case QUERY -> parseQueryVector();
     }
   }
 

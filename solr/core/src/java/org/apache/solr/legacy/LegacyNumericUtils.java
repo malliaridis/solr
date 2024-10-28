@@ -307,15 +307,10 @@ public final class LegacyNumericUtils {
     maxBound |= (1L << shift) - 1L;
     // delegate to correct range builder
     switch (valSize) {
-      case 64:
-        ((LongRangeBuilder) builder).addRange(minBound, maxBound, shift);
-        break;
-      case 32:
-        ((IntRangeBuilder) builder).addRange((int) minBound, (int) maxBound, shift);
-        break;
-      default:
-        // Should not happen!
-        throw new IllegalArgumentException("valSize must be 32 or 64.");
+      case 64 -> ((LongRangeBuilder) builder).addRange(minBound, maxBound, shift);
+      case 32 -> ((IntRangeBuilder) builder).addRange((int) minBound, (int) maxBound, shift);
+      default -> // Should not happen!
+      throw new IllegalArgumentException("valSize must be 32 or 64.");
     }
   }
 

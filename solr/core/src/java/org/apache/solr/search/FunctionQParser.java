@@ -212,19 +212,19 @@ public class FunctionQParser extends QParser {
     char ch = sp.peek();
     String val = null;
     switch (ch) {
-      case ')':
+      case ')' -> {
         return null;
-      case '$':
+      }
+      case '$' -> {
         sp.pos++;
         String param = sp.getId();
         val = getParam(param);
-        break;
-      case '\'':
-      case '"':
+      }
+      case '\'', '"' -> {
         val = sp.getQuotedString();
         argWasQuoted = true;
-        break;
-      default:
+      }
+      default -> {
         // read unquoted literal ended by whitespace ',' or ')'
         // there is no escaping.
         int valStart = sp.pos;
@@ -240,6 +240,7 @@ public class FunctionQParser extends QParser {
           }
           sp.pos++;
         }
+      }
     }
 
     sp.eatws();
@@ -261,14 +262,9 @@ public class FunctionQParser extends QParser {
         sp.pos++;
       } else if ((ch >= '0' && ch <= '9') || ch == '.' || ch == '+' || ch == '-') {
         switch (encoding) {
-          case BYTE:
-            values.add(sp.getByte());
-            break;
-          case FLOAT32:
-            values.add(sp.getFloat());
-            break;
-          default:
-            throw new SyntaxError("Unexpected vector encoding: " + encoding);
+          case BYTE -> values.add(sp.getByte());
+          case FLOAT32 -> values.add(sp.getFloat());
+          default -> throw new SyntaxError("Unexpected vector encoding: " + encoding);
         }
         valueExpected = false;
       } else if (ch == ',') {
@@ -513,22 +509,22 @@ public class FunctionQParser extends QParser {
             : VectorEncoding.FLOAT32;
     var vector = parseVector(encoding);
 
-    switch (encoding) {
-      case BYTE:
+    return switch (encoding) {
+      case BYTE -> {
         byte[] byteVector = new byte[vector.size()];
         for (int i = 0; i < vector.size(); ++i) {
           byteVector[i] = vector.get(i).byteValue();
         }
-        return new ConstKnnByteVectorValueSource(byteVector);
-      case FLOAT32:
+        yield new ConstKnnByteVectorValueSource(byteVector);
+      }
+      case FLOAT32 -> {
         float[] floatVector = new float[vector.size()];
         for (int i = 0; i < vector.size(); ++i) {
           floatVector[i] = vector.get(i).floatValue();
         }
-        return new ConstKnnFloatValueSource(floatVector);
-    }
-
-    throw new SyntaxError("wrong vector encoding:" + encoding);
+        yield new ConstKnnFloatValueSource(floatVector);
+      }
+    };
   }
 
   /**

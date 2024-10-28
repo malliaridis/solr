@@ -171,7 +171,7 @@ public class BBoxField extends AbstractSpatialFieldType<BBoxStrategy> implements
 
     switch (scoreParam) {
         // TODO move these to superclass after LUCENE-5804 ?
-      case OVERLAP_RATIO:
+      case OVERLAP_RATIO -> {
         double queryTargetProportion = 0.25; // Suggested default; weights towards target area
 
         String v = parser.getParam(PARAM_QUERY_TARGET_PROPORTION);
@@ -187,26 +187,27 @@ public class BBoxField extends AbstractSpatialFieldType<BBoxStrategy> implements
             (Rectangle) spatialArgs.getShape(),
             queryTargetProportion,
             minSideLength);
-
-      case AREA:
+      }
+      case AREA -> {
         return new ShapeAreaValueSource(
             strategy.makeShapeValueSource(),
             ctx,
             ctx.isGeo(),
             distanceUnits.multiplierFromDegreesToThisUnit()
                 * distanceUnits.multiplierFromDegreesToThisUnit());
-
-      case AREA2D:
+      }
+      case AREA2D -> {
         return new ShapeAreaValueSource(
             strategy.makeShapeValueSource(),
             ctx,
             false,
             distanceUnits.multiplierFromDegreesToThisUnit()
                 * distanceUnits.multiplierFromDegreesToThisUnit());
-
-      default:
+      }
+      default -> {
         return super.getValueSourceFromSpatialArgs(
             parser, field, spatialArgs, scoreParam, strategy);
+      }
     }
   }
 }

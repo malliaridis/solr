@@ -269,23 +269,21 @@ public class DocCollection extends ZkNodeProps implements Iterable<Slice> {
     if (o == null) {
       return def;
     }
-    switch (propName) {
-      case CollectionStateProps.REPLICATION_FACTOR:
-        return Integer.parseInt(o.toString());
-      case CollectionStateProps.PER_REPLICA_STATE:
-      case CollectionStateProps.READ_ONLY:
-        return Boolean.parseBoolean(o.toString());
-      case "snitch":
-        return o;
-      default:
+    return switch (propName) {
+      case CollectionStateProps.REPLICATION_FACTOR -> Integer.parseInt(o.toString());
+      case CollectionStateProps.PER_REPLICA_STATE, CollectionStateProps.READ_ONLY -> Boolean
+          .parseBoolean(o.toString());
+      case "snitch" -> o;
+      default -> {
         // Properties associated with a number of replicas are parsed as integers.
         for (Replica.Type replicaType : Replica.Type.values()) {
           if (replicaType.numReplicasPropertyName.equals(propName)) {
-            return Integer.parseInt(o.toString());
+            yield Integer.parseInt(o.toString());
           }
         }
-        return o;
-    }
+        yield o;
+      }
+    };
   }
 
   /**

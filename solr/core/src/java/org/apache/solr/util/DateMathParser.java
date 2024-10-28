@@ -183,18 +183,17 @@ public class DateMathParser {
       throw new IllegalArgumentException("Rounding Unit not recognized: " + unit);
     }
     // note: OffsetDateTime.truncatedTo does not support >= DAYS units so we handle those
-    switch (uu) {
-      case YEARS:
-        return LocalDateTime.of(
-            LocalDate.of(t.getYear(), 1, 1), LocalTime.MIDNIGHT); // midnight is 00:00:00
-      case MONTHS:
-        return LocalDateTime.of(LocalDate.of(t.getYear(), t.getMonth(), 1), LocalTime.MIDNIGHT);
-      case DAYS:
-        return LocalDateTime.of(t.toLocalDate(), LocalTime.MIDNIGHT);
-      default:
+    return switch (uu) {
+      case YEARS -> LocalDateTime.of(
+          LocalDate.of(t.getYear(), 1, 1), LocalTime.MIDNIGHT); // midnight is 00:00:00
+      case MONTHS -> LocalDateTime.of(
+          LocalDate.of(t.getYear(), t.getMonth(), 1), LocalTime.MIDNIGHT);
+      case DAYS -> LocalDateTime.of(t.toLocalDate(), LocalTime.MIDNIGHT);
+      default -> {
         assert !uu.isDateBased(); // >= DAY
-        return t.truncatedTo(uu);
-    }
+        yield t.truncatedTo(uu);
+      }
+    };
   }
 
   /**
@@ -374,7 +373,7 @@ public class DateMathParser {
       char command = ops[pos++].charAt(0);
 
       switch (command) {
-        case '/':
+        case '/' -> {
           if (ops.length < pos + 1) {
             throw new ParseException("Need a unit after command: \"" + command + "\"", pos);
           }
@@ -383,9 +382,8 @@ public class DateMathParser {
           } catch (IllegalArgumentException e) {
             throw new ParseException("Unit not recognized: \"" + ops[pos - 1] + "\"", pos - 1);
           }
-          break;
-        case '+': /* fall through */
-        case '-':
+        } /* fall through */
+        case '+', '-' -> {
           if (ops.length < pos + 2) {
             throw new ParseException("Need a value and unit for command: \"" + command + "\"", pos);
           }
@@ -404,9 +402,8 @@ public class DateMathParser {
           } catch (IllegalArgumentException e) {
             throw new ParseException("Unit not recognized: \"" + ops[pos - 1] + "\"", pos - 1);
           }
-          break;
-        default:
-          throw new ParseException("Unrecognized command: \"" + command + "\"", pos - 1);
+        }
+        default -> throw new ParseException("Unrecognized command: \"" + command + "\"", pos - 1);
       }
     }
 

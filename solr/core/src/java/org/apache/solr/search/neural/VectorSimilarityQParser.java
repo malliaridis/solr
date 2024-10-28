@@ -59,17 +59,11 @@ public class VectorSimilarityQParser extends AbstractVectorQParserBase {
         denseVectorType.getVectorBuilder(vectorToSearch, DenseVectorParser.BuilderPhase.QUERY);
 
     final VectorEncoding vectorEncoding = denseVectorType.getVectorEncoding();
-    switch (vectorEncoding) {
-      case FLOAT32:
-        return new FloatVectorSimilarityQuery(
-            fieldName, vectorBuilder.getFloatVector(), minTraverse, minReturn, getFilterQuery());
-      case BYTE:
-        return new ByteVectorSimilarityQuery(
-            fieldName, vectorBuilder.getByteVector(), minTraverse, minReturn, getFilterQuery());
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR,
-            "Unexpected state. Vector Encoding: " + vectorEncoding);
-    }
+    return switch (vectorEncoding) {
+      case FLOAT32 -> new FloatVectorSimilarityQuery(
+          fieldName, vectorBuilder.getFloatVector(), minTraverse, minReturn, getFilterQuery());
+      case BYTE -> new ByteVectorSimilarityQuery(
+          fieldName, vectorBuilder.getByteVector(), minTraverse, minReturn, getFilterQuery());
+    };
   }
 }

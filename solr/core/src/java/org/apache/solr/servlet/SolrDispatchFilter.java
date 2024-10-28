@@ -242,24 +242,19 @@ public class SolrDispatchFilter extends BaseSolrFilter implements PathExcluder {
     try {
       Action result = call.call();
       switch (result) {
-        case PASSTHROUGH:
+        case PASSTHROUGH -> {
           span.addEvent("SolrDispatchFilter PASSTHROUGH");
           chain.doFilter(request, response);
-          break;
-        case RETRY:
+        }
+        case RETRY -> {
           span.addEvent("SolrDispatchFilter RETRY");
           doFilter(request, response, chain, true); // RECURSION
-          break;
-        case FORWARD:
+        }
+        case FORWARD -> {
           span.addEvent("SolrDispatchFilter FORWARD");
           request.getRequestDispatcher(call.getPath()).forward(request, response);
-          break;
-        case ADMIN:
-        case PROCESS:
-        case REMOTEQUERY:
-        case ADMIN_OR_REMOTEQUERY:
-        case RETURN:
-          break;
+        }
+        case ADMIN, PROCESS, REMOTEQUERY, ADMIN_OR_REMOTEQUERY, RETURN -> {}
       }
     } finally {
       call.destroy();

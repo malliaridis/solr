@@ -217,38 +217,24 @@ class SolrSchema extends AbstractSchema implements Closeable {
       if (flags != null && flags.contains(FieldFlag.MULTI_VALUED)) {
         type = typeFactory.createSqlType(SqlTypeName.ANY);
       } else {
-        switch (luceneFieldType) {
-          case "string":
-            type = typeFactory.createJavaType(String.class);
-            break;
-          case "tint":
-          case "tlong":
-          case "int":
-          case "long":
-          case "pint":
-          case "plong":
-            type = typeFactory.createJavaType(Long.class);
-            break;
-          case "tfloat":
-          case "tdouble":
-          case "float":
-          case "double":
-          case "pfloat":
-          case "pdouble":
-            type = typeFactory.createJavaType(Double.class);
-            break;
-          case "pdate":
-            type = typeFactory.createJavaType(Date.class);
-            break;
-          default:
-            Class<?> javaClass = javaClassForTypeMap.get(luceneFieldType);
-            if (javaClass == null) {
-              javaClass =
-                  guessJavaClassForFieldType(schema.getFieldTypeInfo().get(luceneFieldType));
-              javaClassForTypeMap.put(luceneFieldType, javaClass);
-            }
-            type = typeFactory.createJavaType(javaClass);
-        }
+        type =
+            switch (luceneFieldType) {
+              case "string" -> typeFactory.createJavaType(String.class);
+              case "tint", "tlong", "int", "long", "pint", "plong" -> typeFactory.createJavaType(
+                  Long.class);
+              case "tfloat", "tdouble", "float", "double", "pfloat", "pdouble" -> typeFactory
+                  .createJavaType(Double.class);
+              case "pdate" -> typeFactory.createJavaType(Date.class);
+              default -> {
+                Class<?> javaClass = javaClassForTypeMap.get(luceneFieldType);
+                if (javaClass == null) {
+                  javaClass =
+                      guessJavaClassForFieldType(schema.getFieldTypeInfo().get(luceneFieldType));
+                  javaClassForTypeMap.put(luceneFieldType, javaClass);
+                }
+                yield typeFactory.createJavaType(javaClass);
+              }
+            };
       }
       fieldInfo.add(entry.getKey(), type).nullable(true);
     }

@@ -477,107 +477,98 @@ public final class LegacyNumericRangeQuery<T extends Number> extends MultiTermQu
     NumericRangeTermsEnum(final TermsEnum tenum) {
       super(tenum);
       switch (dataType) {
-        case LONG:
-        case DOUBLE:
-          {
-            // lower
-            long minBound;
-            if (dataType == LegacyNumericType.LONG) {
-              minBound = (min == null) ? Long.MIN_VALUE : min.longValue();
-            } else {
-              assert dataType == LegacyNumericType.DOUBLE;
-              minBound =
-                  (min == null)
-                      ? LONG_NEGATIVE_INFINITY
-                      : NumericUtils.doubleToSortableLong(min.doubleValue());
-            }
-            if (!minInclusive && min != null) {
-              if (minBound == Long.MAX_VALUE) break;
-              minBound++;
-            }
-
-            // upper
-            long maxBound;
-            if (dataType == LegacyNumericType.LONG) {
-              maxBound = (max == null) ? Long.MAX_VALUE : max.longValue();
-            } else {
-              assert dataType == LegacyNumericType.DOUBLE;
-              maxBound =
-                  (max == null)
-                      ? LONG_POSITIVE_INFINITY
-                      : NumericUtils.doubleToSortableLong(max.doubleValue());
-            }
-            if (!maxInclusive && max != null) {
-              if (maxBound == Long.MIN_VALUE) break;
-              maxBound--;
-            }
-
-            LegacyNumericUtils.splitLongRange(
-                new LegacyNumericUtils.LongRangeBuilder() {
-                  @Override
-                  public final void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
-                    rangeBounds.add(minPrefixCoded);
-                    rangeBounds.add(maxPrefixCoded);
-                  }
-                },
-                precisionStep,
-                minBound,
-                maxBound);
-            break;
+        case LONG, DOUBLE -> {
+          // lower
+          long minBound;
+          if (dataType == LegacyNumericType.LONG) {
+            minBound = (min == null) ? Long.MIN_VALUE : min.longValue();
+          } else {
+            assert dataType == LegacyNumericType.DOUBLE;
+            minBound =
+                (min == null)
+                    ? LONG_NEGATIVE_INFINITY
+                    : NumericUtils.doubleToSortableLong(min.doubleValue());
+          }
+          if (!minInclusive && min != null) {
+            if (minBound == Long.MAX_VALUE) break;
+            minBound++;
           }
 
-        case INT:
-        case FLOAT:
-          {
-            // lower
-            int minBound;
-            if (dataType == LegacyNumericType.INT) {
-              minBound = (min == null) ? Integer.MIN_VALUE : min.intValue();
-            } else {
-              assert dataType == LegacyNumericType.FLOAT;
-              minBound =
-                  (min == null)
-                      ? INT_NEGATIVE_INFINITY
-                      : NumericUtils.floatToSortableInt(min.floatValue());
-            }
-            if (!minInclusive && min != null) {
-              if (minBound == Integer.MAX_VALUE) break;
-              minBound++;
-            }
-
-            // upper
-            int maxBound;
-            if (dataType == LegacyNumericType.INT) {
-              maxBound = (max == null) ? Integer.MAX_VALUE : max.intValue();
-            } else {
-              assert dataType == LegacyNumericType.FLOAT;
-              maxBound =
-                  (max == null)
-                      ? INT_POSITIVE_INFINITY
-                      : NumericUtils.floatToSortableInt(max.floatValue());
-            }
-            if (!maxInclusive && max != null) {
-              if (maxBound == Integer.MIN_VALUE) break;
-              maxBound--;
-            }
-
-            LegacyNumericUtils.splitIntRange(
-                new LegacyNumericUtils.IntRangeBuilder() {
-                  @Override
-                  public final void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
-                    rangeBounds.add(minPrefixCoded);
-                    rangeBounds.add(maxPrefixCoded);
-                  }
-                },
-                precisionStep,
-                minBound,
-                maxBound);
-            break;
+          // upper
+          long maxBound;
+          if (dataType == LegacyNumericType.LONG) {
+            maxBound = (max == null) ? Long.MAX_VALUE : max.longValue();
+          } else {
+            assert dataType == LegacyNumericType.DOUBLE;
+            maxBound =
+                (max == null)
+                    ? LONG_POSITIVE_INFINITY
+                    : NumericUtils.doubleToSortableLong(max.doubleValue());
+          }
+          if (!maxInclusive && max != null) {
+            if (maxBound == Long.MIN_VALUE) break;
+            maxBound--;
           }
 
-        default:
-          // should never happen
-          throw new IllegalArgumentException("Invalid LegacyNumericType");
+          LegacyNumericUtils.splitLongRange(
+              new LegacyNumericUtils.LongRangeBuilder() {
+                @Override
+                public final void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
+                  rangeBounds.add(minPrefixCoded);
+                  rangeBounds.add(maxPrefixCoded);
+                }
+              },
+              precisionStep,
+              minBound,
+              maxBound);
+        }
+        case INT, FLOAT -> {
+          // lower
+          int minBound;
+          if (dataType == LegacyNumericType.INT) {
+            minBound = (min == null) ? Integer.MIN_VALUE : min.intValue();
+          } else {
+            assert dataType == LegacyNumericType.FLOAT;
+            minBound =
+                (min == null)
+                    ? INT_NEGATIVE_INFINITY
+                    : NumericUtils.floatToSortableInt(min.floatValue());
+          }
+          if (!minInclusive && min != null) {
+            if (minBound == Integer.MAX_VALUE) break;
+            minBound++;
+          }
+
+          // upper
+          int maxBound;
+          if (dataType == LegacyNumericType.INT) {
+            maxBound = (max == null) ? Integer.MAX_VALUE : max.intValue();
+          } else {
+            assert dataType == LegacyNumericType.FLOAT;
+            maxBound =
+                (max == null)
+                    ? INT_POSITIVE_INFINITY
+                    : NumericUtils.floatToSortableInt(max.floatValue());
+          }
+          if (!maxInclusive && max != null) {
+            if (maxBound == Integer.MIN_VALUE) break;
+            maxBound--;
+          }
+
+          LegacyNumericUtils.splitIntRange(
+              new LegacyNumericUtils.IntRangeBuilder() {
+                @Override
+                public final void addRange(BytesRef minPrefixCoded, BytesRef maxPrefixCoded) {
+                  rangeBounds.add(minPrefixCoded);
+                  rangeBounds.add(maxPrefixCoded);
+                }
+              },
+              precisionStep,
+              minBound,
+              maxBound);
+        }
+        default -> // should never happen
+        throw new IllegalArgumentException("Invalid LegacyNumericType");
       }
     }
 

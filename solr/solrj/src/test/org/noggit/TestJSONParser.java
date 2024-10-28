@@ -55,21 +55,21 @@ public class TestJSONParser extends SolrTestCaseJ4 {
     parserInput = s;
     parserType = type;
 
-    JSONParser parser = null;
-    switch (type) {
-      case 0:
-        // test directly using input buffer
-        parser = new JSONParser(s.toCharArray(), 0, s.length());
-        break;
-      case 1:
-        // test using Reader...
-        // small input buffers can help find bugs on boundary conditions
+    JSONParser parser =
+        switch (type) {
+          case 0 -> // test directly using input buffer
+          new JSONParser(s.toCharArray(), 0, s.length());
+          case 1 -> {
+            // test using Reader...
+            // small input buffers can help find bugs on boundary conditions
 
-        if (bufSize < 1) bufSize = random().nextInt(25) + 1;
-        bufferSize = bufSize; // record in case there is an error
-        parser = new JSONParser(new StringReader(s), new char[bufSize]);
-        break;
-    }
+            if (bufSize < 1) bufSize = random().nextInt(25) + 1;
+            bufferSize = bufSize; // record in case there is an error
+            yield new JSONParser(new StringReader(s), new char[bufSize]);
+          }
+          default -> null;
+        };
+
     if (parser == null) return null;
 
     lastParser = parser;
@@ -157,92 +157,37 @@ public class TestJSONParser extends SolrTestCaseJ4 {
       input.getChars(0, arr.length, arr, 0);
       int changes = random().nextInt(arr.length >> 1) + 1;
       for (int j = 0; j < changes; j++) {
-        char ch;
-        switch (random().nextInt(31)) {
-          case 0:
-            ch = 0;
-            break;
-          case 1:
-            ch = '[';
-            break;
-          case 2:
-            ch = ']';
-            break;
-          case 3:
-            ch = '{';
-            break;
-          case 4:
-            ch = '}';
-            break;
-          case 5:
-            ch = '"';
-            break;
-          case 6:
-            ch = '\'';
-            break;
-          case 7:
-            ch = ' ';
-            break;
-          case 8:
-            ch = '\r';
-            break;
-          case 9:
-            ch = '\n';
-            break;
-          case 10:
-            ch = '\t';
-            break;
-          case 11:
-            ch = ',';
-            break;
-          case 12:
-            ch = ':';
-            break;
-          case 13:
-            ch = '.';
-            break;
-          case 14:
-            ch = 'a';
-            break;
-          case 15:
-            ch = 'e';
-            break;
-          case 16:
-            ch = '0';
-            break;
-          case 17:
-            ch = '1';
-            break;
-          case 18:
-            ch = '+';
-            break;
-          case 19:
-            ch = '-';
-            break;
-          case 20:
-            ch = 't';
-            break;
-          case 21:
-            ch = 'f';
-            break;
-          case 22:
-            ch = 'n';
-            break;
-          case 23:
-            ch = '/';
-            break;
-          case 24:
-            ch = '\\';
-            break;
-          case 25:
-            ch = 'u';
-            break;
-          case 26:
-            ch = '\u00a0';
-            break;
-          default:
-            ch = (char) random().nextInt(256);
-        }
+        char ch =
+            switch (random().nextInt(31)) {
+              case 0 -> 0;
+              case 1 -> '[';
+              case 2 -> ']';
+              case 3 -> '{';
+              case 4 -> '}';
+              case 5 -> '"';
+              case 6 -> '\'';
+              case 7 -> ' ';
+              case 8 -> '\r';
+              case 9 -> '\n';
+              case 10 -> '\t';
+              case 11 -> ',';
+              case 12 -> ':';
+              case 13 -> '.';
+              case 14 -> 'a';
+              case 15 -> 'e';
+              case 16 -> '0';
+              case 17 -> '1';
+              case 18 -> '+';
+              case 19 -> '-';
+              case 20 -> 't';
+              case 21 -> 'f';
+              case 22 -> 'n';
+              case 23 -> '/';
+              case 24 -> '\\';
+              case 25 -> 'u';
+              case 26 -> '\u00a0';
+              default -> (char) random().nextInt(256);
+            };
 
         arr[random().nextInt(arr.length)] = ch;
       }
@@ -257,23 +202,12 @@ public class TestJSONParser extends SolrTestCaseJ4 {
           if (random().nextBoolean()) {
             // see if we can read the event
             switch (ev) {
-              case JSONParser.STRING:
-                ret += parser.getString().length();
-                break;
-              case JSONParser.BOOLEAN:
-                ret += parser.getBoolean() ? 1 : 2;
-                break;
-              case JSONParser.BIGNUMBER:
-                ret += parser.getNumberChars().length();
-                break;
-              case JSONParser.NUMBER:
-                ret += parser.getDouble();
-                break;
-              case JSONParser.LONG:
-                ret += parser.getLong();
-                break;
-              default:
-                ret += ev;
+              case JSONParser.STRING -> ret += parser.getString().length();
+              case JSONParser.BOOLEAN -> ret += parser.getBoolean() ? 1 : 2;
+              case JSONParser.BIGNUMBER -> ret += parser.getNumberChars().length();
+              case JSONParser.NUMBER -> ret += parser.getDouble();
+              case JSONParser.LONG -> ret += parser.getLong();
+              default -> ret += ev;
             }
           }
 
@@ -403,46 +337,27 @@ public class TestJSONParser extends SolrTestCaseJ4 {
       Object got = null;
 
       switch (ev) {
-        case JSONParser.ARRAY_START:
-          got = a;
-          break;
-        case JSONParser.ARRAY_END:
-          got = A;
-          break;
-        case JSONParser.OBJECT_START:
-          got = m;
-          break;
-        case JSONParser.OBJECT_END:
-          got = M;
-          break;
-        case JSONParser.LONG:
-          got = o(p.getLong());
-          break;
-        case JSONParser.NUMBER:
+        case JSONParser.ARRAY_START -> got = a;
+        case JSONParser.ARRAY_END -> got = A;
+        case JSONParser.OBJECT_START -> got = m;
+        case JSONParser.OBJECT_END -> got = M;
+        case JSONParser.LONG -> got = o(p.getLong());
+        case JSONParser.NUMBER -> {
           if (exp instanceof Double) {
             got = o(p.getDouble());
           } else {
             got = n(p.getNumberChars().toString());
           }
-          break;
-        case JSONParser.BIGNUMBER:
-          got = bn(p.getNumberChars().toString());
-          break;
-        case JSONParser.NULL:
+        }
+        case JSONParser.BIGNUMBER -> got = bn(p.getNumberChars().toString());
+        case JSONParser.NULL -> {
           got = N;
           p.getNull();
-          break; // optional
-        case JSONParser.BOOLEAN:
-          got = o(p.getBoolean());
-          break;
-        case JSONParser.EOF:
-          got = e;
-          break;
-        case JSONParser.STRING:
-          got = p.getString();
-          break;
-        default:
-          got = "Unexpected Event Number " + ev;
+        }
+        case JSONParser.BOOLEAN -> got = o(p.getBoolean());
+        case JSONParser.EOF -> got = e;
+        case JSONParser.STRING -> got = p.getString();
+        default -> got = "Unexpected Event Number " + ev;
       }
 
       if (!(exp == got || exp.equals(got))) {

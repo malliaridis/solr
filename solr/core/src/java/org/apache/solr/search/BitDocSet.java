@@ -248,7 +248,7 @@ public class BitDocSet extends DocSet {
   public DocIdSetIterator iterator(LeafReaderContext context) {
     if (context.isTopLevel) {
       switch (size) {
-        case -1:
+        case -1 -> {
           // size has not been computed; use bits.length() as an upper bound on cost
           final int maxSize = bits.length();
           if (maxSize < 1) {
@@ -256,11 +256,14 @@ public class BitDocSet extends DocSet {
           } else {
             return new BitSetIterator(bits, maxSize);
           }
-        case 0:
+        }
+        case 0 -> {
           return null;
-        default:
+        }
+        default -> {
           // we have an explicit size; use it
           return new BitSetIterator(bits, size);
+        }
       }
     }
 

@@ -99,24 +99,16 @@ public abstract class CacheHeaderTestBase extends SolrJettyTestBase {
 
     if ("GET".equals(method)) {
       switch (resp.getStatusLine().getStatusCode()) {
-        case 200:
-          assertTrue(
-              "Response body was empty for method " + method,
-              responseBody != null && responseBody.length() > 0);
-          break;
-        case 304:
-          assertTrue(
-              "Response body was not empty for method " + method,
-              responseBody == null || responseBody.length() == 0);
-          break;
-        case 412:
-          assertTrue(
-              "Response body was not empty for method " + method,
-              responseBody == null || responseBody.length() == 0);
-          break;
-        default:
+        case 200 -> assertTrue(
+            "Response body was empty for method " + method,
+            responseBody != null && responseBody.length() > 0);
+        case 304, 412 -> assertTrue(
+            "Response body was not empty for method " + method,
+            responseBody == null || responseBody.length() == 0);
+        default -> {
           System.err.println(responseBody);
           assertEquals("Unknown request response", 0, resp.getStatusLine().getStatusCode());
+        }
       }
     }
     if ("HEAD".equals(method)) {

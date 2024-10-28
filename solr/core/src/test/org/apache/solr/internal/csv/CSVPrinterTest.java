@@ -179,39 +179,20 @@ public class CSVPrinterTest extends SolrTestCase {
       // stick in special chars with greater frequency
       char ch;
       int what = r.nextInt(20);
-      switch (what) {
-        case 0:
-          ch = '\r';
-          break;
-        case 1:
-          ch = '\n';
-          break;
-        case 2:
-          ch = '\t';
-          break;
-        case 3:
-          ch = '\f';
-          break;
-        case 4:
-          ch = ' ';
-          break;
-        case 5:
-          ch = ',';
-          break;
-        case 6:
-          ch = '"';
-          break;
-        case 7:
-          ch = '\'';
-          break;
-        case 8:
-          ch = '\\';
-          break;
-        default:
-          ch = (char) r.nextInt(300);
-          break;
-          // default: ch = 'a'; break;
-      }
+      ch =
+          switch (what) {
+            case 0 -> '\r';
+            case 1 -> '\n';
+            case 2 -> '\t';
+            case 3 -> '\f';
+            case 4 -> ' ';
+            case 5 -> ',';
+            case 6 -> '"';
+            case 7 -> '\'';
+            case 8 -> '\\';
+            default -> (char) r.nextInt(300);
+              // default: ch = 'a'; break;
+          };
       buf[i] = ch;
     }
     return new String(buf);

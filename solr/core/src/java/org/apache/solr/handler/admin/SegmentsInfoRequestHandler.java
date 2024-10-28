@@ -321,23 +321,12 @@ public class SegmentsInfoRequestHandler extends RequestHandlerBase {
     if (dvt != DocValuesType.NONE) {
       flags.append(FieldFlag.DOC_VALUES.getAbbreviation());
       switch (dvt) {
-        case NUMERIC:
-          flags.append("num");
-          break;
-        case BINARY:
-          flags.append("bin");
-          break;
-        case SORTED:
-          flags.append("srt");
-          break;
-        case SORTED_NUMERIC:
-          flags.append("srn");
-          break;
-        case SORTED_SET:
-          flags.append("srs");
-          break;
-        default:
-          flags.append("???"); // should not happen
+        case NUMERIC -> flags.append("num");
+        case BINARY -> flags.append("bin");
+        case SORTED -> flags.append("srt");
+        case SORTED_NUMERIC -> flags.append("srn");
+        case SORTED_SET -> flags.append("srs");
+        default -> flags.append("???"); // should not happen
       }
     } else {
       flags.append("----");

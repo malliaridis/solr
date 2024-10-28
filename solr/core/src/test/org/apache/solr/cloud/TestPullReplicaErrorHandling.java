@@ -370,17 +370,10 @@ public class TestPullReplicaErrorHandling extends SolrCloudTestCase {
         for (Replica replica : slice) {
           if (replica.isActive(liveNodes))
             switch (replica.getType()) {
-              case TLOG:
-                activesFound++;
-                break;
-              case PULL:
-                passivesFound++;
-                break;
-              case NRT:
-                writersFound++;
-                break;
-              default:
-                throw new AssertionError("Unexpected replica type");
+              case TLOG -> activesFound++;
+              case PULL -> passivesFound++;
+              case NRT -> writersFound++;
+              default -> throw new AssertionError("Unexpected replica type");
             }
         }
       }

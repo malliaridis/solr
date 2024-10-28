@@ -116,23 +116,21 @@ public class XMLResponseParser extends ResponseParser {
       for (int event = parser.next();
           event != XMLStreamConstants.END_DOCUMENT;
           event = parser.next()) {
-        switch (event) {
-          case XMLStreamConstants.START_ELEMENT:
-            if (response != null) {
-              throw new Exception("already read the response!");
-            }
+        if (event == XMLStreamConstants.START_ELEMENT) {
+          if (response != null) {
+            throw new Exception("already read the response!");
+          }
 
-            // only top-level element is "response
-            String name = parser.getLocalName();
-            if (name.equals("response") || name.equals("result")) {
-              response = readNamedList(parser);
-            } else if (name.equals("solr")) {
-              return new SimpleOrderedMap<>();
-            } else {
-              throw new Exception(
-                  "really needs to be response or result.  " + "not:" + parser.getLocalName());
-            }
-            break;
+          // only top-level element is "response
+          String name = parser.getLocalName();
+          if (name.equals("response") || name.equals("result")) {
+            response = readNamedList(parser);
+          } else if (name.equals("solr")) {
+            return new SimpleOrderedMap<>();
+          } else {
+            throw new Exception(
+                "really needs to be response or result.  " + "not:" + parser.getLocalName());
+          }
         }
       }
       return response;
@@ -267,7 +265,7 @@ public class XMLResponseParser extends ResponseParser {
     int depth = 0;
     while (true) {
       switch (parser.next()) {
-        case XMLStreamConstants.START_ELEMENT:
+        case XMLStreamConstants.START_ELEMENT -> {
           depth++;
           builder.setLength(0); // reset the text
           type = KnownType.get(parser.getLocalName());
@@ -320,22 +318,18 @@ public class XMLResponseParser extends ResponseParser {
             }
             throw new XMLStreamException("branch element not handled!", parser.getLocation());
           }
-          break;
-
-        case XMLStreamConstants.END_ELEMENT:
+        }
+        case XMLStreamConstants.END_ELEMENT -> {
           if (--depth < 0) {
             return nl;
           }
           // System.out.println( "NL:ELEM:"+type+"::"+name+"::"+builder );
           nl.add(name, type.read(builder.toString().trim()));
-          break;
-
-        case XMLStreamConstants.SPACE:
+        }
           // TODO?  should this be trimmed? make sure it only gets one/two space?
-        case XMLStreamConstants.CDATA:
-        case XMLStreamConstants.CHARACTERS:
-          builder.append(parser.getText());
-          break;
+        case XMLStreamConstants.SPACE,
+            XMLStreamConstants.CDATA,
+            XMLStreamConstants.CHARACTERS -> builder.append(parser.getText());
       }
     }
   }
@@ -356,7 +350,7 @@ public class XMLResponseParser extends ResponseParser {
     int depth = 0;
     while (true) {
       switch (parser.next()) {
-        case XMLStreamConstants.START_ELEMENT:
+        case XMLStreamConstants.START_ELEMENT -> {
           depth++;
           KnownType t = KnownType.get(parser.getLocalName());
           if (t == null) {
@@ -405,9 +399,8 @@ public class XMLResponseParser extends ResponseParser {
             }
             throw new XMLStreamException("branch element not handled!", parser.getLocation());
           }
-          break;
-
-        case XMLStreamConstants.END_ELEMENT:
+        }
+        case XMLStreamConstants.END_ELEMENT -> {
           if (--depth < 0) {
             return vals; // the last element is itself
           }
@@ -417,14 +410,11 @@ public class XMLResponseParser extends ResponseParser {
             throw new XMLStreamException("error reading value:" + type, parser.getLocation());
           }
           vals.add(val);
-          break;
-
-        case XMLStreamConstants.SPACE:
+        }
           // TODO?  should this be trimmed? make sure it only gets one/two space?
-        case XMLStreamConstants.CDATA:
-        case XMLStreamConstants.CHARACTERS:
-          builder.append(parser.getText());
-          break;
+        case XMLStreamConstants.SPACE,
+            XMLStreamConstants.CDATA,
+            XMLStreamConstants.CHARACTERS -> builder.append(parser.getText());
       }
     }
   }
@@ -478,7 +468,7 @@ public class XMLResponseParser extends ResponseParser {
     int depth = 0;
     while (true) {
       switch (parser.next()) {
-        case XMLStreamConstants.START_ELEMENT:
+        case XMLStreamConstants.START_ELEMENT -> {
           depth++;
           builder.setLength(0); // reset the text
           type = KnownType.get(parser.getLocalName());
@@ -529,9 +519,8 @@ public class XMLResponseParser extends ResponseParser {
           } else if (!type.isLeaf) {
             throw new XMLStreamException("must be value or array", parser.getLocation());
           }
-          break;
-
-        case XMLStreamConstants.END_ELEMENT:
+        }
+        case XMLStreamConstants.END_ELEMENT -> {
           if (--depth < 0) {
             return doc;
           }
@@ -541,14 +530,11 @@ public class XMLResponseParser extends ResponseParser {
             throw new XMLStreamException("error reading value:" + type, parser.getLocation());
           }
           doc.addField(name, val);
-          break;
-
-        case XMLStreamConstants.SPACE:
+        }
           // TODO?  should this be trimmed? make sure it only gets one/two space?
-        case XMLStreamConstants.CDATA:
-        case XMLStreamConstants.CHARACTERS:
-          builder.append(parser.getText());
-          break;
+        case XMLStreamConstants.SPACE,
+            XMLStreamConstants.CDATA,
+            XMLStreamConstants.CHARACTERS -> builder.append(parser.getText());
       }
     }
   }

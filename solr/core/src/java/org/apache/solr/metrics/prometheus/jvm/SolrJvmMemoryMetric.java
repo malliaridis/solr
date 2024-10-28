@@ -50,16 +50,14 @@ public class SolrJvmMemoryMetric extends SolrJvmMetric {
     String[] parsedMetric = metricName.split("\\.");
     String metricType = parsedMetric[1];
     switch (metricType) {
-      case "heap":
-      case "non-heap":
-      case "total":
+      case "heap", "non-heap", "total" -> {
         labels.put("memory", parsedMetric[1]);
         formatter.exportGauge(JVM_MEMORY, (Gauge<?>) dropwizardMetric, getLabels());
-        break;
-      case "pools":
+      }
+      case "pools" -> {
         labels.put("space", parsedMetric[2]);
         formatter.exportGauge(JVM_MEMORY_POOL_BYTES, (Gauge<?>) dropwizardMetric, getLabels());
-        break;
+      }
     }
   }
 }

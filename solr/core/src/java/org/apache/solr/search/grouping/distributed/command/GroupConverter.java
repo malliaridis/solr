@@ -75,61 +75,60 @@ class GroupConverter {
       SearchGroup<MutableValue> converted = new SearchGroup<>();
       converted.sortValues = original.sortValues; // ?
       NumberType type = fieldType.getNumberType();
-      final MutableValue v;
-      switch (type) {
-        case INTEGER:
-          MutableValueInt mutableInt = new MutableValueInt();
-          if (original.groupValue == null) {
-            mutableInt.value = 0;
-            mutableInt.exists = false;
-          } else {
-            mutableInt.value = (Integer) fieldType.toObject(field, original.groupValue);
-          }
-          v = mutableInt;
-          break;
-        case FLOAT:
-          MutableValueFloat mutableFloat = new MutableValueFloat();
-          if (original.groupValue == null) {
-            mutableFloat.value = 0;
-            mutableFloat.exists = false;
-          } else {
-            mutableFloat.value = (Float) fieldType.toObject(field, original.groupValue);
-          }
-          v = mutableFloat;
-          break;
-        case DOUBLE:
-          MutableValueDouble mutableDouble = new MutableValueDouble();
-          if (original.groupValue == null) {
-            mutableDouble.value = 0;
-            mutableDouble.exists = false;
-          } else {
-            mutableDouble.value = (Double) fieldType.toObject(field, original.groupValue);
-          }
-          v = mutableDouble;
-          break;
-        case LONG:
-          MutableValueLong mutableLong = new MutableValueLong();
-          if (original.groupValue == null) {
-            mutableLong.value = 0;
-            mutableLong.exists = false;
-          } else {
-            mutableLong.value = (Long) fieldType.toObject(field, original.groupValue);
-          }
-          v = mutableLong;
-          break;
-        case DATE:
-          MutableValueDate mutableDate = new MutableValueDate();
-          if (original.groupValue == null) {
-            mutableDate.value = 0;
-            mutableDate.exists = false;
-          } else {
-            mutableDate.value = ((Date) fieldType.toObject(field, original.groupValue)).getTime();
-          }
-          v = mutableDate;
-          break;
-        default:
-          throw new AssertionError();
-      }
+      final MutableValue v =
+          switch (type) {
+            case INTEGER -> {
+              MutableValueInt mutableInt = new MutableValueInt();
+              if (original.groupValue == null) {
+                mutableInt.value = 0;
+                mutableInt.exists = false;
+              } else {
+                mutableInt.value = (Integer) fieldType.toObject(field, original.groupValue);
+              }
+              yield mutableInt;
+            }
+            case FLOAT -> {
+              MutableValueFloat mutableFloat = new MutableValueFloat();
+              if (original.groupValue == null) {
+                mutableFloat.value = 0;
+                mutableFloat.exists = false;
+              } else {
+                mutableFloat.value = (Float) fieldType.toObject(field, original.groupValue);
+              }
+              yield mutableFloat;
+            }
+            case DOUBLE -> {
+              MutableValueDouble mutableDouble = new MutableValueDouble();
+              if (original.groupValue == null) {
+                mutableDouble.value = 0;
+                mutableDouble.exists = false;
+              } else {
+                mutableDouble.value = (Double) fieldType.toObject(field, original.groupValue);
+              }
+              yield mutableDouble;
+            }
+            case LONG -> {
+              MutableValueLong mutableLong = new MutableValueLong();
+              if (original.groupValue == null) {
+                mutableLong.value = 0;
+                mutableLong.exists = false;
+              } else {
+                mutableLong.value = (Long) fieldType.toObject(field, original.groupValue);
+              }
+              yield mutableLong;
+            }
+            case DATE -> {
+              MutableValueDate mutableDate = new MutableValueDate();
+              if (original.groupValue == null) {
+                mutableDate.value = 0;
+                mutableDate.exists = false;
+              } else {
+                mutableDate.value =
+                    ((Date) fieldType.toObject(field, original.groupValue)).getTime();
+              }
+              yield mutableDate;
+            }
+          };
       converted.groupValue = v;
       result.add(converted);
     }

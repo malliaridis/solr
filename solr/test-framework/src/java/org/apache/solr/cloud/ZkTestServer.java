@@ -245,24 +245,10 @@ public class ZkTestServer {
 
       private void updateForFire(WatchedEvent event) {
         switch (event.getType()) {
-          case None:
-            break;
-          case NodeCreated:
-          case NodeDeleted:
-            statLimit.updateForFire(event);
-            break;
-          case NodeDataChanged:
-            dataLimit.updateForFire(event);
-            break;
-          case NodeChildrenChanged:
-            childrenLimit.updateForFire(event);
-            break;
-          case ChildWatchRemoved:
-            break;
-          case DataWatchRemoved:
-            break;
-          case PersistentWatchRemoved:
-            break;
+          case None, ChildWatchRemoved, DataWatchRemoved, PersistentWatchRemoved -> {}
+          case NodeCreated, NodeDeleted -> statLimit.updateForFire(event);
+          case NodeDataChanged -> dataLimit.updateForFire(event);
+          case NodeChildrenChanged -> childrenLimit.updateForFire(event);
         }
       }
     }

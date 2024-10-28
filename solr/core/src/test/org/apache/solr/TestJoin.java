@@ -475,15 +475,15 @@ public class TestJoin extends SolrTestCaseJ4 {
     final String allProvidedParams = baseJoinParams + " " + optionalParamsJoined;
 
     final int joinMethod = random().nextInt(4);
-    switch (joinMethod) {
-      case 0: // No explicit method specified
-        return "{!join " + allProvidedParams + " }";
-      case 1: // method=persegment
-        return "{!join " + allProvidedParams + " method=index}";
-      case 2: // method=score
-        return "{!join " + allProvidedParams + " method=dvWithScore score=none}";
-      default: // method=toplevel
-        return "{!join " + allProvidedParams + " method=topLevelDV}";
-    }
+    return switch (joinMethod) {
+      case 0 -> // No explicit method specified
+      "{!join " + allProvidedParams + " }";
+      case 1 -> // method=persegment
+      "{!join " + allProvidedParams + " method=index}";
+      case 2 -> // method=score
+      "{!join " + allProvidedParams + " method=dvWithScore score=none}";
+      default -> // method=toplevel
+      "{!join " + allProvidedParams + " method=topLevelDV}";
+    };
   }
 }

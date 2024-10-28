@@ -124,21 +124,17 @@ public class SolrExporter {
       String clusterId) {
     SolrClientFactory factory = new SolrClientFactory(settings, configuration);
 
-    switch (configuration.getType()) {
-      case STANDALONE:
-        return new SolrStandaloneScraper(
-            factory.createStandaloneSolrClient(configuration.getSolrHost().get()),
-            requestExecutor,
-            clusterId);
-      case CLOUD:
-        return new SolrCloudScraper(
-            factory.createCloudSolrClient(configuration.getZookeeperConnectionString().get()),
-            requestExecutor,
-            factory,
-            clusterId);
-      default:
-        throw new RuntimeException("Invalid type: " + configuration.getType());
-    }
+    return switch (configuration.getType()) {
+      case STANDALONE -> new SolrStandaloneScraper(
+          factory.createStandaloneSolrClient(configuration.getSolrHost().get()),
+          requestExecutor,
+          clusterId);
+      case CLOUD -> new SolrCloudScraper(
+          factory.createCloudSolrClient(configuration.getZookeeperConnectionString().get()),
+          requestExecutor,
+          factory,
+          clusterId);
+    };
   }
 
   public static void main(String[] args) {

@@ -141,21 +141,14 @@ abstract class FacetParser<T extends FacetRequest> {
   public Object parseFacetOrStat(String key, String type, Object args) throws SyntaxError {
     // TODO: a place to register all these facet types?
 
-    switch (type) {
-      case "field":
-      case "terms":
-        return new FacetFieldParser(this, key).parse(args);
-      case "query":
-        return new FacetQueryParser(this, key).parse(args);
-      case "range":
-        return new FacetRangeParser(this, key).parse(args);
-      case "heatmap":
-        return new FacetHeatmap.Parser(this, key).parse(args);
-      case "func":
-        return parseStat(key, args);
-    }
-
-    throw err("Unknown facet or stat. key=" + key + " type=" + type + " args=" + args);
+    return switch (type) {
+      case "field", "terms" -> new FacetFieldParser(this, key).parse(args);
+      case "query" -> new FacetQueryParser(this, key).parse(args);
+      case "range" -> new FacetRangeParser(this, key).parse(args);
+      case "heatmap" -> new FacetHeatmap.Parser(this, key).parse(args);
+      case "func" -> parseStat(key, args);
+      default -> throw err("Unknown facet or stat. key=" + key + " type=" + type + " args=" + args);
+    };
   }
 
   public Object parseStringFacetOrStat(String key, String s) throws SyntaxError {

@@ -758,19 +758,12 @@ public class GatherNodesStream extends TupleStream implements Expressible {
              * We derive the window and add it to the join values below.
              */
 
-            String[] timeWindow = null;
-
-            switch (this.interval) {
-              case WEEK_DAY_INTERVAL:
-                timeWindow = getWeekDayWindow(window, lag, value);
-                break;
-              case DAY_INTERVAL:
-                timeWindow = getDayWindow(window, lag, value);
-                break;
-              default:
-                timeWindow = getTenSecondWindow(window, lag, value);
-                break;
-            }
+            String[] timeWindow =
+                switch (this.interval) {
+                  case WEEK_DAY_INTERVAL -> getWeekDayWindow(window, lag, value);
+                  case DAY_INTERVAL -> getDayWindow(window, lag, value);
+                  default -> getTenSecondWindow(window, lag, value);
+                };
 
             for (String windowString : timeWindow) {
               if (!windowSet.contains(windowString)) {

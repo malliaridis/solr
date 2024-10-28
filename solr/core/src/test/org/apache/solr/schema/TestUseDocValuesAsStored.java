@@ -261,36 +261,21 @@ public class TestUseDocValuesAsStored extends AbstractBadConfigTestBase {
     String[] values = new String[arity];
     for (int i = 0; i < arity; ++i) {
       switch (valueType) {
-        case "int":
-          values[i] = String.valueOf(random().nextInt());
-          break;
-        case "double":
-          values[i] = String.valueOf(Double.longBitsToDouble(random().nextLong()));
-          break;
-        case "long":
-          values[i] = String.valueOf(random().nextLong());
-          break;
-        case "float":
-          values[i] = String.valueOf(Float.intBitsToFloat(random().nextInt()));
-          break;
-        case "enum":
-          values[i] = SEVERITY[TestUtil.nextInt(random(), 0, SEVERITY.length - 1)];
-          break;
-        case "str":
-          {
-            String str = TestUtil.randomRealisticUnicodeString(random());
-            values[i] = BAD_CHAR_PATTERN.matcher(str).replaceAll("\uFFFD");
-            break;
-          }
-        case "date":
-          {
-            long epochMillis =
-                TestUtil.nextLong(random(), START_RANDOM_EPOCH_MILLIS, END_RANDOM_EPOCH_MILLIS);
-            values[i] = Instant.ofEpochMilli(epochMillis).toString();
-            break;
-          }
-        default:
-          throw new Exception("unknown type '" + valueType + "'");
+        case "int" -> values[i] = String.valueOf(random().nextInt());
+        case "double" -> values[i] = String.valueOf(Double.longBitsToDouble(random().nextLong()));
+        case "long" -> values[i] = String.valueOf(random().nextLong());
+        case "float" -> values[i] = String.valueOf(Float.intBitsToFloat(random().nextInt()));
+        case "enum" -> values[i] = SEVERITY[TestUtil.nextInt(random(), 0, SEVERITY.length - 1)];
+        case "str" -> {
+          String str = TestUtil.randomRealisticUnicodeString(random());
+          values[i] = BAD_CHAR_PATTERN.matcher(str).replaceAll("\uFFFD");
+        }
+        case "date" -> {
+          long epochMillis =
+              TestUtil.nextLong(random(), START_RANDOM_EPOCH_MILLIS, END_RANDOM_EPOCH_MILLIS);
+          values[i] = Instant.ofEpochMilli(epochMillis).toString();
+        }
+        default -> throw new Exception("unknown type '" + valueType + "'");
       }
     }
     return values;

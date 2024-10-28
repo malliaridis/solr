@@ -200,21 +200,18 @@ public abstract class RoutedAlias {
       String aliasName, Map<String, String> props, RoutedAliasTypes routerType) {
     // this switch must have a case for every element of the RoutedAliasTypes enum EXCEPT
     // DIMENSIONAL
-    switch (routerType) {
-      case TIME:
-        return new TimeRoutedAlias(aliasName, props);
-      case CATEGORY:
-        return new CategoryRoutedAlias(aliasName, props);
-      default:
-        // if we got a type not handled by the switch there's been a bogus implementation.
-        throw new SolrException(
-            SERVER_ERROR,
-            "Router "
-                + routerType
-                + " is not fully implemented. If you see this"
-                + "error in an official release please file a bug report. Available types were:"
-                + Arrays.asList(RoutedAliasTypes.values()));
-    }
+    // if we got a type not handled by the switch there's been a bogus implementation.
+    return switch (routerType) {
+      case TIME -> new TimeRoutedAlias(aliasName, props);
+      case CATEGORY -> new CategoryRoutedAlias(aliasName, props);
+      default -> throw new SolrException(
+          SERVER_ERROR,
+          "Router "
+              + routerType
+              + " is not fully implemented. If you see this"
+              + "error in an official release please file a bug report. Available types were:"
+              + Arrays.asList(RoutedAliasTypes.values()));
+    };
   }
 
   /**

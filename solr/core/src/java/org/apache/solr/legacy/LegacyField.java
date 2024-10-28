@@ -60,20 +60,11 @@ public class LegacyField extends Field {
       // initialize value in TokenStream
       final Number val = (Number) fieldsData;
       switch (numericType) {
-        case INT:
-          nts.setIntValue(val.intValue());
-          break;
-        case LONG:
-          nts.setLongValue(val.longValue());
-          break;
-        case FLOAT:
-          nts.setFloatValue(val.floatValue());
-          break;
-        case DOUBLE:
-          nts.setDoubleValue(val.doubleValue());
-          break;
-        default:
-          throw new AssertionError("Should never get here");
+        case INT -> nts.setIntValue(val.intValue());
+        case LONG -> nts.setLongValue(val.longValue());
+        case FLOAT -> nts.setFloatValue(val.floatValue());
+        case DOUBLE -> nts.setDoubleValue(val.doubleValue());
+        default -> throw new AssertionError("Should never get here");
       }
       return reuse;
     }

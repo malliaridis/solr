@@ -207,19 +207,12 @@ public class ExportTool extends ToolBase {
     }
 
     DocsSink getSink() {
-      DocsSink docSink = null;
-      switch (format) {
-        case JAVABIN:
-          docSink = new JavabinSink(this);
-          break;
-        case JSON:
-          docSink = new JsonSink(this);
-          break;
-        case "jsonl":
-          docSink = new JsonWithLinesSink(this);
-          break;
-      }
-      return docSink;
+      return switch (format) {
+        case JAVABIN -> new JavabinSink(this);
+        case JSON -> new JsonSink(this);
+        case "jsonl" -> new JsonWithLinesSink(this);
+        default -> null;
+      };
     }
 
     abstract void exportDocs() throws Exception;

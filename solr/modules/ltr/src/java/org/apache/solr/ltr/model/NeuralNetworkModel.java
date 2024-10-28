@@ -160,56 +160,15 @@ public class NeuralNetworkModel extends LTRScoringModel {
 
     public void setActivation(Object activationStr) {
       this.activationStr = (String) activationStr;
-      switch (this.activationStr) {
-        case "relu":
-          this.activation =
-              new Activation() {
-                @Override
-                public float apply(float in) {
-                  return in < 0 ? 0 : in;
-                }
-              };
-          break;
-        case "leakyrelu":
-          this.activation =
-              new Activation() {
-                @Override
-                public float apply(float in) {
-                  return in < 0 ? 0.01f * in : in;
-                }
-              };
-          break;
-        case "tanh":
-          this.activation =
-              new Activation() {
-                @Override
-                public float apply(float in) {
-                  return (float) Math.tanh(in);
-                }
-              };
-          break;
-        case "sigmoid":
-          this.activation =
-              new Activation() {
-                @Override
-                public float apply(float in) {
-                  return (float) (1 / (1 + Math.exp(-in)));
-                }
-              };
-          break;
-        case "identity":
-          this.activation =
-              new Activation() {
-                @Override
-                public float apply(float in) {
-                  return in;
-                }
-              };
-          break;
-        default:
-          this.activation = null;
-          break;
-      }
+      this.activation =
+          switch (this.activationStr) {
+            case "relu" -> in -> in < 0 ? 0 : in;
+            case "leakyrelu" -> in -> in < 0 ? 0.01f * in : in;
+            case "tanh" -> in -> (float) Math.tanh(in);
+            case "sigmoid" -> in -> (float) (1 / (1 + Math.exp(-in)));
+            case "identity" -> in -> in;
+            default -> null;
+          };
     }
 
     @Override

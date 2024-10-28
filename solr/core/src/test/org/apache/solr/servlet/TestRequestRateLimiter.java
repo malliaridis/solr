@@ -290,14 +290,11 @@ public class TestRequestRateLimiter extends SolrCloudTestCase {
 
     @Override
     public String getHeader(String name) {
-      switch (name) {
-        case SOLR_REQUEST_CONTEXT_PARAM:
-          return ctx;
-        case SOLR_REQUEST_TYPE_PARAM:
-          return type;
-        default:
-          throw new IllegalArgumentException();
-      }
+      return switch (name) {
+        case SOLR_REQUEST_CONTEXT_PARAM -> ctx;
+        case SOLR_REQUEST_TYPE_PARAM -> type;
+        default -> throw new IllegalArgumentException();
+      };
     }
   }
 

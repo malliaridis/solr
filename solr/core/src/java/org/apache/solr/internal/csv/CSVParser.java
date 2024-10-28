@@ -161,21 +161,13 @@ public class CSVParser {
    */
   public String nextValue() throws IOException {
     Token tkn = nextToken();
-    String ret = null;
-    switch (tkn.type) {
-      case TT_TOKEN:
-      case TT_EORECORD:
-        ret = tkn.content.toString();
-        break;
-      case TT_EOF:
-        ret = null;
-        break;
-      case TT_INVALID:
-      default:
-        // error no token available (or error)
-        throw new IOException("(line " + getLineNumber() + ") invalid parse sequence");
-        // unreachable: break;
-    }
+    String ret =
+        switch (tkn.type) {
+          case TT_TOKEN, TT_EORECORD -> tkn.content.toString();
+          case TT_EOF -> null;
+          default -> // error no token available (or error)
+          throw new IOException("(line " + getLineNumber() + ") invalid parse sequence");
+        };
     return ret;
   }
 
@@ -193,24 +185,17 @@ public class CSVParser {
       reusableToken.reset();
       nextToken(reusableToken);
       switch (reusableToken.type) {
-        case TT_TOKEN:
-          record.add(reusableToken.content.toString());
-          break;
-        case TT_EORECORD:
-          record.add(reusableToken.content.toString());
-          break;
-        case TT_EOF:
+        case TT_TOKEN -> record.add(reusableToken.content.toString());
+        case TT_EORECORD -> record.add(reusableToken.content.toString());
+        case TT_EOF -> {
           if (reusableToken.isReady) {
             record.add(reusableToken.content.toString());
           } else {
             ret = null;
           }
-          break;
-        case TT_INVALID:
-        default:
-          // error: throw IOException
-          throw new IOException("(line " + getLineNumber() + ") invalid parse sequence");
-          // unreachable: break;
+        }
+        default -> // error: throw IOException
+        throw new IOException("(line " + getLineNumber() + ") invalid parse sequence");
       }
       if (reusableToken.type != TT_TOKEN) {
         break;
@@ -495,27 +480,14 @@ public class CSVParser {
   private int readEscape(int c) throws IOException {
     // assume c is the escape char (normally a backslash)
     c = in.read();
-    int out;
-    switch (c) {
-      case 'r':
-        out = '\r';
-        break;
-      case 'n':
-        out = '\n';
-        break;
-      case 't':
-        out = '\t';
-        break;
-      case 'b':
-        out = '\b';
-        break;
-      case 'f':
-        out = '\f';
-        break;
-      default:
-        out = c;
-    }
-    return out;
+    return switch (c) {
+      case 'r' -> '\r';
+      case 'n' -> '\n';
+      case 't' -> '\t';
+      case 'b' -> '\b';
+      case 'f' -> '\f';
+      default -> c;
+    };
   }
 
   // ======================================================

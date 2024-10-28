@@ -63,20 +63,13 @@ public class SplitHandlerTest extends SolrTestCaseJ4 {
 
   // bias around special numbers
   int randomBound(Random rand) {
-    int ret = 0;
-    switch (rand.nextInt(10)) {
-      case 0:
-        ret = Integer.MIN_VALUE;
-        break;
-      case 1:
-        ret = Integer.MAX_VALUE;
-        break;
-      case 2:
-        ret = 0;
-        break;
-      default:
-        ret = rand.nextInt();
-    }
+    int ret =
+        switch (rand.nextInt(10)) {
+          case 0 -> Integer.MIN_VALUE;
+          case 1 -> Integer.MAX_VALUE;
+          case 2 -> 0;
+          default -> rand.nextInt();
+        };
     if (rand.nextBoolean()) {
       ret += rand.nextInt(2000) - 1000;
     }

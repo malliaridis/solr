@@ -26,17 +26,18 @@ public class JSONUtil {
     for (; ; ) {
       int event = parser.nextEvent();
       switch (event) {
-        case JSONParser.STRING:
+        case JSONParser.STRING -> {
           if (key != null && parser.wasKey()) {
             String val = parser.getString();
             if (key.equals(val)) {
               return true;
             }
           }
-          break;
-        case JSONParser.OBJECT_END:
+        }
+        case JSONParser.OBJECT_END -> {
           return false;
-        case JSONParser.OBJECT_START:
+        }
+        case JSONParser.OBJECT_START -> {
           if (deepSearch) {
             boolean found = advanceToMapKey(parser, key, true);
             if (found) {
@@ -45,10 +46,8 @@ public class JSONUtil {
           } else {
             advanceToMapKey(parser, null, false);
           }
-          break;
-        case JSONParser.ARRAY_START:
-          skipArray(parser, key, deepSearch);
-          break;
+        }
+        case JSONParser.ARRAY_START -> skipArray(parser, key, deepSearch);
       }
     }
   }
@@ -58,14 +57,11 @@ public class JSONUtil {
     for (; ; ) {
       int event = parser.nextEvent();
       switch (event) {
-        case JSONParser.OBJECT_START:
-          advanceToMapKey(parser, key, deepSearch);
-          break;
-        case JSONParser.ARRAY_START:
-          skipArray(parser, key, deepSearch);
-          break;
-        case JSONParser.ARRAY_END:
+        case JSONParser.OBJECT_START -> advanceToMapKey(parser, key, deepSearch);
+        case JSONParser.ARRAY_START -> skipArray(parser, key, deepSearch);
+        case JSONParser.ARRAY_END -> {
           return;
+        }
       }
     }
   }

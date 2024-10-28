@@ -102,18 +102,14 @@ public class FieldTypeXmlAdapter {
    * param XML tags.
    */
   protected static String classToXmlTag(Class<?> clazz) {
-    switch (clazz.getSimpleName()) {
-      case "Boolean":
-        return "bool";
-      case "Double":
-        return "double";
-      case "Long":
-        return "long";
-      case "String":
-        return "str";
-    }
-    throw new SolrException(
-        ErrorCode.BAD_REQUEST, "Unsupported object type '" + clazz.getSimpleName() + "'");
+    return switch (clazz.getSimpleName()) {
+      case "Boolean" -> "bool";
+      case "Double" -> "double";
+      case "Long" -> "long";
+      case "String" -> "str";
+      default -> throw new SolrException(
+          ErrorCode.BAD_REQUEST, "Unsupported object type '" + clazz.getSimpleName() + "'");
+    };
   }
 
   @SuppressWarnings("unchecked")

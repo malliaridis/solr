@@ -94,44 +94,40 @@ public interface JsonTextWriter extends TextWriter {
           continue;
         }
         switch (ch) {
-          case '"':
-          case '\\':
+          case '"', '\\' -> {
             _writeChar('\\');
             _writeChar(ch);
-            break;
-          case '\r':
+          }
+          case '\r' -> {
             _writeChar('\\');
             _writeChar('r');
-            break;
-          case '\n':
+          }
+          case '\n' -> {
             _writeChar('\\');
             _writeChar('n');
-            break;
-          case '\t':
+          }
+          case '\t' -> {
             _writeChar('\\');
             _writeChar('t');
-            break;
-          case '\b':
+          }
+          case '\b' -> {
             _writeChar('\\');
             _writeChar('b');
-            break;
-          case '\f':
+          }
+          case '\f' -> {
             _writeChar('\\');
             _writeChar('f');
-            break;
-          case '\u2028': // fallthrough
-          case '\u2029':
-            unicodeEscape(getWriter(), ch);
-            break;
+          } // fallthrough
+          case '\u2028', '\u2029' -> unicodeEscape(getWriter(), ch);
+
             // case '/':
-          default:
-            {
-              if (ch <= 0x1F) {
-                unicodeEscape(getWriter(), ch);
-              } else {
-                _writeChar(ch);
-              }
+          default -> {
+            if (ch <= 0x1F) {
+              unicodeEscape(getWriter(), ch);
+            } else {
+              _writeChar(ch);
             }
+          }
         }
       }
 

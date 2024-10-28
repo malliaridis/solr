@@ -130,18 +130,12 @@ class ResultSetMetaDataImpl implements ResultSetMetaData {
 
   @Override
   public int getColumnType(int column) throws SQLException {
-    switch (getColumnTypeName(column)) {
-      case "String":
-        return Types.VARCHAR;
-      case "Integer":
-        return Types.INTEGER;
-      case "Long":
-        return Types.DOUBLE;
-      case "Double":
-        return Types.DOUBLE;
-      default:
-        return Types.JAVA_OBJECT;
-    }
+    return switch (getColumnTypeName(column)) {
+      case "String" -> Types.VARCHAR;
+      case "Integer" -> Types.INTEGER;
+      case "Long", "Double" -> Types.DOUBLE;
+      default -> Types.JAVA_OBJECT;
+    };
   }
 
   @Override

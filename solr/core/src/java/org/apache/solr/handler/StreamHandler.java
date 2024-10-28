@@ -285,14 +285,13 @@ public class StreamHandler extends RequestHandlerBase
     }
 
     switch (action) {
-      case "stop":
+      case "stop" -> {
         d.close();
         rsp.add(
             StreamParams.RESULT_SET,
             new DaemonResponseStream("Daemon:" + id + " stopped on " + coreName));
-        break;
-
-      case "start":
+      }
+      case "start" -> {
         try {
           d.open();
         } catch (IOException e) {
@@ -303,23 +302,19 @@ public class StreamHandler extends RequestHandlerBase
         rsp.add(
             StreamParams.RESULT_SET,
             new DaemonResponseStream("Daemon:" + id + " started on " + coreName));
-        break;
-
-      case "kill":
+      }
+      case "kill" -> {
         daemons.remove(id);
         // we already found it in the daemons list, so we don't need to verify we removed it.
         d.close();
         rsp.add(
             StreamParams.RESULT_SET,
             new DaemonResponseStream("Daemon:" + id + " killed on " + coreName));
-        break;
-
-      default:
-        rsp.add(
-            StreamParams.RESULT_SET,
-            new DaemonResponseStream(
-                "Daemon:" + id + " action '" + action + "' not recognized on " + coreName));
-        break;
+      }
+      default -> rsp.add(
+          StreamParams.RESULT_SET,
+          new DaemonResponseStream(
+              "Daemon:" + id + " action '" + action + "' not recognized on " + coreName));
     }
   }
 

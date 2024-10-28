@@ -765,21 +765,18 @@ public abstract class AbstractBasicDistributedZkTestBase extends AbstractFullDis
       for (FacetField.Count count : ff.getValues()) {
         long num = count.getCount();
         switch (count.getName()) {
-          case "all the kings horses and all the kings men":
-          case "An eye for eye only ends up making the whole world blind.":
-          case "Great works are performed, not by strength, but by perseverance.":
-          case "how now brown cow":
-          case "no eggs on wall, lesson learned":
-          case "now is the time for all good men":
-          case "this too shall pass":
-          case "to come to the aid of their country.":
-            assertEquals("Should have exactly one facet count for field " + ff.getName(), 1, num);
-            break;
-          case "the quick fox jumped over the lazy dog":
-            assertEquals("Should have 5 docs for the lazy dog", 5, num);
-            break;
-          default:
-            fail("No case for facet '" + ff.getName() + "'");
+          case "all the kings horses and all the kings men",
+              "An eye for eye only ends up making the whole world blind.",
+              "Great works are performed, not by strength, but by perseverance.",
+              "how now brown cow",
+              "no eggs on wall, lesson learned",
+              "now is the time for all good men",
+              "this too shall pass",
+              "to come to the aid of their country." -> assertEquals(
+              "Should have exactly one facet count for field " + ff.getName(), 1, num);
+          case "the quick fox jumped over the lazy dog" -> assertEquals(
+              "Should have 5 docs for the lazy dog", 5, num);
+          default -> fail("No case for facet '" + ff.getName() + "'");
         }
       }
     }
@@ -818,22 +815,18 @@ public abstract class AbstractBasicDistributedZkTestBase extends AbstractFullDis
         if (grp.getGroupValue() == null)
           continue; // Don't count the groups without an entry as the numnber is variable
         switch (grp.getGroupValue()) {
-          case "all the kings horses and all the kings men":
-          case "An eye for eye only ends up making the whole world blind.":
-          case "Great works are performed, not by strength, but by perseverance.":
-          case "how now brown cow":
-          case "no eggs on wall, lesson learned":
-          case "now is the time for all good men":
-          case "this too shall pass":
-          case "to come to the aid of their country.":
-            assertEquals(
-                "Should have exactly one facet count for field " + grpCmd.getName(), 1, count);
-            break;
-          case "the quick fox jumped over the lazy dog":
-            assertEquals("Should have 5 docs for the lazy dog", 5, count);
-            break;
-          default:
-            fail("No case for facet '" + grpCmd.getName() + "'");
+          case "all the kings horses and all the kings men",
+              "An eye for eye only ends up making the whole world blind.",
+              "Great works are performed, not by strength, but by perseverance.",
+              "how now brown cow",
+              "no eggs on wall, lesson learned",
+              "now is the time for all good men",
+              "this too shall pass",
+              "to come to the aid of their country." -> assertEquals(
+              "Should have exactly one facet count for field " + grpCmd.getName(), 1, count);
+          case "the quick fox jumped over the lazy dog" -> assertEquals(
+              "Should have 5 docs for the lazy dog", 5, count);
+          default -> fail("No case for facet '" + grpCmd.getName() + "'");
         }
       }
     }

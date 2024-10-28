@@ -116,13 +116,10 @@ public class PingRequestHandler extends RequestHandlerBase implements SolrCoreAw
   public Name getPermissionName(AuthorizationContext request) {
     String action = request.getParams().get(ACTION, "").strip().toLowerCase(Locale.ROOT);
     // Modifying the health check file requires more permission than just doing a ping
-    switch (action) {
-      case ENABLE:
-      case DISABLE:
-        return Name.CONFIG_EDIT_PERM;
-      default:
-        return Name.HEALTH_PERM;
-    }
+    return switch (action) {
+      case ENABLE, DISABLE -> Name.CONFIG_EDIT_PERM;
+      default -> Name.HEALTH_PERM;
+    };
   }
 
   protected enum ACTIONS {
@@ -196,7 +193,7 @@ public class PingRequestHandler extends RequestHandlerBase implements SolrCoreAw
       }
     }
     switch (action) {
-      case PING:
+      case PING -> {
         if (isPingDisabled()) {
           SolrException e =
               new SolrException(SolrException.ErrorCode.SERVICE_UNAVAILABLE, "Service disabled");
@@ -204,14 +201,10 @@ public class PingRequestHandler extends RequestHandlerBase implements SolrCoreAw
           return;
         }
         handlePing(req, rsp);
-        break;
-      case ENABLE:
-        handleEnable(true);
-        break;
-      case DISABLE:
-        handleEnable(false);
-        break;
-      case STATUS:
+      }
+      case ENABLE -> handleEnable(true);
+      case DISABLE -> handleEnable(false);
+      case STATUS -> {
         if (healthcheck == null) {
           SolrException e =
               new SolrException(
@@ -220,6 +213,7 @@ public class PingRequestHandler extends RequestHandlerBase implements SolrCoreAw
         } else {
           rsp.add("status", isPingDisabled() ? "disabled" : "enabled");
         }
+      }
     }
   }
 

@@ -346,11 +346,9 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
           effectiveLimit += freq.overrequest;
         } else {
           switch (freq.overrequest) {
-            case 0:
-              // no-op (overrequest explicitly disabled)
-              break;
-            case -1:
-              // default
+            case 0 -> { // no-op (overrequest explicitly disabled)
+            }
+            case -1 -> { // default
               if (!"index".equals(this.sort.sortVariable)) {
                 // NOTE: even for distrib requests, `overrequest` is not directly relevant for
                 // "index" sort, hence there is no default/implicit overrequest for "index sort"
@@ -358,11 +356,10 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
                 // `resort` must be explicit, even in a distrib context)
                 effectiveLimit = applyDefaultOverrequest(freq.offset, effectiveLimit);
               }
-              break;
-            default:
-              // other negative values are not supported
-              throw new IllegalArgumentException(
-                  "Illegal `overrequest` specified: " + freq.overrequest);
+            }
+            default -> // other negative values are not supported
+            throw new IllegalArgumentException(
+                "Illegal `overrequest` specified: " + freq.overrequest);
           }
         }
       } else if (null != resort && 0 < freq.overrequest) {
@@ -865,19 +862,14 @@ abstract class FacetFieldProcessor extends FacetProcessor<FacetField> {
         }
         j++;
       }
-      switch (j) {
-        case 0:
-          return null;
-        case 1:
-          return subAccs[0];
-        default:
-          if (j == subAccs.length) {
-            return this;
-          } else {
-            // must resize final field subAccs
-            return new MultiAcc(fcontext, ArrayUtil.copyOfSubArray(subAccs, 0, j));
-          }
-      }
+      return switch (j) {
+        case 0 -> null;
+        case 1 -> subAccs[0];
+        default -> // must resize final field subAccs
+        j == subAccs.length
+            ? this
+            : new MultiAcc(fcontext, ArrayUtil.copyOfSubArray(subAccs, 0, j));
+      };
     }
   }
 

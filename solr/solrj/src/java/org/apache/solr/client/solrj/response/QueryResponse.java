@@ -448,41 +448,33 @@ public class QueryResponse extends SolrResponseBase {
           final String key = nl.getName(index);
           final Object val = nl.getVal(index);
           switch (key) {
-            case "pivot":
-              {
-                assert null != val : "Server sent back 'null' for sub pivots?";
-                assert val instanceof List : "Server sent non-List for sub pivots?";
+            case "pivot" -> {
+              assert null != val : "Server sent back 'null' for sub pivots?";
+              assert val instanceof List : "Server sent non-List for sub pivots?";
 
-                subPivots = readPivots((List<NamedList>) val);
-                break;
-              }
-            case "stats":
-              {
-                assert null != val : "Server sent back 'null' for stats?";
-                assert val instanceof NamedList : "Server sent non-NamedList for stats?";
+              subPivots = readPivots((List<NamedList>) val);
+            }
+            case "stats" -> {
+              assert null != val : "Server sent back 'null' for stats?";
+              assert val instanceof NamedList : "Server sent non-NamedList for stats?";
 
-                fieldStatsInfos = extractFieldStatsInfo((NamedList<Object>) val);
-                break;
-              }
-            case "queries":
-              {
-                // Parse the queries
-                queryCounts = new LinkedHashMap<>();
-                NamedList<Integer> fq = (NamedList<Integer>) val;
-                if (fq != null) {
-                  for (Map.Entry<String, Integer> entry : fq) {
-                    queryCounts.put(entry.getKey(), entry.getValue());
-                  }
+              fieldStatsInfos = extractFieldStatsInfo((NamedList<Object>) val);
+            }
+            case "queries" -> {
+              // Parse the queries
+              queryCounts = new LinkedHashMap<>();
+              NamedList<Integer> fq = (NamedList<Integer>) val;
+              if (fq != null) {
+                for (Map.Entry<String, Integer> entry : fq) {
+                  queryCounts.put(entry.getKey(), entry.getValue());
                 }
-                break;
               }
-            case "ranges":
-              {
-                ranges = extractRangeFacets((NamedList<NamedList<Object>>) val);
-                break;
-              }
-            default:
-              throw new RuntimeException("unknown key in pivot: " + key + " [" + val + "]");
+            }
+            case "ranges" -> {
+              ranges = extractRangeFacets((NamedList<NamedList<Object>>) val);
+            }
+            default -> throw new RuntimeException(
+                "unknown key in pivot: " + key + " [" + val + "]");
           }
         }
       }

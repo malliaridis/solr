@@ -455,7 +455,7 @@ public class KafkaCrossDcConsumer extends Consumer.CrossDcConsumer {
       throws MirroringException {
     MirroredSolrRequest<?> item = result.getItem();
     switch (result.status()) {
-      case FAILED_RESUBMIT:
+      case FAILED_RESUBMIT -> {
         if (log.isTraceEnabled()) {
           log.trace("result=failed-resubmit");
         }
@@ -470,30 +470,31 @@ public class KafkaCrossDcConsumer extends Consumer.CrossDcConsumer {
           kafkaMirroringSink.submit(item);
           metrics.counter(MetricRegistry.name(type.name(), "failed-resubmit")).inc();
         }
-        break;
-      case HANDLED:
+      }
+      case HANDLED -> {
         // no-op
         if (log.isTraceEnabled()) {
           log.trace("result=handled");
         }
         metrics.counter(MetricRegistry.name(type.name(), "handled")).inc();
-        break;
-      case NOT_HANDLED_SHUTDOWN:
+      }
+      case NOT_HANDLED_SHUTDOWN -> {
         if (log.isTraceEnabled()) {
           log.trace("result=nothandled_shutdown");
         }
         metrics.counter(MetricRegistry.name(type.name(), "nothandled_shutdown")).inc();
-        break;
-      case FAILED_RETRY:
+      }
+      case FAILED_RETRY -> {
         log.error(
             "Unexpected response while processing request. We never expect {}.", result.status());
         metrics.counter(MetricRegistry.name(type.name(), "failed-retry")).inc();
-        break;
-      default:
+      }
+      default -> {
         if (log.isTraceEnabled()) {
           log.trace("result=no matching case");
         }
         // no-op
+      }
     }
   }
 

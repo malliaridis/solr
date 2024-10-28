@@ -87,32 +87,20 @@ public class ObjectBuilder {
 
   public Object getVal() throws IOException {
     int ev = parser.lastEvent();
-    switch (ev) {
-      case JSONParser.STRING:
-        return getString();
-      case JSONParser.LONG:
-        return getLong();
-      case JSONParser.NUMBER:
-        return getNumber();
-      case JSONParser.BIGNUMBER:
-        return getBigNumber();
-      case JSONParser.BOOLEAN:
-        return getBoolean();
-      case JSONParser.NULL:
-        return getNull();
-      case JSONParser.OBJECT_START:
-        return getObject();
-      case JSONParser.OBJECT_END:
-        return null; // OR ERROR?
-      case JSONParser.ARRAY_START:
-        return getArray();
-      case JSONParser.ARRAY_END:
-        return null; // OR ERROR?
-      case JSONParser.EOF:
-        return null; // OR ERROR?
-      default:
-        return null; // OR ERROR?
-    }
+    return switch (ev) {
+      case JSONParser.STRING -> getString();
+      case JSONParser.LONG -> getLong();
+      case JSONParser.NUMBER -> getNumber();
+      case JSONParser.BIGNUMBER -> getBigNumber();
+      case JSONParser.BOOLEAN -> getBoolean();
+      case JSONParser.NULL -> getNull();
+      case JSONParser.OBJECT_START -> getObject();
+      case JSONParser.OBJECT_END -> null; // OR ERROR?
+      case JSONParser.ARRAY_START -> getArray();
+      case JSONParser.ARRAY_END -> null; // OR ERROR?
+      case JSONParser.EOF -> null; // OR ERROR?
+      default -> null; // OR ERROR?
+    };
   }
 
   public Object getString() throws IOException {

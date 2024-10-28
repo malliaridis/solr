@@ -256,9 +256,8 @@ public class RealTimeGetComponent extends SearchComponent {
             List<?> entry = (List<?>) o;
             assert entry.size() >= 3;
             int oper = (Integer) entry.get(UpdateLog.FLAGS_IDX) & UpdateLog.OPERATION_MASK;
-            switch (oper) {
-              case UpdateLog.UPDATE_INPLACE: // fall through to ADD
-              case UpdateLog.ADD:
+            switch (oper) { // fall through to ADD
+              case UpdateLog.UPDATE_INPLACE, UpdateLog.ADD -> {
                 if (mustUseRealtimeSearcher) {
                   // close handles to current searchers & result context
                   if (!opennedRealtimeSearcher) {
@@ -304,12 +303,10 @@ public class RealTimeGetComponent extends SearchComponent {
                 }
 
                 docList.add(doc);
-                break;
-              case UpdateLog.DELETE:
-                break;
-              default:
-                throw new SolrException(
-                    SolrException.ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
+              }
+              case UpdateLog.DELETE -> {}
+              default -> throw new SolrException(
+                  ErrorCode.SERVER_ERROR, "Unknown Operation! " + oper);
             }
             if (o != null) continue;
           }

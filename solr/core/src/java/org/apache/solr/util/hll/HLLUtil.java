@@ -109,25 +109,14 @@ final class HLLUtil {
    * @throws IllegalArgumentException if <code>registerCount</code> is less than 16.
    */
   public static double alphaMSquared(final int m) {
-    switch (m) {
-      case 1 /*2^0*/:
-      case 2 /*2^1*/:
-      case 4 /*2^2*/:
-      case 8 /*2^3*/:
-        throw new IllegalArgumentException("'m' cannot be less than 16 (" + m + " < 16).");
-
-      case 16 /*2^4*/:
-        return 0.673 * m * m;
-
-      case 32 /*2^5*/:
-        return 0.697 * m * m;
-
-      case 64 /*2^6*/:
-        return 0.709 * m * m;
-
-      default /*>2^6*/:
-        return (0.7213 / (1.0 + 1.079 / m)) * m * m;
-    }
+    return switch (m) {
+      case 1 /*2^0*/, 2 /*2^1*/, 4 /*2^2*/, 8 /*2^3*/ -> throw new IllegalArgumentException(
+          "'m' cannot be less than 16 (" + m + " < 16).");
+      case 16 /*2^4*/ -> 0.673 * m * m;
+      case 32 /*2^5*/ -> 0.697 * m * m;
+      case 64 /*2^6*/ -> 0.709 * m * m;
+      default /*>2^6*/ -> (0.7213 / (1.0 + 1.079 / m)) * m * m;
+    };
   }
 
   // ========================================================================

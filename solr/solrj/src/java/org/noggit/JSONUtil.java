@@ -101,42 +101,40 @@ public class JSONUtil {
 
   public static void writeChar(char ch, CharArr out) {
     switch (ch) {
-      case '"':
-      case '\\':
+      case '"', '\\' -> {
         out.write('\\');
         out.write(ch);
-        break;
-      case '\r':
+      }
+      case '\r' -> {
         out.write('\\');
         out.write('r');
-        break;
-      case '\n':
+      }
+      case '\n' -> {
         out.write('\\');
         out.write('n');
-        break;
-      case '\t':
+      }
+      case '\t' -> {
         out.write('\\');
         out.write('t');
-        break;
-      case '\b':
+      }
+      case '\b' -> {
         out.write('\\');
         out.write('b');
-        break;
-      case '\f':
+      }
+      case '\f' -> {
         out.write('\\');
         out.write('f');
-        break;
+      }
         // case '/':
-      case '\u2028': // valid JSON, but not valid json script
-      case '\u2029':
-        unicodeEscape(ch, out);
-        break;
-      default:
+        // valid JSON, but not valid json script
+      case '\u2028', '\u2029' -> unicodeEscape(ch, out);
+      default -> {
         if (ch <= 0x1F) {
           unicodeEscape(ch, out);
         } else {
           out.write(ch);
         }
+      }
     }
   }
 

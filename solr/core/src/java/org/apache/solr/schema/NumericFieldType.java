@@ -59,7 +59,7 @@ public abstract class NumericFieldType extends PrimitiveFieldType {
     assert field.hasDocValues() && (field.getType().isPointField() || !field.multiValued());
 
     switch (getNumberType()) {
-      case INTEGER:
+      case INTEGER -> {
         return numericDocValuesRangeQuery(
             field.getName(),
             min == null ? null : (long) parseIntFromUser(field.getName(), min),
@@ -67,14 +67,16 @@ public abstract class NumericFieldType extends PrimitiveFieldType {
             minInclusive,
             maxInclusive,
             field.multiValued());
-      case FLOAT:
+      }
+      case FLOAT -> {
         if (field.multiValued()) {
           return getRangeQueryForMultiValuedFloatDocValues(
               field, min, max, minInclusive, maxInclusive);
         } else {
           return getRangeQueryForFloatDoubleDocValues(field, min, max, minInclusive, maxInclusive);
         }
-      case LONG:
+      }
+      case LONG -> {
         return numericDocValuesRangeQuery(
             field.getName(),
             min == null ? null : parseLongFromUser(field.getName(), min),
@@ -82,14 +84,16 @@ public abstract class NumericFieldType extends PrimitiveFieldType {
             minInclusive,
             maxInclusive,
             field.multiValued());
-      case DOUBLE:
+      }
+      case DOUBLE -> {
         if (field.multiValued()) {
           return getRangeQueryForMultiValuedDoubleDocValues(
               field, min, max, minInclusive, maxInclusive);
         } else {
           return getRangeQueryForFloatDoubleDocValues(field, min, max, minInclusive, maxInclusive);
         }
-      case DATE:
+      }
+      case DATE -> {
         return numericDocValuesRangeQuery(
             field.getName(),
             min == null ? null : DateMathParser.parseMath(null, min).getTime(),
@@ -97,9 +101,9 @@ public abstract class NumericFieldType extends PrimitiveFieldType {
             minInclusive,
             maxInclusive,
             field.multiValued());
-      default:
-        throw new SolrException(
-            SolrException.ErrorCode.SERVER_ERROR, "Unknown type for numeric field");
+      }
+      default -> throw new SolrException(
+          SolrException.ErrorCode.SERVER_ERROR, "Unknown type for numeric field");
     }
   }
 

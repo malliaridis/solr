@@ -236,18 +236,13 @@ public class TestRetrieveFieldsOptimizer extends SolrTestCaseJ4 {
     List<RetrieveField> toCheck = new ArrayList<>();
     String idField = idNotStoredDv + ",";
     switch (source) {
-      case ALL_FROM_DV:
-        toCheck = new ArrayList(fieldsHolder.dvNotStoredFields);
-        break;
-      case ALL_FROM_STORED:
+      case ALL_FROM_DV -> toCheck = new ArrayList(fieldsHolder.dvNotStoredFields);
+      case ALL_FROM_STORED -> {
         idField = idStoredNotDv + ",";
         toCheck = new ArrayList(fieldsHolder.storedNotDvFields);
-        break;
-      case MIXED_SOURCES:
-        toCheck = new ArrayList(fieldsHolder.allFields);
-        break;
-      default:
-        fail("Value passed to checkFetchSources unknown: " + source);
+      }
+      case MIXED_SOURCES -> toCheck = new ArrayList(fieldsHolder.allFields);
+      default -> fail("Value passed to checkFetchSources unknown: " + source);
     }
 
     // MultiValued fields are _always_ read from stored data.
@@ -267,15 +262,9 @@ public class TestRetrieveFieldsOptimizer extends SolrTestCaseJ4 {
     Collections.shuffle(shuffled, random());
     for (int which : shuffled) {
       switch (which) {
-        case 0:
-          check(fl, source);
-          break;
-
-        case 1:
-          check(flAll, MIXED_SOURCES);
-          break;
-
-        case 2:
+        case 0 -> check(fl, source);
+        case 1 -> check(flAll, MIXED_SOURCES);
+        case 2 -> {
           List<RetrieveField> toCheckPlusMv = new ArrayList<>(toCheck);
           toCheckPlusMv.add(
               fieldsHolder.storedMvFields.get(
@@ -291,9 +280,8 @@ public class TestRetrieveFieldsOptimizer extends SolrTestCaseJ4 {
           } else {
             check(flWithMv, MIXED_SOURCES);
           }
-          break;
-        default:
-          fail("Your shuffling should be between 0 and 2, inclusive. It was: " + which);
+        }
+        default -> fail("Your shuffling should be between 0 and 2, inclusive. It was: " + which);
       }
     }
   }
@@ -551,56 +539,48 @@ class RetrieveField {
   List<String> getValsForField() {
     List<String> valsAsStrings = new ArrayList<>();
     switch (testFieldType.getSolrTypeClass()) {
-      case "solr.TrieIntField":
-      case "solr.TrieLongField":
-      case "solr.IntPointField":
-      case "solr.LongPointField":
+      case "solr.TrieIntField",
+          "solr.TrieLongField",
+          "solr.IntPointField",
+          "solr.LongPointField" -> {
         valsAsStrings.add(Integer.toString(random().nextInt(10_000)));
         if (schemaField.multiValued() == false) break;
         for (int idx = 0; idx < random().nextInt(5); ++idx) {
           valsAsStrings.add(Integer.toString(random().nextInt(10_000)));
         }
-        break;
-
-      case "solr.TrieFloatField":
-      case "solr.TrieDoubleField":
-      case "solr.FloatPointField":
-      case "solr.DoublePointField":
+      }
+      case "solr.TrieFloatField",
+          "solr.TrieDoubleField",
+          "solr.FloatPointField",
+          "solr.DoublePointField" -> {
         valsAsStrings.add(Float.toString(random().nextFloat()));
         if (schemaField.multiValued() == false) break;
         for (int idx = 0; idx < random().nextInt(5); ++idx) {
           valsAsStrings.add(Float.toString(random().nextFloat()));
         }
-        break;
-
-      case "solr.TrieDateField":
-      case "solr.DatePointField":
+      }
+      case "solr.TrieDateField", "solr.DatePointField" -> {
         valsAsStrings.add(randDate());
         if (schemaField.multiValued() == false) break;
         for (int idx = 0; idx < random().nextInt(5); ++idx) {
           valsAsStrings.add(randDate());
         }
-        break;
-
-      case "solr.StrField":
+      }
+      case "solr.StrField" -> {
         valsAsStrings.add(randString());
         if (schemaField.multiValued() == false) break;
         for (int idx = 0; idx < random().nextInt(5); ++idx) {
           valsAsStrings.add(randString());
         }
-        break;
-
-      case "solr.BoolField":
+      }
+      case "solr.BoolField" -> {
         valsAsStrings.add(Boolean.toString(random().nextBoolean()));
         if (schemaField.multiValued() == false) break;
         for (int idx = 0; idx < random().nextInt(5); ++idx) {
           valsAsStrings.add(Boolean.toString(random().nextBoolean()));
         }
-        break;
-
-      default:
-        SolrTestCaseJ4.fail("Found no case for field " + name + " type " + type);
-        break;
+      }
+      default -> SolrTestCaseJ4.fail("Found no case for field " + name + " type " + type);
     }
     // There are tricky cases with multiValued fields that are sometimes fetched from docValues that
     // obey set semantics so be sure we include at least one duplicate in a multiValued field
@@ -617,51 +597,34 @@ class RetrieveField {
       return;
     }
 
-    switch (info.getDocValuesType()) {
-      case NONE: // These three types are single values, just return.
-      case NUMERIC:
-      case BINARY: // here for completeness, really doesn't make sense.
-        return;
-
-      case SORTED_NUMERIC: // Can have multiple, identical values. This was a surprise to me.
-        break;
-
-      case SORTED_SET: // Obey set semantics.
-      case SORTED:
+    switch (info.getDocValuesType()) { // These three types are single values, just return.
+      case NONE, NUMERIC, BINARY -> {
+        return; // here for completeness, really doesn't make sense.
+      }
+      case SORTED_NUMERIC -> {} // Obey set semantics.
+      case SORTED_SET, SORTED -> {
         Set<String> uniq = new TreeSet<>(valsAsStrings);
         valsAsStrings.clear();
         valsAsStrings.addAll(uniq);
-        break;
+      }
     }
 
     // Now order them if string-based comparison isn't reasonable
     switch (testFieldType.getSolrTypeClass()) {
-      case "solr.TrieIntField":
-      case "solr.TrieLongField":
-        valsAsStrings.sort(Comparator.comparingInt(Integer::parseInt));
-        break;
-      case "solr.IntPointField":
-      case "solr.LongPointField":
-        valsAsStrings.sort(Comparator.comparingLong(Long::parseLong));
-        break;
-
-      case "solr.TrieFloatField":
-      case "solr.FloatPointField":
-      case "solr.TrieDoubleField":
-      case "solr.DoublePointField":
-        valsAsStrings.sort(Comparator.comparingDouble(Double::parseDouble));
-        break;
-
-      case "solr.TrieDateField":
-      case "solr.DatePointField":
-      case "solr.StrField":
-      case "solr.BoolField":
-        Collections.sort(valsAsStrings);
-        break;
-
-      default:
-        SolrTestCaseJ4.fail("Found no case for field " + name + " type " + type);
-        break;
+      case "solr.TrieIntField", "solr.TrieLongField" -> valsAsStrings.sort(
+          Comparator.comparingInt(Integer::parseInt));
+      case "solr.IntPointField", "solr.LongPointField" -> valsAsStrings.sort(
+          Comparator.comparingLong(Long::parseLong));
+      case "solr.TrieFloatField",
+          "solr.FloatPointField",
+          "solr.TrieDoubleField",
+          "solr.DoublePointField" -> valsAsStrings.sort(
+          Comparator.comparingDouble(Double::parseDouble));
+      case "solr.TrieDateField",
+          "solr.DatePointField",
+          "solr.StrField",
+          "solr.BoolField" -> Collections.sort(valsAsStrings);
+      default -> SolrTestCaseJ4.fail("Found no case for field " + name + " type " + type);
     }
   }
 }

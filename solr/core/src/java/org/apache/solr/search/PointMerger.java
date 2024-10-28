@@ -75,23 +75,14 @@ public class PointMerger {
         int capacity = (int) ((long) totalBufferSize * ctx.reader().maxDoc() / ndocs);
         capacity = Math.max(capacity, minSegBufferSize);
 
-        switch (field.getType().getNumberType()) {
-          case INTEGER:
-            seg = new IntSeg(pv, capacity);
-            break;
-          case LONG:
-            seg = new LongSeg(pv, capacity);
-            break;
-          case FLOAT:
-            seg = new FloatSeg(pv, capacity);
-            break;
-          case DOUBLE:
-            seg = new DoubleSeg(pv, capacity);
-            break;
-          case DATE:
-            seg = new DateSeg(pv, capacity);
-            break;
-        }
+        seg =
+            switch (field.getType().getNumberType()) {
+              case INTEGER -> new IntSeg(pv, capacity);
+              case LONG -> new LongSeg(pv, capacity);
+              case FLOAT -> new FloatSeg(pv, capacity);
+              case DOUBLE -> new DoubleSeg(pv, capacity);
+              case DATE -> new DateSeg(pv, capacity);
+            };
         int count = seg.setNextValue();
         if (count >= 0) {
           queue.add(seg);

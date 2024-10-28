@@ -283,25 +283,16 @@ class SolrTable extends AbstractQueryableTable implements TranslatableTable {
   }
 
   private Metric getMetric(Pair<String, String> metricPair) {
-    switch (metricPair.getKey()) {
-      case COUNT_DISTINCT:
-        return new CountDistinctMetric(metricPair.getValue());
-      case APPROX_COUNT_DISTINCT:
-        return new CountDistinctMetric(metricPair.getValue(), true);
-      case "COUNT":
-        return new CountMetric(metricPair.getValue());
-      case "SUM":
-      case "$SUM0":
-        return new SumMetric(metricPair.getValue());
-      case "MIN":
-        return new MinMetric(metricPair.getValue());
-      case "MAX":
-        return new MaxMetric(metricPair.getValue());
-      case "AVG":
-        return new MeanMetric(metricPair.getValue());
-      default:
-        throw new IllegalArgumentException(metricPair.getKey());
-    }
+    return switch (metricPair.getKey()) {
+      case COUNT_DISTINCT -> new CountDistinctMetric(metricPair.getValue());
+      case APPROX_COUNT_DISTINCT -> new CountDistinctMetric(metricPair.getValue(), true);
+      case "COUNT" -> new CountMetric(metricPair.getValue());
+      case "SUM", "$SUM0" -> new SumMetric(metricPair.getValue());
+      case "MIN" -> new MinMetric(metricPair.getValue());
+      case "MAX" -> new MaxMetric(metricPair.getValue());
+      case "AVG" -> new MeanMetric(metricPair.getValue());
+      default -> throw new IllegalArgumentException(metricPair.getKey());
+    };
   }
 
   private TupleStream handleSelect(

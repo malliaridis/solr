@@ -515,20 +515,14 @@ public class TestLegacyNumericUtils extends SolrTestCase {
   }
 
   private long randomLong(final Random random) {
-    long val;
-    switch (random.nextInt(4)) {
-      case 0:
-        val =
-            1L
-                << (random.nextInt(
-                    63)); //  patterns like 0x000000100000 (-1 yields patterns like 0x0000fff)
-        break;
-      case 1:
-        val = -1L << (random.nextInt(63)); // patterns like 0xfffff00000
-        break;
-      default:
-        val = random.nextLong();
-    }
+    long val =
+        switch (random.nextInt(4)) {
+          case 0 -> 1L
+              << (random.nextInt(
+                  63)); //  patterns like 0x000000100000 (-1 yields patterns like 0x0000fff)
+          case 1 -> -1L << (random.nextInt(63)); // patterns like 0xfffff00000
+          default -> random.nextLong();
+        };
 
     val += random.nextInt(5) - 2;
 

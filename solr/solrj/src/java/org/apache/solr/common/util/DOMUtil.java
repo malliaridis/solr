@@ -270,10 +270,9 @@ public class DOMUtil {
     // but when asked for the text of these types, we must return null
     // (Not the empty string)
     switch (type) {
-      case Node.DOCUMENT_NODE: /* fall through */
-      case Node.DOCUMENT_TYPE_NODE: /* fall through */
-      case Node.NOTATION_NODE: /* fall through */
+      case Node.DOCUMENT_NODE, Node.DOCUMENT_TYPE_NODE, Node.NOTATION_NODE -> {
         return null;
+      }
     }
 
     StringBuilder sb = new StringBuilder();
@@ -289,10 +288,10 @@ public class DOMUtil {
     short type = nd.getNodeType();
 
     switch (type) {
-      case Node.ELEMENT_NODE: /* fall through */
-      case Node.ENTITY_NODE: /* fall through */
-      case Node.ENTITY_REFERENCE_NODE: /* fall through */
-      case Node.DOCUMENT_FRAGMENT_NODE:
+      case Node.ELEMENT_NODE,
+          Node.ENTITY_NODE,
+          Node.ENTITY_REFERENCE_NODE,
+          Node.DOCUMENT_FRAGMENT_NODE -> {
         NodeList childs = nd.getChildNodes();
         for (int i = 0; i < childs.getLength(); i++) {
           Node child = childs.item(i);
@@ -301,35 +300,29 @@ public class DOMUtil {
             getText(child, buf);
           }
         }
-        break;
-
-      case Node.ATTRIBUTE_NODE: /* fall through */
-        /* Putting Attribute nodes in this section does not exactly
-           match the definition of how textContent should behave
-           according to the DOM Level-3 Core documentation - which
-           specifies that the Attr's children should have their
-           textContent contacted (Attr's can have a single child which
-           is either Text node or an EntityReference).  In practice,
-           DOM implementations do not seem to use child nodes of
-           Attributes, storing the "text" directly as the nodeValue.
-           Fortunately, the DOM Spec indicates that when Attr.nodeValue
-           is read, it should return the nodeValue from the child Node,
-           so this approach should work both for strict implementations,
-           and implementations actually encountered.
-        */
-      case Node.TEXT_NODE: /* fall through */
-      case Node.CDATA_SECTION_NODE: /* fall through */
-      case Node.COMMENT_NODE: /* fall through */
-      case Node.PROCESSING_INSTRUCTION_NODE: /* fall through */
-        buf.append(nd.getNodeValue());
-        break;
-
-      case Node.DOCUMENT_NODE: /* fall through */
-      case Node.DOCUMENT_TYPE_NODE: /* fall through */
-      case Node.NOTATION_NODE: /* fall through */
-      default:
+      }
+      case Node.ATTRIBUTE_NODE,
+          Node.TEXT_NODE,
+          Node.CDATA_SECTION_NODE,
+          Node.COMMENT_NODE,
+          Node.PROCESSING_INSTRUCTION_NODE ->
+      /* In case of ATTRIBUTE_NOTE putting Attribute nodes in this section does not exactly
+         match the definition of how textContent should behave
+         according to the DOM Level-3 Core documentation - which
+         specifies that the Attr's children should have their
+         textContent contacted (Attr's can have a single child which
+         is either Text node or an EntityReference).  In practice,
+         DOM implementations do not seem to use child nodes of
+         Attributes, storing the "text" directly as the nodeValue.
+         Fortunately, the DOM Spec indicates that when Attr.nodeValue
+         is read, it should return the nodeValue from the child Node,
+         so this approach should work both for strict implementations,
+         and implementations actually encountered.
+      */
+      buf.append(nd.getNodeValue());
+      default -> {
         /* :NOOP: */
-
+      }
     }
   }
 

@@ -470,26 +470,15 @@ public class FieldCacheImpl implements FieldCache {
       FieldInfo fieldInfo = reader.getFieldInfos().fieldInfo(field);
 
       DocValuesType dvType = fieldInfo.getDocValuesType();
-      DocIdSetIterator iterator;
-      switch (dvType) {
-        case NUMERIC:
-          iterator = reader.getNumericDocValues(field);
-          break;
-        case BINARY:
-          iterator = reader.getBinaryDocValues(field);
-          break;
-        case SORTED:
-          iterator = reader.getSortedDocValues(field);
-          break;
-        case SORTED_NUMERIC:
-          iterator = reader.getSortedNumericDocValues(field);
-          break;
-        case SORTED_SET:
-          iterator = reader.getSortedSetDocValues(field);
-          break;
-        default:
-          throw new AssertionError();
-      }
+      DocIdSetIterator iterator =
+          switch (dvType) {
+            case NUMERIC -> reader.getNumericDocValues(field);
+            case BINARY -> reader.getBinaryDocValues(field);
+            case SORTED -> reader.getSortedDocValues(field);
+            case SORTED_NUMERIC -> reader.getSortedNumericDocValues(field);
+            case SORTED_SET -> reader.getSortedSetDocValues(field);
+            default -> throw new AssertionError();
+          };
 
       FixedBitSet bits = new FixedBitSet(reader.maxDoc());
       while (true) {

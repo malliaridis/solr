@@ -366,13 +366,11 @@ public class MultipleAdditiveTreesModel extends LTRScoringModel {
       } else if (featureVector[regressionTreeNode.featureIndex] > regressionTreeNode.threshold) {
         regressionTreeNode = regressionTreeNode.right;
       } else if (Float.isNaN(featureVector[regressionTreeNode.featureIndex])) {
-        switch (regressionTreeNode.missing) {
-          case "left":
-            regressionTreeNode = regressionTreeNode.left;
-            break;
-          default:
-            regressionTreeNode = regressionTreeNode.right;
-        }
+        regressionTreeNode =
+            switch (regressionTreeNode.missing) {
+              case "left" -> regressionTreeNode.left;
+              default -> regressionTreeNode.right;
+            };
       }
     }
   }

@@ -111,7 +111,7 @@ public class JSONTupleStream implements TupleStreamParser {
     for (; ; ) {
       int event = parser.nextEvent();
       switch (event) {
-        case JSONParser.STRING:
+        case JSONParser.STRING -> {
           if (key != null) {
             String val = parser.getString();
             if (key.equals(val)) {
@@ -120,10 +120,11 @@ public class JSONTupleStream implements TupleStreamParser {
               handleError();
             }
           }
-          break;
-        case JSONParser.OBJECT_END:
+        }
+        case JSONParser.OBJECT_END -> {
           return false;
-        case JSONParser.OBJECT_START:
+        }
+        case JSONParser.OBJECT_START -> {
           if (deepSearch) {
             boolean found = advanceToMapKey(key, true);
             if (found) {
@@ -132,10 +133,8 @@ public class JSONTupleStream implements TupleStreamParser {
           } else {
             advanceToMapKey(null, false);
           }
-          break;
-        case JSONParser.ARRAY_START:
-          skipArray(key, deepSearch);
-          break;
+        }
+        case JSONParser.ARRAY_START -> skipArray(key, deepSearch);
       }
     }
   }
@@ -164,14 +163,11 @@ public class JSONTupleStream implements TupleStreamParser {
     for (; ; ) {
       int event = parser.nextEvent();
       switch (event) {
-        case JSONParser.OBJECT_START:
-          advanceToMapKey(key, deepSearch);
-          break;
-        case JSONParser.ARRAY_START:
-          skipArray(key, deepSearch);
-          break;
-        case JSONParser.ARRAY_END:
+        case JSONParser.OBJECT_START -> advanceToMapKey(key, deepSearch);
+        case JSONParser.ARRAY_START -> skipArray(key, deepSearch);
+        case JSONParser.ARRAY_END -> {
           return;
+        }
       }
     }
   }

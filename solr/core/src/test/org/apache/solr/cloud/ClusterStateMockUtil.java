@@ -124,7 +124,7 @@ public class ClusterStateMockUtil {
     while (m.find()) {
       Replica replica;
       switch (m.group(1)) {
-        case "c":
+        case "c" -> {
           slices = new HashMap<>();
           collectionProps.put(
               ZkStateReader.CONFIGNAME_PROP, ConfigSetsHandler.DEFAULT_CONFIGSET_NAME);
@@ -135,8 +135,8 @@ public class ClusterStateMockUtil {
                   collectionProps,
                   DocRouter.DEFAULT);
           collectionStates.put(docCollection.getName(), docCollection);
-          break;
-        case "s":
+        }
+        case "s" -> {
           if (collName == null) collName = "collection" + (collectionStates.size() + 1);
           slice =
               new Slice(sliceName = "slice" + (slices.size() + 1), new HashMap<>(), null, collName);
@@ -150,11 +150,8 @@ public class ClusterStateMockUtil {
           // final object once all the slices and replicas have been created.
           docCollection = docCollection.copyWithSlices(slices);
           collectionStates.put(docCollection.getName(), docCollection);
-          break;
-        case "r":
-        case "n":
-        case "t":
-        case "p":
+        }
+        case "r", "n", "t", "p" -> {
           String node = m.group(2);
           String replicaName = "replica" + replicaCount++;
           String stateCode = m.group(3);
@@ -184,9 +181,8 @@ public class ClusterStateMockUtil {
           slices.put(slice.getName(), slice);
           docCollection = docCollection.copyWithSlices(slices);
           collectionStates.put(docCollection.getName(), docCollection);
-          break;
-        default:
-          break;
+        }
+        default -> {}
       }
     }
 
@@ -209,33 +205,23 @@ public class ClusterStateMockUtil {
 
     Replica.State state = Replica.State.ACTIVE;
     if (stateCode != null) {
-      switch (stateCode.charAt(0)) {
-        case 'S':
-          state = Replica.State.ACTIVE;
-          break;
-        case 'R':
-          state = Replica.State.RECOVERING;
-          break;
-        case 'D':
-          state = Replica.State.DOWN;
-          break;
-        case 'F':
-          state = Replica.State.RECOVERY_FAILED;
-          break;
-        default:
-          throw new IllegalArgumentException("Unexpected state for replica: " + stateCode);
-      }
+      state =
+          switch (stateCode.charAt(0)) {
+            case 'S' -> Replica.State.ACTIVE;
+            case 'R' -> Replica.State.RECOVERING;
+            case 'D' -> Replica.State.DOWN;
+            case 'F' -> Replica.State.RECOVERY_FAILED;
+            default -> throw new IllegalArgumentException(
+                "Unexpected state for replica: " + stateCode);
+          };
     }
 
-    Replica.Type replicaType = Replica.Type.NRT;
-    switch (replicaTypeCode) {
-      case "t":
-        replicaType = Replica.Type.TLOG;
-        break;
-      case "p":
-        replicaType = Replica.Type.PULL;
-        break;
-    }
+    Replica.Type replicaType =
+        switch (replicaTypeCode) {
+          case "t" -> Replica.Type.TLOG;
+          case "p" -> Replica.Type.PULL;
+          default -> Replica.Type.NRT;
+        };
 
     Map<String, Object> replicaPropMap = new HashMap<>();
     int port = 8982 + Integer.parseInt(node);

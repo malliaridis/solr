@@ -229,51 +229,50 @@ public class OpenExchangeRatesOrgProvider implements ExchangeRateProvider {
       do {
         ev = parser.nextEvent();
         switch (ev) {
-          case JSONParser.STRING:
+          case JSONParser.STRING -> {
             if (parser.wasKey()) {
               String key = parser.getString();
-              if (key.equals("disclaimer")) {
-                parser.nextEvent();
-                disclaimer = parser.getString();
-              } else if (key.equals("license")) {
-                parser.nextEvent();
-                license = parser.getString();
-              } else if (key.equals("timestamp")) {
-                parser.nextEvent();
-                timestamp = parser.getLong();
-              } else if (key.equals("base")) {
-                parser.nextEvent();
-                baseCurrency = parser.getString();
-              } else if (key.equals("rates")) {
-                ev = parser.nextEvent();
-                assert (ev == JSONParser.OBJECT_START);
-                ev = parser.nextEvent();
-                while (ev != JSONParser.OBJECT_END) {
-                  String curr = parser.getString();
-                  ev = parser.nextEvent();
-                  Double rate = parser.getDouble();
-                  rates.put(curr, rate);
-                  ev = parser.nextEvent();
+              switch (key) {
+                case "disclaimer" -> {
+                  parser.nextEvent();
+                  disclaimer = parser.getString();
                 }
-              } else {
-                log.warn("Unknown key {}", key);
+                case "license" -> {
+                  parser.nextEvent();
+                  license = parser.getString();
+                }
+                case "timestamp" -> {
+                  parser.nextEvent();
+                  timestamp = parser.getLong();
+                }
+                case "base" -> {
+                  parser.nextEvent();
+                  baseCurrency = parser.getString();
+                }
+                case "rates" -> {
+                  ev = parser.nextEvent();
+                  assert (ev == JSONParser.OBJECT_START);
+                  ev = parser.nextEvent();
+                  while (ev != JSONParser.OBJECT_END) {
+                    String curr = parser.getString();
+                    ev = parser.nextEvent();
+                    Double rate = parser.getDouble();
+                    rates.put(curr, rate);
+                    ev = parser.nextEvent();
+                  }
+                }
+                default -> log.warn("Unknown key {}", key);
               }
-              break;
             } else {
               log.warn("Expected key, got {}", JSONParser.getEventString(ev));
-              break;
             }
-
-          case JSONParser.OBJECT_END:
-          case JSONParser.OBJECT_START:
-          case JSONParser.EOF:
-            break;
-
-          default:
+          }
+          case JSONParser.OBJECT_END, JSONParser.OBJECT_START, JSONParser.EOF -> {}
+          default -> {
             if (log.isInfoEnabled()) {
               log.info("Noggit UNKNOWN_EVENT_ID: {}", JSONParser.getEventString(ev));
             }
-            break;
+          }
         }
       } while (ev != JSONParser.EOF);
     }

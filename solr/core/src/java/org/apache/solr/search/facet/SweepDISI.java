@@ -66,17 +66,14 @@ abstract class SweepDISI extends DocIdSetIterator implements SweepCountAware {
         activeCt++;
       }
     }
-    switch (activeCt) {
-      case 0:
-        return null;
-      case 1:
-        return new SingletonDISI(
-            subIterators[0],
-            activeCountAccs,
-            baseIdx >= 0); // solr docsets already exclude any deleted docs
-      default:
-        return new UnionDISI(subIterators, activeCountAccs, activeCt, baseIdx);
-    }
+    return switch (activeCt) {
+      case 0 -> null;
+      case 1 -> new SingletonDISI(
+          subIterators[0],
+          activeCountAccs,
+          baseIdx >= 0); // solr docsets already exclude any deleted docs
+      default -> new UnionDISI(subIterators, activeCountAccs, activeCt, baseIdx);
+    };
   }
 
   @Override

@@ -108,8 +108,7 @@ public class DefaultSchemaSuggester implements SchemaSuggester {
             .flatMap(c -> (c instanceof Collection) ? ((Collection<?>) c).stream() : Stream.of(c))
             .collect(Collectors.toList());
     switch (toNumType) {
-      case DOUBLE:
-      case FLOAT:
+      case DOUBLE, FLOAT -> {
         if (isFloatOrDouble(fieldValues, Locale.ROOT) == null) {
           throw new SolrException(
               SolrException.ErrorCode.BAD_REQUEST,
@@ -120,9 +119,8 @@ public class DefaultSchemaSuggester implements SchemaSuggester {
                   field.getName(),
                   toType.getTypeName()));
         }
-        break;
-      case LONG:
-      case INTEGER:
+      }
+      case LONG, INTEGER -> {
         if (isIntOrLong(fieldValues, Locale.ROOT) == null) {
           throw new SolrException(
               SolrException.ErrorCode.BAD_REQUEST,
@@ -133,8 +131,8 @@ public class DefaultSchemaSuggester implements SchemaSuggester {
                   field.getName(),
                   toType.getTypeName()));
         }
-        break;
-      case DATE:
+      }
+      case DATE -> {
         if (!isDateTime(fieldValues)) {
           throw new SolrException(
               SolrException.ErrorCode.BAD_REQUEST,
@@ -145,7 +143,7 @@ public class DefaultSchemaSuggester implements SchemaSuggester {
                   field.getName(),
                   toType.getTypeName()));
         }
-        break;
+      }
     }
   }
 

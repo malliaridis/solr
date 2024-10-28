@@ -216,38 +216,32 @@ final class NumericFacets {
         } while (ctx == null || doc >= ctx.docBase + ctx.reader().maxDoc());
         assert doc >= ctx.docBase;
         switch (numericType) {
-          case LONG:
-          case DATE:
-          case INTEGER:
-            // Long, Date and Integer
-            longs = DocValues.getNumeric(ctx.reader(), fieldName);
-            break;
-          case FLOAT:
-            // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
-            longs =
-                new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
-                  @Override
-                  public long longValue() throws IOException {
-                    long bits = super.longValue();
-                    if (bits < 0) bits ^= 0x7fffffffffffffffL;
-                    return bits;
-                  }
-                };
-            break;
-          case DOUBLE:
-            // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
-            longs =
-                new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
-                  @Override
-                  public long longValue() throws IOException {
-                    long bits = super.longValue();
-                    if (bits < 0) bits ^= 0x7fffffffffffffffL;
-                    return bits;
-                  }
-                };
-            break;
-          default:
-            throw new AssertionError("Unexpected type: " + numericType);
+          case LONG, DATE, INTEGER ->
+          // Long, Date and Integer
+          longs = DocValues.getNumeric(ctx.reader(), fieldName);
+          case FLOAT ->
+          // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
+          longs =
+              new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
+                @Override
+                public long longValue() throws IOException {
+                  long bits = super.longValue();
+                  if (bits < 0) bits ^= 0x7fffffffffffffffL;
+                  return bits;
+                }
+              };
+          case DOUBLE ->
+          // TODO: this bit flipping should probably be moved to tie-break in the PQ comparator
+          longs =
+              new FilterNumericDocValues(DocValues.getNumeric(ctx.reader(), fieldName)) {
+                @Override
+                public long longValue() throws IOException {
+                  long bits = super.longValue();
+                  if (bits < 0) bits ^= 0x7fffffffffffffffL;
+                  return bits;
+                }
+              };
+          default -> throw new AssertionError("Unexpected type: " + numericType);
         }
       }
       int valuesDocID = longs.docID();
@@ -355,18 +349,11 @@ final class NumericFacets {
             prefix = new BytesRef();
           }
           final TermsEnum termsEnum = terms.iterator();
-          BytesRef term;
-          switch (termsEnum.seekCeil(prefix)) {
-            case FOUND:
-            case NOT_FOUND:
-              term = termsEnum.term();
-              break;
-            case END:
-              term = null;
-              break;
-            default:
-              throw new AssertionError();
-          }
+          BytesRef term =
+              switch (termsEnum.seekCeil(prefix)) {
+                case FOUND, NOT_FOUND -> termsEnum.term();
+                case END -> null;
+              };
           final CharsRefBuilder spare = new CharsRefBuilder();
           for (int skipped = hashTable.size;
               skipped < offset && term != null && StringHelper.startsWith(term, prefix); ) {
@@ -418,18 +405,11 @@ final class NumericFacets {
           prefix = new BytesRef();
         }
         final TermsEnum termsEnum = terms.iterator();
-        BytesRef term;
-        switch (termsEnum.seekCeil(prefix)) {
-          case FOUND:
-          case NOT_FOUND:
-            term = termsEnum.term();
-            break;
-          case END:
-            term = null;
-            break;
-          default:
-            throw new AssertionError();
-        }
+        BytesRef term =
+            switch (termsEnum.seekCeil(prefix)) {
+              case FOUND, NOT_FOUND -> termsEnum.term();
+              case END -> null;
+            };
         final CharsRefBuilder spare = new CharsRefBuilder();
         for (int i = 0; i < offset && term != null && StringHelper.startsWith(term, prefix); ++i) {
           term = termsEnum.next();
@@ -576,18 +556,11 @@ final class NumericFacets {
   }
 
   private static String bitsToStringValue(FieldType fieldType, long bits) {
-    switch (fieldType.getNumberType()) {
-      case LONG:
-      case INTEGER:
-        return String.valueOf(bits);
-      case FLOAT:
-        return String.valueOf(NumericUtils.sortableIntToFloat((int) bits));
-      case DOUBLE:
-        return String.valueOf(NumericUtils.sortableLongToDouble(bits));
-      case DATE:
-        return new Date(bits).toInstant().toString();
-      default:
-        throw new AssertionError("Unsupported NumberType: " + fieldType.getNumberType());
-    }
+    return switch (fieldType.getNumberType()) {
+      case LONG, INTEGER -> String.valueOf(bits);
+      case FLOAT -> String.valueOf(NumericUtils.sortableIntToFloat((int) bits));
+      case DOUBLE -> String.valueOf(NumericUtils.sortableLongToDouble(bits));
+      case DATE -> new Date(bits).toInstant().toString();
+    };
   }
 }

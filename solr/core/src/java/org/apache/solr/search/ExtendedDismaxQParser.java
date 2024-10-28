@@ -806,27 +806,28 @@ public class ExtendedDismaxQParser extends QParser {
             break;
           }
           switch (ch) {
-            case '!':
-            case '(':
-            case ')':
-            case ':':
-            case '^':
-            case '[':
-            case ']':
-            case '{':
-            case '}':
-            case '~':
-            case '*':
-            case '?':
-            case '"':
-            case '+':
-            case '-':
-            case '\\':
-            case '|':
-            case '&':
-            case '/':
+            case '!',
+                '(',
+                ')',
+                ':',
+                '^',
+                '[',
+                ']',
+                '{',
+                '}',
+                '~',
+                '*',
+                '?',
+                '"',
+                '+',
+                '-',
+                '\\',
+                '|',
+                '&',
+                '/' -> {
               clause.hasSpecialSyntax = true;
               sb.append('\\');
+            }
           }
         } else if (ch == '"') {
           // only char we need to escape in a string is double quote
@@ -1424,9 +1425,8 @@ public class ExtendedDismaxQParser extends QParser {
     private Query getQuery() {
       try {
 
-        switch (type) {
-          case FIELD: // fallthrough
-          case PHRASE:
+        return switch (type) {
+          case FIELD, PHRASE -> {
             Query query;
             if (val == null) {
               query = super.getFieldQuery(field, vals, false);
@@ -1442,7 +1442,7 @@ public class ExtendedDismaxQParser extends QParser {
               }
             } else if (query instanceof PhraseQuery) {
               PhraseQuery pq = (PhraseQuery) query;
-              if (minClauseSize > 1 && pq.getTerms().length < minClauseSize) return null;
+              if (minClauseSize > 1 && pq.getTerms().length < minClauseSize) yield null;
               PhraseQuery.Builder builder = new PhraseQuery.Builder();
               Term[] terms = pq.getTerms();
               int[] positions = pq.getPositions();
@@ -1453,27 +1453,23 @@ public class ExtendedDismaxQParser extends QParser {
               query = builder.build();
             } else if (query instanceof MultiPhraseQuery) {
               MultiPhraseQuery mpq = (MultiPhraseQuery) query;
-              if (minClauseSize > 1 && mpq.getTermArrays().length < minClauseSize) return null;
+              if (minClauseSize > 1 && mpq.getTermArrays().length < minClauseSize) yield null;
               if (slop != mpq.getSlop()) {
                 query = new MultiPhraseQuery.Builder(mpq).setSlop(slop).build();
               }
             } else if (query instanceof SpanQuery) {
-              return query;
+              yield query;
             } else if (minClauseSize > 1) {
               // if it's not a type of phrase query, it doesn't meet the minClauseSize requirements
-              return null;
+              yield null;
             }
-            return query;
-          case PREFIX:
-            return super.getPrefixQuery(field, val);
-          case WILDCARD:
-            return super.getWildcardQuery(field, val);
-          case FUZZY:
-            return super.getFuzzyQuery(field, val, flt);
-          case RANGE:
-            return super.getRangeQuery(field, val, val2, bool, bool2);
-        }
-        return null;
+            yield query;
+          }
+          case PREFIX -> super.getPrefixQuery(field, val);
+          case WILDCARD -> super.getWildcardQuery(field, val);
+          case FUZZY -> super.getFuzzyQuery(field, val, flt);
+          case RANGE -> super.getRangeQuery(field, val, val2, bool, bool2);
+        };
 
       } catch (Exception e) {
         // an exception here is due to the field query not being compatible with the input text

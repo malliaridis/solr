@@ -1104,17 +1104,10 @@ public class TestTlogReplica extends SolrCloudTestCase {
         for (Replica replica : slice) {
           if (replica.isActive(liveNodes))
             switch (replica.getType()) {
-              case TLOG:
-                tlogFound++;
-                break;
-              case PULL:
-                pullFound++;
-                break;
-              case NRT:
-                nrtFound++;
-                break;
-              default:
-                throw new AssertionError("Unexpected replica type");
+              case TLOG -> tlogFound++;
+              case PULL -> pullFound++;
+              case NRT -> nrtFound++;
+              default -> throw new AssertionError("Unexpected replica type");
             }
         }
       }

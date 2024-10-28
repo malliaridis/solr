@@ -628,33 +628,36 @@ public class SolrDocumentFetcher {
       throws IOException {
 
     final DocValuesType dvType = e.type;
-    switch (dvType) {
-      case NUMERIC:
+    return switch (dvType) {
+      case NUMERIC -> {
         final NumericDocValues ndv = e.getNumericDocValues(localId, leafReader, readerOrd);
         if (ndv == null) {
-          return null;
+          yield null;
         }
         long val = ndv.longValue();
-        return decodeNumberFromDV(e.schemaField, val, false);
-      case BINARY:
+        yield decodeNumberFromDV(e.schemaField, val, false);
+      }
+      case BINARY -> {
         BinaryDocValues bdv = e.getBinaryDocValues(localId, leafReader, readerOrd);
         if (bdv != null) {
-          return BytesRef.deepCopyOf(bdv.binaryValue()).bytes;
+          yield BytesRef.deepCopyOf(bdv.binaryValue()).bytes;
         }
-        return null;
-      case SORTED:
+        yield null;
+      }
+      case SORTED -> {
         SortedDocValues sdv = e.getSortedDocValues(localId, leafReader, readerOrd);
         if (sdv != null) {
           final BytesRef bRef = sdv.lookupOrd(sdv.ordValue());
           // Special handling for Boolean fields since they're stored as 'T' and 'F'.
           if (e.schemaField.getType() instanceof BoolField) {
-            return e.schemaField.getType().toObject(e.schemaField, bRef);
+            yield e.schemaField.getType().toObject(e.schemaField, bRef);
           } else {
-            return bRef.utf8ToString();
+            yield bRef.utf8ToString();
           }
         }
-        return null;
-      case SORTED_NUMERIC:
+        yield null;
+      }
+      case SORTED_NUMERIC -> {
         final SortedNumericDocValues numericDv =
             e.getSortedNumericDocValues(localId, leafReader, readerOrd);
         if (numericDv != null) {
@@ -665,21 +668,22 @@ public class SolrDocumentFetcher {
             Object value = decodeNumberFromDV(e.schemaField, number, true);
             // return immediately if the number is not decodable, hence won't return an empty list.
             if (value == null) {
-              return null;
+              yield null;
             }
             // normally never true but LatLonPointSpatialField uses SORTED_NUMERIC even when single
             // valued
             else if (e.schemaField.multiValued() == false) {
-              return value;
+              yield value;
             } else {
               outValues.add(value);
             }
           }
           assert outValues.size() > 0;
-          return outValues;
+          yield outValues;
         }
-        return null;
-      case SORTED_SET:
+        yield null;
+      }
+      case SORTED_SET -> {
         final SortedSetDocValues values = e.getSortedSetDocValues(localId, leafReader, readerOrd);
         if (values != null) {
           final List<Object> outValues = new ArrayList<>();
@@ -690,12 +694,12 @@ public class SolrDocumentFetcher {
             outValues.add(e.schemaField.getType().toObject(e.schemaField, value));
           }
           assert outValues.size() > 0;
-          return outValues;
+          yield outValues;
         }
-        return null;
-      default:
-        throw new IllegalStateException();
-    }
+        yield null;
+      }
+      default -> throw new IllegalStateException();
+    };
   }
 
   private Object decodeNumberFromDV(SchemaField schemaField, long value, boolean sortableNumeric) {
@@ -714,7 +718,7 @@ public class SolrDocumentFetcher {
     }
 
     switch (schemaField.getType().getNumberType()) {
-      case INTEGER:
+      case INTEGER -> {
         final int raw = (int) value;
         if (schemaField.getType() instanceof AbstractEnumField) {
           return ((AbstractEnumField) schemaField.getType())
@@ -723,25 +727,29 @@ public class SolrDocumentFetcher {
         } else {
           return raw;
         }
-      case LONG:
+      }
+      case LONG -> {
         return value;
-      case FLOAT:
+      }
+      case FLOAT -> {
         if (sortableNumeric) {
           return NumericUtils.sortableIntToFloat((int) value);
         } else {
           return Float.intBitsToFloat((int) value);
         }
-      case DOUBLE:
+      }
+      case DOUBLE -> {
         if (sortableNumeric) {
           return NumericUtils.sortableLongToDouble(value);
         } else {
           return Double.longBitsToDouble(value);
         }
-      case DATE:
+      }
+      case DATE -> {
         return new Date(value);
-      default:
-        // catched all possible values, this line will never be reached
-        throw new AssertionError();
+      }
+      default -> // catched all possible values, this line will never be reached
+      throw new AssertionError();
     }
   }
 

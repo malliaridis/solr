@@ -156,21 +156,15 @@ public class CloudReplicaSourceTest extends SolrTestCaseJ4 {
         // the order they were specified, using the collection param can return slice names in any
         // order
         switch (sliceName) {
-          case "collection1_slice1":
-            assertEquals(
-                "http://baseUrl1:8983/solr/slice1_replica1/",
-                cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
-          case "collection1_slice2":
-            assertEquals(
-                "http://baseUrl2:8984/solr/slice2_replica2/",
-                cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
-          case "collection2_slice1":
-            assertEquals(
-                "http://baseUrl1:8983/solr/slice1_replica3/",
-                cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
+          case "collection1_slice1" -> assertEquals(
+              "http://baseUrl1:8983/solr/slice1_replica1/",
+              cloudReplicaSource.getReplicasBySlice(i).get(0));
+          case "collection1_slice2" -> assertEquals(
+              "http://baseUrl2:8984/solr/slice2_replica2/",
+              cloudReplicaSource.getReplicasBySlice(i).get(0));
+          case "collection2_slice1" -> assertEquals(
+              "http://baseUrl1:8983/solr/slice1_replica3/",
+              cloudReplicaSource.getReplicasBySlice(i).get(0));
         }
       }
     }
@@ -201,16 +195,12 @@ public class CloudReplicaSourceTest extends SolrTestCaseJ4 {
 
         // need to switch because without a shards param, the order of slices is not deterministic
         switch (sliceName) {
-          case "slice1":
-            assertEquals(
-                "http://baseUrl1:8983/solr/slice1_replica1/",
-                cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
-          case "slice2":
-            assertEquals(
-                "http://baseUrl2:8984/solr/slice2_replica2/",
-                cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
+          case "slice1" -> assertEquals(
+              "http://baseUrl1:8983/solr/slice1_replica1/",
+              cloudReplicaSource.getReplicasBySlice(i).get(0));
+          case "slice2" -> assertEquals(
+              "http://baseUrl2:8984/solr/slice2_replica2/",
+              cloudReplicaSource.getReplicasBySlice(i).get(0));
         }
       }
     }
@@ -241,18 +231,18 @@ public class CloudReplicaSourceTest extends SolrTestCaseJ4 {
         String sliceName = sliceNames.get(i);
         // need to switch because without a shards param, the order of slices is not deterministic
         switch (sliceName) {
-          case "slice1":
+          case "slice1" -> {
             assertEquals(2, cloudReplicaSource.getReplicasBySlice(i).size());
             assertEquals(
                 "http://baseUrl1:8983/solr/slice1_replica1/",
                 cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
-          case "slice2":
+          }
+          case "slice2" -> {
             assertEquals(1, cloudReplicaSource.getReplicasBySlice(i).size());
             assertEquals(
                 "http://baseUrl2:8984/solr/slice2_replica3/",
                 cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
+          }
         }
       }
     }
@@ -286,24 +276,24 @@ public class CloudReplicaSourceTest extends SolrTestCaseJ4 {
         String sliceName = sliceNames.get(i);
         // need to switch because without a shards param, the order of slices is not deterministic
         switch (sliceName) {
-          case "collection1_slice1":
+          case "collection1_slice1" -> {
             assertEquals(2, cloudReplicaSource.getReplicasBySlice(i).size());
             assertEquals(
                 "http://baseUrl1:8983/solr/slice1_replica1/",
                 cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
-          case "collection1_slice2":
+          }
+          case "collection1_slice2" -> {
             assertEquals(1, cloudReplicaSource.getReplicasBySlice(i).size());
             assertEquals(
                 "http://baseUrl2:8984/solr/slice2_replica3/",
                 cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
-          case "collection2_slice1":
+          }
+          case "collection2_slice1" -> {
             assertEquals(1, cloudReplicaSource.getReplicasBySlice(i).size());
             assertEquals(
                 "http://baseUrl1:8983/solr/slice1_replica5/",
                 cloudReplicaSource.getReplicasBySlice(i).get(0));
-            break;
+          }
         }
       }
     }

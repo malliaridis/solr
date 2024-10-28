@@ -737,28 +737,22 @@ public class SolrIndexSplitter {
       for (int ii = 0; ii < docsMatchingRanges.length; ii++) {
         if (0 == docsMatchingRanges[ii]) continue;
         switch (ii) {
-          case 0:
-            // document loss
-            log.error(
-                "Splitting {}: {} documents belong to no shards and will be dropped",
-                reader,
-                docsMatchingRanges[ii]);
-            break;
-          case 1:
-            // normal case, each document moves to one of the sub-shards
-            log.info(
-                "Splitting {}: {} documents will move into a sub-shard",
-                reader,
-                docsMatchingRanges[ii]);
-            break;
-          default:
-            // document duplication
-            log.error(
-                "Splitting {}: {} documents will be moved to multiple ({}) sub-shards",
-                reader,
-                docsMatchingRanges[ii],
-                ii);
-            break;
+          case 0 -> // document loss
+          log.error(
+              "Splitting {}: {} documents belong to no shards and will be dropped",
+              reader,
+              docsMatchingRanges[ii]);
+          case 1 -> // normal case, each document moves to one of the sub-shards
+          log.info(
+              "Splitting {}: {} documents will move into a sub-shard",
+              reader,
+              docsMatchingRanges[ii]);
+          default -> // document duplication
+          log.error(
+              "Splitting {}: {} documents will be moved to multiple ({}) sub-shards",
+              reader,
+              docsMatchingRanges[ii],
+              ii);
         }
       }
     }

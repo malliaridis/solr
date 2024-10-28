@@ -84,26 +84,17 @@ public class CircuitBreakerRegistry implements Closeable {
               // 0=metric name (e.g. loadavg), 1=threshold value (e.g. 70), 2=warnOnly flag (e.g.
               // "false")
               String[] breakerAndValueArr = breakerAndValue.split(":");
-              switch (breakerAndValueArr[0]) {
-                case "cpu":
-                  breaker =
-                      new CPUCircuitBreaker(coreContainer)
-                          .setThreshold(Double.parseDouble(breakerAndValueArr[1]));
-                  break;
-                case "mem":
-                  breaker =
-                      new MemoryCircuitBreaker()
-                          .setThreshold(Double.parseDouble(breakerAndValueArr[1]));
-                  break;
-                case "loadavg":
-                  breaker =
-                      new LoadAverageCircuitBreaker()
-                          .setThreshold(Double.parseDouble(breakerAndValueArr[1]));
-                  break;
-                default:
-                  throw new IllegalArgumentException(
-                      "Unknown circuit breaker type: " + breakerAndValueArr[0]);
-              }
+              breaker =
+                  switch (breakerAndValueArr[0]) {
+                    case "cpu" -> new CPUCircuitBreaker(coreContainer)
+                        .setThreshold(Double.parseDouble(breakerAndValueArr[1]));
+                    case "mem" -> new MemoryCircuitBreaker()
+                        .setThreshold(Double.parseDouble(breakerAndValueArr[1]));
+                    case "loadavg" -> new LoadAverageCircuitBreaker()
+                        .setThreshold(Double.parseDouble(breakerAndValueArr[1]));
+                    default -> throw new IllegalArgumentException(
+                        "Unknown circuit breaker type: " + breakerAndValueArr[0]);
+                  };
               breaker.setWarnOnly(Boolean.parseBoolean(breakerAndValueArr[2]));
               breaker.setRequestTypes(
                   breakers.stream().map(m -> m.group(1)).collect(Collectors.toList()));

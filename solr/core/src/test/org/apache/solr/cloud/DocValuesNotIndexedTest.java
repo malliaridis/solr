@@ -399,32 +399,29 @@ public class DocValuesNotIndexedTest extends SolrCloudTestCase {
       for (GroupCommand fieldCommand : commands) {
         for (Group grp : fieldCommand.getValues()) {
           switch (grp.getResult().size()) {
-            case 7:
+            case 7 -> {
               ++sevenCount;
               assertNotNull(
                   "Every group with 7 entries should have a group value.", grp.getGroupValue());
-              break;
-            case 10:
+            }
+            case 10 -> {
               ++nullCount;
               assertNull("This should be the null group", grp.getGroupValue());
-              break;
-            case 25:
-            case 24:
+            }
+            case 25, 24 -> {
               ++boolCount;
               assertEquals(
                   "We should have more counts for boolean fields!", boolName, prop.getName());
-              break;
-
-            default:
-              fail(
-                  "Unexpected number of elements in the group for '"
-                      + prop.getName()
-                      + "' size: '"
-                      + grp.getResult().size()
-                      + "' GroupValue: '"
-                      + grp.getGroupValue()
-                      + "' rsp: "
-                      + rsp);
+            }
+            default -> fail(
+                "Unexpected number of elements in the group for '"
+                    + prop.getName()
+                    + "' size: '"
+                    + grp.getResult().size()
+                    + "' GroupValue: '"
+                    + grp.getGroupValue()
+                    + "' rsp: "
+                    + rsp);
           }
         }
       }

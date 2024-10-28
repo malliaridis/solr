@@ -944,16 +944,17 @@ public class DocTermOrds implements Accountable {
     @Override
     public long lookupTerm(BytesRef key) {
       try {
-        switch (te.seekCeil(key)) {
-          case FOUND:
+        return switch (te.seekCeil(key)) {
+          case FOUND -> {
             assert te.ord() >= 0;
-            return te.ord();
-          case NOT_FOUND:
+            yield te.ord();
+          }
+          case NOT_FOUND -> {
             assert te.ord() >= 0;
-            return -te.ord() - 1;
-          default: /* END */
-            return -numTerms() - 1L;
-        }
+            yield -te.ord() - 1;
+          }
+          default -> /* END */ -numTerms() - 1L;
+        };
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

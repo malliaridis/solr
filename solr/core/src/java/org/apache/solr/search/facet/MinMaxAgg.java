@@ -93,16 +93,11 @@ public class MinMaxAgg extends SimpleAggValueSource {
 
     // Since functions don't currently have types, we rely on the type of the field
     if (sf != null && sf.getType().getNumberType() != null) {
-      switch (sf.getType().getNumberType()) {
-        case FLOAT:
-        case DOUBLE:
-          return new DFuncAcc(vs, fcontext, numSlots);
-        case INTEGER:
-        case LONG:
-          return new LFuncAcc(vs, fcontext, numSlots);
-        case DATE:
-          return new DateFuncAcc(vs, fcontext, numSlots);
-      }
+      return switch (sf.getType().getNumberType()) {
+        case FLOAT, DOUBLE -> new DFuncAcc(vs, fcontext, numSlots);
+        case INTEGER, LONG -> new LFuncAcc(vs, fcontext, numSlots);
+        case DATE -> new DateFuncAcc(vs, fcontext, numSlots);
+      };
     }
 
     // numeric functions

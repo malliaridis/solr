@@ -172,19 +172,11 @@ public abstract class DocValuesAcc extends SlotAcc {
 
     /** converts given long value to double based on field type */
     protected double getDouble(long val) {
-      switch (sf.getType().getNumberType()) {
-        case INTEGER:
-        case LONG:
-        case DATE:
-          return val;
-        case FLOAT:
-          return NumericUtils.sortableIntToFloat((int) val);
-        case DOUBLE:
-          return NumericUtils.sortableLongToDouble(val);
-        default:
-          // this would never happen
-          return 0.0d;
-      }
+      return switch (sf.getType().getNumberType()) {
+        case INTEGER, LONG, DATE -> val;
+        case FLOAT -> NumericUtils.sortableIntToFloat((int) val);
+        case DOUBLE -> NumericUtils.sortableLongToDouble(val);
+      };
     }
   }
 

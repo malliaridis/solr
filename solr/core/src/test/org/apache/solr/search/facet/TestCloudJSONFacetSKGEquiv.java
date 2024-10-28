@@ -1052,18 +1052,13 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
      */
     public static String randomFacetField(final Random r) {
       final int fieldNum = r.nextInt(MAX_FIELD_NUM);
-      switch (r.nextInt(4)) {
-        case 0:
-          return multiStrField(fieldNum);
-        case 1:
-          return multiIntField(fieldNum);
-        case 2:
-          return soloStrField(fieldNum);
-        case 3:
-          return soloIntField(fieldNum);
-        default:
-          throw new RuntimeException("Broken case statement");
-      }
+      return switch (r.nextInt(4)) {
+        case 0 -> multiStrField(fieldNum);
+        case 1 -> multiIntField(fieldNum);
+        case 2 -> soloStrField(fieldNum);
+        case 3 -> soloIntField(fieldNum);
+        default -> throw new RuntimeException("Broken case statement");
+      };
     }
 
     /**
@@ -1077,17 +1072,12 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
      * @return a Boolean, may be null
      */
     public static Boolean randomAllBucketsParam(final Random r) {
-      switch (r.nextInt(4)) {
-        case 0:
-          return true;
-        case 1:
-          return false;
-        case 2:
-        case 3:
-          return null;
-        default:
-          throw new RuntimeException("Broken case statement");
-      }
+      return switch (r.nextInt(4)) {
+        case 0 -> true;
+        case 1 -> false;
+        case 2, 3 -> null;
+        default -> throw new RuntimeException("Broken case statement");
+      };
     }
 
     /**
@@ -1097,16 +1087,12 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
      */
     public static Boolean randomRefineParam(final Random r) {
 
-      switch (r.nextInt(3)) {
-        case 0:
-          return null;
-        case 1:
-          return true;
-        case 2:
-          return false;
-        default:
-          throw new RuntimeException("Broken case statement");
-      }
+      return switch (r.nextInt(3)) {
+        case 0 -> null;
+        case 1 -> true;
+        case 2 -> false;
+        default -> throw new RuntimeException("Broken case statement");
+      };
     }
 
     /**
@@ -1116,17 +1102,12 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
      */
     public static Boolean randomPerSegParam(final Random r) {
 
-      switch (r.nextInt(4)) {
-        case 0:
-          return true;
-        case 1:
-          return false;
-        case 2:
-        case 3:
-          return null;
-        default:
-          throw new RuntimeException("Broken case statement");
-      }
+      return switch (r.nextInt(4)) {
+        case 0 -> true;
+        case 1 -> false;
+        case 2, 3 -> null;
+        default -> throw new RuntimeException("Broken case statement");
+      };
     }
 
     /**
@@ -1144,18 +1125,12 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
           "possible facet fields have changed, breaking test",
           facetField.contains("multi_s") || facetField.contains("solo_s"));
 
-      switch (r.nextInt(5)) {
-        case 0:
-          return "2";
-        case 1:
-          return "3";
-        case 2:
-        case 3:
-        case 4:
-          return null;
-        default:
-          throw new RuntimeException("Broken case statement");
-      }
+      return switch (r.nextInt(5)) {
+        case 0 -> "2";
+        case 1 -> "3";
+        case 2, 3, 4 -> null;
+        default -> throw new RuntimeException("Broken case statement");
+      };
     }
 
     /**
@@ -1169,18 +1144,13 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
     public static String randomSortParam(final Random r) {
 
       final String dir = random().nextBoolean() ? "asc" : "desc";
-      switch (r.nextInt(4)) {
-        case 0:
-          return null;
-        case 1:
-          return "count " + dir;
-        case 2:
-          return "skg " + dir;
-        case 3:
-          return "index " + dir;
-        default:
-          throw new RuntimeException("Broken case statement");
-      }
+      return switch (r.nextInt(4)) {
+        case 0 -> null;
+        case 1 -> "count " + dir;
+        case 2 -> "skg " + dir;
+        case 3 -> "index " + dir;
+        default -> throw new RuntimeException("Broken case statement");
+      };
     }
 
     /**
@@ -1228,23 +1198,15 @@ public class TestCloudJSONFacetSKGEquiv extends SolrCloudTestCase {
      */
     public static Integer randomOverrequestParam(final Random r) {
 
-      switch (r.nextInt(10)) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-          return 0; // 40% of the time, disable overrequest to better stress refinement
-        case 4:
-        case 5:
-          return r.nextInt(UNIQUE_FIELD_VALS); // 20% ask for less them what's needed
-        case 6:
-          return r.nextInt(
-              Integer.MAX_VALUE); // 10%: completely random value, statisticaly more than enough
-        default:
-          break;
-      }
-      // else.... either leave param unspecified (or redundantly specify the -1 default)
-      return r.nextBoolean() ? null : -1;
+      return switch (r.nextInt(10)) {
+        case 0, 1, 2, 3 -> 0; // 40% of the time, disable overrequest to better stress refinement
+        case 4, 5 -> r.nextInt(UNIQUE_FIELD_VALS); // 20% ask for less them what's needed
+        case 6 -> r.nextInt(
+            Integer.MAX_VALUE); // 10%: completely random value, statisticaly more than enough
+        default ->
+        // else.... either leave param unspecified (or redundantly specify the -1 default)
+        r.nextBoolean() ? null : -1;
+      };
     }
 
     /**

@@ -432,15 +432,14 @@ public abstract class AbstractSpatialFieldType<T extends SpatialStrategy> extend
     final double multiplier; // default multiplier for degrees
 
     switch (score) {
-      case "":
-      case NONE:
+      case "", NONE -> {
         return null;
-      case RECIP_DISTANCE:
+      }
+      case RECIP_DISTANCE -> {
         return strategy.makeRecipDistanceValueSource(spatialArgs.getShape());
-      case DISTANCE:
-        multiplier = distanceUnits.multiplierFromDegreesToThisUnit();
-        break;
-      default:
+      }
+      case DISTANCE -> multiplier = distanceUnits.multiplierFromDegreesToThisUnit();
+      default -> {
         DistanceUnits du = parseDistanceUnits(score);
         if (du != null) {
           multiplier = du.multiplierFromDegreesToThisUnit();
@@ -449,6 +448,7 @@ public abstract class AbstractSpatialFieldType<T extends SpatialStrategy> extend
               SolrException.ErrorCode.BAD_REQUEST,
               "'score' local-param must be one of " + supportedScoreModes + ", it was: " + score);
         }
+      }
     }
 
     return strategy.makeDistanceValueSource(spatialArgs.getShape().getCenter(), multiplier);

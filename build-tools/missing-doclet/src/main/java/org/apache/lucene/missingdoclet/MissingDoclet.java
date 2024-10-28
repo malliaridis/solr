@@ -101,22 +101,25 @@ public class MissingDoclet extends StandardDoclet {
 
           @Override
           public boolean process(String option, List<String> arguments) {
-            switch (arguments.get(0)) {
-              case "package":
+            return switch (arguments.get(0)) {
+              case "package" -> {
                 level = PACKAGE;
-                return true;
-              case "class":
+                yield true;
+              }
+              case "class" -> {
                 level = CLASS;
-                return true;
-              case "method":
+                yield true;
+              }
+              case "method" -> {
                 level = METHOD;
-                return true;
-              case "parameter":
+                yield true;
+              }
+              case "parameter" -> {
                 level = PARAMETER;
-                return true;
-              default:
-                return false;
-            }
+                yield true;
+              }
+              default -> false;
+            };
           }
         });
     options.add(

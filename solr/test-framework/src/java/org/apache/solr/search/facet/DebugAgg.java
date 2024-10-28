@@ -38,14 +38,11 @@ class DebugAgg extends AggValueSource {
       parses.incrementAndGet();
       final String what = fp.hasMoreArguments() ? fp.parseId() : "wrap";
 
-      switch (what) {
-        case "wrap":
-          return new DebugAgg(fp);
-        case "numShards":
-          return new DebugAggNumShards();
-        default: /* No-Op */
-      }
-      throw new RuntimeException("No idea what to do with " + what);
+      return switch (what) {
+        case "wrap" -> new DebugAgg(fp);
+        case "numShards" -> new DebugAggNumShards();
+        default -> throw new RuntimeException("No idea what to do with " + what);
+      };
     }
   }
 

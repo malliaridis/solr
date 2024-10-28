@@ -95,18 +95,13 @@ public class V2ApiUtils {
     if (StrUtils.isBlank(wtParam)) return defaultMediaType;
 
     // The only currently-supported response-formats for JAX-RS v2 endpoints.
-    switch (wtParam) {
-      case "json":
-        return "application/json";
-      case "xml":
-        return "application/xml";
-      case "javabin":
-        return BINARY_CONTENT_TYPE_V2;
-      case FILE_STREAM:
-        return RawResponseWriter.CONTENT_TYPE;
-      default:
-        return defaultMediaType;
-    }
+    return switch (wtParam) {
+      case "json" -> "application/json";
+      case "xml" -> "application/xml";
+      case "javabin" -> BINARY_CONTENT_TYPE_V2;
+      case FILE_STREAM -> RawResponseWriter.CONTENT_TYPE;
+      default -> defaultMediaType;
+    };
   }
 
   public static void squashObjectIntoNamedList(

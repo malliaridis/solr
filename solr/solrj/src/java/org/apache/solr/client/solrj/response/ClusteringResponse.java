@@ -43,26 +43,12 @@ public class ClusteringResponse {
       boolean otherTopics = false;
       for (Map.Entry<String, ?> e : clusterNode) {
         switch (e.getKey()) {
-          case LABELS_NODE:
-            labelList = (List<String>) e.getValue();
-            break;
-
-          case DOCS_NODE:
-            docIdList = (List<String>) e.getValue();
-            break;
-
-          case SCORE_NODE:
-            score = ((Number) e.getValue()).doubleValue();
-            break;
-
-          case CLUSTERS_NODE:
-            subclusters =
-                new ClusteringResponse((List<NamedList<Object>>) e.getValue()).getClusters();
-            break;
-
-          case IS_OTHER_TOPICS:
-            otherTopics = (Boolean) e.getValue();
-            break;
+          case LABELS_NODE -> labelList = (List<String>) e.getValue();
+          case DOCS_NODE -> docIdList = (List<String>) e.getValue();
+          case SCORE_NODE -> score = ((Number) e.getValue()).doubleValue();
+          case CLUSTERS_NODE -> subclusters =
+              new ClusteringResponse((List<NamedList<Object>>) e.getValue()).getClusters();
+          case IS_OTHER_TOPICS -> otherTopics = (Boolean) e.getValue();
         }
       }
 

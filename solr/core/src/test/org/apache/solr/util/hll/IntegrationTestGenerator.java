@@ -504,18 +504,12 @@ public class IntegrationTestGenerator {
    *     This will never be <code>null</code>
    */
   private static String stringCardinality(final HLL hll) {
-    switch (hll.getType()) {
-      case EMPTY:
-        return "0";
-      case EXPLICIT: /*promotion has not yet occurred*/
-        return Long.toString(hll.cardinality());
-      case SPARSE:
-        return Double.toString(hll.sparseProbabilisticAlgorithmCardinality());
-      case FULL:
-        return Double.toString(hll.fullProbabilisticAlgorithmCardinality());
-      default:
-        throw new RuntimeException("Unknown HLL type " + hll.getType());
-    }
+    return switch (hll.getType()) {
+      case EMPTY -> "0";
+      case EXPLICIT -> /*promotion has not yet occurred*/ Long.toString(hll.cardinality());
+      case SPARSE -> Double.toString(hll.sparseProbabilisticAlgorithmCardinality());
+      case FULL -> Double.toString(hll.fullProbabilisticAlgorithmCardinality());
+    };
   }
 
   /**
@@ -525,47 +519,35 @@ public class IntegrationTestGenerator {
    */
   public static HLL generateRandomHLL() {
     final int randomTypeInt = randomIntBetween(0, HLLType.values().length - 1);
-    final HLLType type;
-    switch (randomTypeInt) {
-      case 0:
-        type = HLLType.EMPTY;
-        break;
-      case 1:
-        type = HLLType.EXPLICIT;
-        break;
-      case 2:
-        type = HLLType.FULL;
-        break;
-      case 3:
-        type = HLLType.EMPTY;
-        break;
-      case 4:
-        type = HLLType.SPARSE;
-        break;
-      default:
-        throw new RuntimeException("Unassigned type int " + randomTypeInt);
-    }
+    final HLLType type =
+        switch (randomTypeInt) {
+          case 0, 3 -> HLLType.EMPTY;
+          case 1 -> HLLType.EXPLICIT;
+          case 2 -> HLLType.FULL;
+          case 4 -> HLLType.SPARSE;
+          default -> throw new RuntimeException("Unassigned type int " + randomTypeInt);
+        };
 
     final int cardinalityCap;
     final int cardinalityBaseline;
 
     switch (type) {
-      case EMPTY:
+      case EMPTY -> {
         return newHLL(HLLType.EMPTY);
-      case EXPLICIT:
+      }
+      case EXPLICIT -> {
         cardinalityCap = EXPLICIT_THRESHOLD;
         cardinalityBaseline = 1;
-        break;
-      case SPARSE:
+      }
+      case SPARSE -> {
         cardinalityCap = SPARSE_THRESHOLD;
         cardinalityBaseline = (EXPLICIT_THRESHOLD + 1);
-        break;
-      case FULL:
+      }
+      case FULL -> {
         cardinalityCap = 100000;
         cardinalityBaseline = (SPARSE_THRESHOLD * 10);
-        break;
-      default:
-        throw new RuntimeException("We should never be here.");
+      }
+      default -> throw new RuntimeException("We should never be here.");
     }
 
     final HLL hll = newHLL(HLLType.EMPTY);
@@ -594,19 +576,18 @@ public class IntegrationTestGenerator {
       throws IOException {
     final String schemaVersionPrefix = "v" + schemaVersion.schemaVersionNumber() + "_";
     final String header;
-    final String filename;
-    switch (type) {
-      case ADD:
-        header = "cardinality,raw_value,HLL\n";
-        filename = schemaVersionPrefix + "cumulative_add_" + description + ".csv";
-        break;
-      case UNION:
-        header = "cardinality,HLL,union_cardinality,union_HLL\n";
-        filename = schemaVersionPrefix + "cumulative_union_" + description + ".csv";
-        break;
-      default:
-        throw new RuntimeException("Unknown test type " + type);
-    }
+    final String filename =
+        switch (type) {
+          case ADD -> {
+            header = "cardinality,raw_value,HLL\n";
+            yield schemaVersionPrefix + "cumulative_add_" + description + ".csv";
+          }
+          case UNION -> {
+            header = "cardinality,HLL,union_cardinality,union_HLL\n";
+            yield schemaVersionPrefix + "cumulative_union_" + description + ".csv";
+          }
+          default -> throw new RuntimeException("Unknown test type " + type);
+        };
 
     final Writer output =
         Files.newBufferedWriter(Paths.get(OUTPUT_DIRECTORY, filename), StandardCharsets.UTF_8);

@@ -156,21 +156,18 @@ public class DocumentAnalysisRequestHandler extends AnalysisRequestHandlerBase {
       while (true) {
         int event = parser.next();
         switch (event) {
-          case XMLStreamConstants.END_DOCUMENT:
-            {
-              parser.close();
-              return request;
+          case XMLStreamConstants.END_DOCUMENT -> {
+            parser.close();
+            return request;
+          }
+          case XMLStreamConstants.START_ELEMENT -> {
+            String currTag = parser.getLocalName();
+            if ("doc".equals(currTag)) {
+              log.trace("Reading doc...");
+              SolrInputDocument document = readDocument(parser, req.getSchema());
+              request.addDocument(document);
             }
-          case XMLStreamConstants.START_ELEMENT:
-            {
-              String currTag = parser.getLocalName();
-              if ("doc".equals(currTag)) {
-                log.trace("Reading doc...");
-                SolrInputDocument document = readDocument(parser, req.getSchema());
-                request.addDocument(document);
-              }
-              break;
-            }
+          }
         }
       }
     } finally {
@@ -280,13 +277,10 @@ public class DocumentAnalysisRequestHandler extends AnalysisRequestHandlerBase {
       int event = reader.next();
       switch (event) {
           // Add everything to the text
-        case XMLStreamConstants.SPACE:
-        case XMLStreamConstants.CDATA:
-        case XMLStreamConstants.CHARACTERS:
-          text.append(reader.getText());
-          break;
-
-        case XMLStreamConstants.END_ELEMENT:
+        case XMLStreamConstants.SPACE,
+            XMLStreamConstants.CDATA,
+            XMLStreamConstants.CHARACTERS -> text.append(reader.getText());
+        case XMLStreamConstants.END_ELEMENT -> {
           if ("doc".equals(reader.getLocalName())) {
             if (!hasId) {
               throw new SolrException(
@@ -300,9 +294,8 @@ public class DocumentAnalysisRequestHandler extends AnalysisRequestHandlerBase {
               hasId = true;
             }
           }
-          break;
-
-        case XMLStreamConstants.START_ELEMENT:
+        }
+        case XMLStreamConstants.START_ELEMENT -> {
           text.setLength(0);
           String localName = reader.getLocalName();
           if (!"field".equals(localName)) {
@@ -317,7 +310,7 @@ public class DocumentAnalysisRequestHandler extends AnalysisRequestHandlerBase {
               fieldName = reader.getAttributeValue(i);
             }
           }
-          break;
+        }
       }
     }
   }

@@ -237,23 +237,15 @@ public class TestHashPartitioner extends SolrTestCaseJ4 {
       int numParts = TestUtil.nextInt(random(), 1, 30);
       for (int part = 0; part < numParts; ++part) {
         switch (random().nextInt(5)) {
-          case 0:
-            idBuilder.append('!');
-            break;
-          case 1:
-            idBuilder.append('/');
-            break;
-          case 2:
-            idBuilder.append(TestUtil.nextInt(random(), -100, 1000));
-            break;
-          default:
-            {
-              int length = TestUtil.nextInt(random(), 1, 10);
-              char[] str = new char[length];
-              TestUtil.randomFixedLengthUnicodeString(random(), str, 0, length);
-              idBuilder.append(str);
-              break;
-            }
+          case 0 -> idBuilder.append('!');
+          case 1 -> idBuilder.append('/');
+          case 2 -> idBuilder.append(TestUtil.nextInt(random(), -100, 1000));
+          default -> {
+            int length = TestUtil.nextInt(random(), 1, 10);
+            char[] str = new char[length];
+            TestUtil.randomFixedLengthUnicodeString(random(), str, 0, length);
+            idBuilder.append(str);
+          }
         }
       }
       String id = idBuilder.toString();

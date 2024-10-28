@@ -75,21 +75,18 @@ public class DimensionalRoutedAlias extends RoutedAlias {
       Deffered<DimensionalRoutedAlias> dra) {
     // this switch must have a case for every element of the RoutedAliasTypes enum EXCEPT
     // DIMENSIONAL
-    switch (type) {
-      case TIME:
-        return new TimeRoutedAliasDimension(props, index, dra);
-      case CATEGORY:
-        return new CategoryRoutedAliasDimension(props, index, dra);
-      default:
-        // if we got a type not handled by the switch there's been a bogus implementation.
-        throw new SolrException(
-            SERVER_ERROR,
-            "Router "
-                + type
-                + " is not fully implemented. If you see this"
-                + "error in an official release please file a bug report. Available types were:"
-                + Arrays.asList(RoutedAliasTypes.values()));
-    }
+    // if we got a type not handled by the switch there's been a bogus implementation.
+    return switch (type) {
+      case TIME -> new TimeRoutedAliasDimension(props, index, dra);
+      case CATEGORY -> new CategoryRoutedAliasDimension(props, index, dra);
+      default -> throw new SolrException(
+          SERVER_ERROR,
+          "Router "
+              + type
+              + " is not fully implemented. If you see this"
+              + "error in an official release please file a bug report. Available types were:"
+              + Arrays.asList(RoutedAliasTypes.values()));
+    };
   }
 
   @Override

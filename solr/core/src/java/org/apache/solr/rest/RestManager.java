@@ -331,22 +331,14 @@ public class RestManager {
       final String method = req.getHttpMethod();
       try {
         switch (method) {
-          case "HEAD":
+          case "HEAD" -> {
             managedResource.doGet(this, childId);
             doHead(this);
-            break;
-          case "GET":
-            managedResource.doGet(this, childId);
-            break;
-          case "PUT":
-            managedResource.doPut(this, parseJsonFromRequestBody(req));
-            break;
-          case "POST":
-            managedResource.doPost(this, parseJsonFromRequestBody(req));
-            break;
-          case "DELETE":
-            doDelete();
-            break;
+          }
+          case "GET" -> managedResource.doGet(this, childId);
+          case "PUT" -> managedResource.doPut(this, parseJsonFromRequestBody(req));
+          case "POST" -> managedResource.doPost(this, parseJsonFromRequestBody(req));
+          case "DELETE" -> doDelete();
         }
       } catch (Exception e) {
         getSolrResponse().setException(e);

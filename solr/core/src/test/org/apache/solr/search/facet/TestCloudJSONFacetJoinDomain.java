@@ -849,23 +849,15 @@ public class TestCloudJSONFacetJoinDomain extends SolrCloudTestCase {
      * @see #UNIQUE_FIELD_VALS
      */
     public static Integer randomOverrequestParam(Random r) {
-      switch (r.nextInt(10)) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-          return 0; // 40% of the time, no overrequest to better stress refinement
-        case 4:
-        case 5:
-          return r.nextInt(UNIQUE_FIELD_VALS); // 20% ask for less them what's needed
-        case 6:
-          return r.nextInt(
-              Integer.MAX_VALUE); // 10%: completely random value, statistically more than enough
-        default:
-          break;
-      }
-      // else.... either leave param unspecified (or redundantly specify the -1 default)
-      return r.nextBoolean() ? null : -1;
+      return switch (r.nextInt(10)) {
+        case 0, 1, 2, 3 -> 0; // 40% of the time, no overrequest to better stress refinement
+        case 4, 5 -> r.nextInt(UNIQUE_FIELD_VALS); // 20% ask for less them what's needed
+        case 6 -> r.nextInt(
+            Integer.MAX_VALUE); // 10%: completely random value, statistically more than enough
+        default -> // else.... either leave param unspecified (or redundantly specify the -1
+        // default)
+        r.nextBoolean() ? null : -1;
+      };
     }
 
     /**

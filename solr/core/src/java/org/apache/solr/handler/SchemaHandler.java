@@ -102,138 +102,106 @@ public class SchemaHandler extends RequestHandlerBase
 
   @Override
   public PermissionNameProvider.Name getPermissionName(AuthorizationContext ctx) {
-    switch (ctx.getHttpMethod()) {
-      case "GET":
-        return PermissionNameProvider.Name.SCHEMA_READ_PERM;
-      case "PUT":
-      case "DELETE":
-      case "POST":
-        return PermissionNameProvider.Name.SCHEMA_EDIT_PERM;
-      default:
-        return null;
-    }
+    return switch (ctx.getHttpMethod()) {
+      case "GET" -> Name.SCHEMA_READ_PERM;
+      case "PUT", "DELETE", "POST" -> Name.SCHEMA_EDIT_PERM;
+      default -> null;
+    };
   }
 
   private void handleGET(SolrQueryRequest req, SolrQueryResponse rsp) {
     try {
       String path = (String) req.getContext().get("path");
       switch (path) {
-        case "/schema":
-          {
-            V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                rsp, new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaInfo());
-            break;
-          }
-        case "/schema/version":
-          {
-            V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                rsp,
-                new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaVersion());
-            break;
-          }
-        case "/schema/uniquekey":
-          {
-            V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                rsp,
-                new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaUniqueKey());
-            break;
-          }
-        case "/schema/similarity":
-          {
-            V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                rsp,
-                new GetSchema(req.getCore(), req.getCore().getLatestSchema())
-                    .getSchemaSimilarity());
-            break;
-          }
-        case "/schema/name":
-          {
-            V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                rsp, new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaName());
-            break;
-          }
-        case "/schema/zkversion":
-          {
-            V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                rsp,
-                new GetSchema(req.getCore(), req.getCore().getLatestSchema())
-                    .getSchemaZkVersion(req.getParams().getInt("refreshIfBelowVersion", -1)));
-            break;
-          }
-        default:
-          {
-            List<String> parts = StrUtils.splitSmart(path, '/', true);
-            if (parts.size() > 1 && level2.containsKey(parts.get(1))) {
-              String realName = parts.get(1);
+        case "/schema" -> V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+            rsp, new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaInfo());
+        case "/schema/version" -> V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+            rsp, new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaVersion());
+        case "/schema/uniquekey" -> V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+            rsp,
+            new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaUniqueKey());
+        case "/schema/similarity" -> V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+            rsp,
+            new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaSimilarity());
+        case "/schema/name" -> V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+            rsp, new GetSchema(req.getCore(), req.getCore().getLatestSchema()).getSchemaName());
+        case "/schema/zkversion" -> V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+            rsp,
+            new GetSchema(req.getCore(), req.getCore().getLatestSchema())
+                .getSchemaZkVersion(req.getParams().getInt("refreshIfBelowVersion", -1)));
+        default -> {
+          List<String> parts = StrUtils.splitSmart(path, '/', true);
+          if (parts.size() > 1 && level2.containsKey(parts.get(1))) {
+            String realName = parts.get(1);
 
-              String pathParam = level2.get(realName); // Might be null
-              if (parts.size() > 2) {
-                req.setParams(
-                    SolrParams.wrapDefaults(
-                        new MapSolrParams(singletonMap(pathParam, parts.get(2))), req.getParams()));
-              }
-              switch (realName) {
-                case "fields":
-                  {
-                    if (parts.size() > 2) {
-                      V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                          rsp,
-                          new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                              .getFieldInfo(parts.get(2)));
-                    } else {
-                      V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                          rsp,
-                          new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                              .listSchemaFields());
-                    }
-                    return;
-                  }
-                case "copyfields":
-                  {
+            String pathParam = level2.get(realName); // Might be null
+            if (parts.size() > 2) {
+              req.setParams(
+                  SolrParams.wrapDefaults(
+                      new MapSolrParams(singletonMap(pathParam, parts.get(2))), req.getParams()));
+            }
+            switch (realName) {
+              case "fields":
+                {
+                  if (parts.size() > 2) {
                     V2ApiUtils.squashIntoSolrResponseWithoutHeader(
                         rsp,
                         new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                            .listCopyFields());
-                    return;
+                            .getFieldInfo(parts.get(2)));
+                  } else {
+                    V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+                        rsp,
+                        new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
+                            .listSchemaFields());
                   }
-                case "dynamicfields":
-                  {
-                    if (parts.size() > 2) {
-                      V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                          rsp,
-                          new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                              .getDynamicFieldInfo(parts.get(2)));
-                    } else {
-                      V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                          rsp,
-                          new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                              .listDynamicFields());
-                    }
-                    return;
+                  return;
+                }
+              case "copyfields":
+                {
+                  V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+                      rsp,
+                      new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
+                          .listCopyFields());
+                  return;
+                }
+              case "dynamicfields":
+                {
+                  if (parts.size() > 2) {
+                    V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+                        rsp,
+                        new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
+                            .getDynamicFieldInfo(parts.get(2)));
+                  } else {
+                    V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+                        rsp,
+                        new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
+                            .listDynamicFields());
                   }
-                case "fieldtypes":
-                  {
-                    if (parts.size() > 2) {
-                      V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                          rsp,
-                          new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                              .getFieldTypeInfo(parts.get(2)));
-                    } else {
-                      V2ApiUtils.squashIntoSolrResponseWithoutHeader(
-                          rsp,
-                          new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
-                              .listSchemaFieldTypes());
-                    }
-                    return;
+                  return;
+                }
+              case "fieldtypes":
+                {
+                  if (parts.size() > 2) {
+                    V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+                        rsp,
+                        new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
+                            .getFieldTypeInfo(parts.get(2)));
+                  } else {
+                    V2ApiUtils.squashIntoSolrResponseWithoutHeader(
+                        rsp,
+                        new GetSchemaFieldAPI(req.getCore().getLatestSchema(), req.getParams())
+                            .listSchemaFieldTypes());
                   }
-                default:
-                  {
-                    break;
-                  }
-              }
+                  return;
+                }
+              default:
+                {
+                  break;
+                }
             }
-            throw new SolrException(SolrException.ErrorCode.NOT_FOUND, "No such path " + path);
           }
+          throw new SolrException(SolrException.ErrorCode.NOT_FOUND, "No such path " + path);
+        }
       }
 
     } catch (Exception e) {

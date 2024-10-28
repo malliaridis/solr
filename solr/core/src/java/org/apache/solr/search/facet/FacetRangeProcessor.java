@@ -173,18 +173,13 @@ class FacetRangeProcessor extends FacetProcessor<FacetRange> {
       if (ft instanceof AbstractEnumField) {
         return new EnumCalc(sf);
       }
-      switch (ft.getNumberType()) {
-        case FLOAT:
-          return new FloatCalc(sf);
-        case DOUBLE:
-          return new DoubleCalc(sf);
-        case INTEGER:
-          return new IntCalc(sf);
-        case LONG:
-          return new LongCalc(sf);
-        case DATE:
-          return new DateCalc(sf, null);
-      }
+      return switch (ft.getNumberType()) {
+        case FLOAT -> new FloatCalc(sf);
+        case DOUBLE -> new DoubleCalc(sf);
+        case INTEGER -> new IntCalc(sf);
+        case LONG -> new LongCalc(sf);
+        case DATE -> new DateCalc(sf, null);
+      };
     }
 
     throw new SolrException(

@@ -80,14 +80,9 @@ public class OverseerConfigSetMessageHandler implements OverseerMessageHandler {
         throw new SolrException(ErrorCode.BAD_REQUEST, "Unknown operation:" + operation);
       }
       switch (action) {
-        case CREATE:
-          ConfigSetCmds.createConfigSet(message, coreContainer);
-          break;
-        case DELETE:
-          ConfigSetCmds.deleteConfigSet(message, coreContainer);
-          break;
-        default:
-          throw new SolrException(ErrorCode.BAD_REQUEST, "Unknown operation:" + operation);
+        case CREATE -> ConfigSetCmds.createConfigSet(message, coreContainer);
+        case DELETE -> ConfigSetCmds.deleteConfigSet(message, coreContainer);
+        default -> throw new SolrException(ErrorCode.BAD_REQUEST, "Unknown operation:" + operation);
       }
     } catch (Exception e) {
       String configSetName = message.getStr(NAME);

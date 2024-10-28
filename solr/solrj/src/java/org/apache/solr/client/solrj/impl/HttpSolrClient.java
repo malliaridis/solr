@@ -593,20 +593,16 @@ public class HttpSolrClient extends BaseHttpSolrClient {
 
       // handle some http level checks before trying to parse the response
       switch (httpStatus) {
-        case HttpStatus.SC_OK:
-        case HttpStatus.SC_BAD_REQUEST:
-        case HttpStatus.SC_CONFLICT: // 409
-          break;
-        case HttpStatus.SC_MOVED_PERMANENTLY:
-        case HttpStatus.SC_MOVED_TEMPORARILY:
+        case HttpStatus.SC_OK, HttpStatus.SC_BAD_REQUEST, HttpStatus.SC_CONFLICT -> {}
+        case HttpStatus.SC_MOVED_PERMANENTLY, HttpStatus.SC_MOVED_TEMPORARILY -> {
           if (!followRedirects) {
             throw new SolrServerException(
                 "Server at " + getBaseURL() + " sent back a redirect (" + httpStatus + ").");
           }
-          break;
-        default:
+        }
+        default -> {
           if (processor == null || contentType == null) {
-            throw new SolrClient.RemoteSolrException(
+            throw new RemoteSolrException(
                 baseUrl,
                 httpStatus,
                 "non ok status: "
@@ -615,6 +611,7 @@ public class HttpSolrClient extends BaseHttpSolrClient {
                     + response.getStatusLine().getReasonPhrase(),
                 null);
           }
+        }
       }
       if (processor == null || processor instanceof InputStreamResponseParser) {
 

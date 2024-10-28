@@ -351,63 +351,54 @@ public class HLL implements Cloneable {
    */
   public void addRaw(final long rawValue) {
     switch (type) {
-      case EMPTY:
-        {
-          // NOTE:  EMPTY type is always promoted on #addRaw()
-          if (explicitThreshold > 0) {
-            initializeStorage(HLLType.EXPLICIT);
-            explicitStorage.add(rawValue);
-          } else if (!sparseOff) {
+      case EMPTY -> {
+        // NOTE: EMPTY type is always promoted on #addRaw()
+        if (explicitThreshold > 0) {
+          initializeStorage(HLLType.EXPLICIT);
+          explicitStorage.add(rawValue);
+        } else if (!sparseOff) {
+          initializeStorage(HLLType.SPARSE);
+          addRawSparseProbabilistic(rawValue);
+        } else {
+          initializeStorage(HLLType.FULL);
+          addRawProbabilistic(rawValue);
+        }
+      }
+      case EXPLICIT -> {
+        explicitStorage.add(rawValue);
+
+        // promotion, if necessary
+        if (explicitStorage.size() > explicitThreshold) {
+          if (!sparseOff) {
             initializeStorage(HLLType.SPARSE);
-            addRawSparseProbabilistic(rawValue);
+            for (LongCursor c : explicitStorage) {
+              addRawSparseProbabilistic(c.value);
+            }
           } else {
             initializeStorage(HLLType.FULL);
-            addRawProbabilistic(rawValue);
-          }
-          return;
-        }
-      case EXPLICIT:
-        {
-          explicitStorage.add(rawValue);
-
-          // promotion, if necessary
-          if (explicitStorage.size() > explicitThreshold) {
-            if (!sparseOff) {
-              initializeStorage(HLLType.SPARSE);
-              for (LongCursor c : explicitStorage) {
-                addRawSparseProbabilistic(c.value);
-              }
-            } else {
-              initializeStorage(HLLType.FULL);
-              for (LongCursor c : explicitStorage) {
-                addRawProbabilistic(c.value);
-              }
+            for (LongCursor c : explicitStorage) {
+              addRawProbabilistic(c.value);
             }
-            explicitStorage = null;
           }
-          return;
+          explicitStorage = null;
         }
-      case SPARSE:
-        {
-          addRawSparseProbabilistic(rawValue);
+      }
+      case SPARSE -> {
+        addRawSparseProbabilistic(rawValue);
 
-          // promotion, if necessary
-          if (sparseProbabilisticStorage.size() > sparseThreshold) {
-            initializeStorage(HLLType.FULL);
-            for (IntByteCursor c : sparseProbabilisticStorage) {
-              final int registerIndex = c.key;
-              final byte registerValue = c.value;
-              probabilisticStorage.setMaxRegister(registerIndex, registerValue);
-            }
-            sparseProbabilisticStorage = null;
+        // promotion, if necessary
+        if (sparseProbabilisticStorage.size() > sparseThreshold) {
+          initializeStorage(HLLType.FULL);
+          for (IntByteCursor c : sparseProbabilisticStorage) {
+            final int registerIndex = c.key;
+            final byte registerValue = c.value;
+            probabilisticStorage.setMaxRegister(registerIndex, registerValue);
           }
-          return;
+          sparseProbabilisticStorage = null;
         }
-      case FULL:
-        addRawProbabilistic(rawValue);
-        return;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+      }
+      case FULL -> addRawProbabilistic(rawValue);
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
   }
 
@@ -518,20 +509,13 @@ public class HLL implements Cloneable {
   private void initializeStorage(final HLLType type) {
     this.type = type;
     switch (type) {
-      case EMPTY:
+      case EMPTY -> {
         // nothing to be done
-        break;
-      case EXPLICIT:
-        this.explicitStorage = new LongHashSet();
-        break;
-      case SPARSE:
-        this.sparseProbabilisticStorage = new IntByteHashMap();
-        break;
-      case FULL:
-        this.probabilisticStorage = new BitVector(regwidth, m);
-        break;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+      }
+      case EXPLICIT -> this.explicitStorage = new LongHashSet();
+      case SPARSE -> this.sparseProbabilisticStorage = new IntByteHashMap();
+      case FULL -> this.probabilisticStorage = new BitVector(regwidth, m);
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
   }
 
@@ -543,18 +527,12 @@ public class HLL implements Cloneable {
    * @return the cardinality of HLL. This will never be negative.
    */
   public long cardinality() {
-    switch (type) {
-      case EMPTY:
-        return 0 /*by definition*/;
-      case EXPLICIT:
-        return explicitStorage.size();
-      case SPARSE:
-        return (long) Math.ceil(sparseProbabilisticAlgorithmCardinality());
-      case FULL:
-        return (long) Math.ceil(fullProbabilisticAlgorithmCardinality());
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
-    }
+    return switch (type) {
+      case EMPTY -> 0; /*by definition*/
+      case EXPLICIT -> explicitStorage.size();
+      case SPARSE -> (long) Math.ceil(sparseProbabilisticAlgorithmCardinality());
+      case FULL -> (long) Math.ceil(fullProbabilisticAlgorithmCardinality());
+    };
   }
 
   // ------------------------------------------------------------------------
@@ -640,19 +618,13 @@ public class HLL implements Cloneable {
    */
   public void clear() {
     switch (type) {
-      case EMPTY:
-        return /*do nothing*/;
-      case EXPLICIT:
-        explicitStorage.clear();
-        return;
-      case SPARSE:
-        sparseProbabilisticStorage.clear();
-        return;
-      case FULL:
-        probabilisticStorage.fill(0);
-        return;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+      case EMPTY -> {
+        /*do nothing*/
+      }
+      case EXPLICIT -> explicitStorage.clear();
+      case SPARSE -> sparseProbabilisticStorage.clear();
+      case FULL -> probabilisticStorage.fill(0);
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
   }
 
@@ -670,10 +642,8 @@ public class HLL implements Cloneable {
 
     if (type.equals(otherType)) {
       homogeneousUnion(other);
-      return;
     } else {
       heterogenousUnion(other);
-      return;
     }
   }
 
@@ -705,53 +675,50 @@ public class HLL implements Cloneable {
       //        clone of the non-empty.
 
       switch (other.getType()) {
-        case EXPLICIT:
-          {
-            // src:  EXPLICIT
-            // dest: EMPTY
+        case EXPLICIT -> {
+          // src:  EXPLICIT
+          // dest: EMPTY
 
-            if (other.explicitStorage.size() <= explicitThreshold) {
-              type = HLLType.EXPLICIT;
-              explicitStorage = other.explicitStorage.clone();
-            } else {
-              if (!sparseOff) {
-                initializeStorage(HLLType.SPARSE);
-              } else {
-                initializeStorage(HLLType.FULL);
-              }
-              for (LongCursor c : other.explicitStorage) {
-                addRaw(c.value);
-              }
-            }
-            return;
-          }
-        case SPARSE:
-          {
-            // src:  SPARSE
-            // dest: EMPTY
-
+          if (other.explicitStorage.size() <= explicitThreshold) {
+            type = HLLType.EXPLICIT;
+            explicitStorage = other.explicitStorage.clone();
+          } else {
             if (!sparseOff) {
-              type = HLLType.SPARSE;
-              sparseProbabilisticStorage = other.sparseProbabilisticStorage.clone();
+              initializeStorage(HLLType.SPARSE);
             } else {
               initializeStorage(HLLType.FULL);
-              for (IntByteCursor c : other.sparseProbabilisticStorage) {
-                final int registerIndex = c.key;
-                final byte registerValue = c.value;
-                probabilisticStorage.setMaxRegister(registerIndex, registerValue);
-              }
             }
-            return;
+            for (LongCursor c : other.explicitStorage) {
+              addRaw(c.value);
+            }
           }
-        default /*case FULL*/:
-          {
-            // src:  FULL
-            // dest: EMPTY
+          return;
+        }
+        case SPARSE -> {
+          // src:  SPARSE
+          // dest: EMPTY
 
-            type = HLLType.FULL;
-            probabilisticStorage = other.probabilisticStorage.clone();
-            return;
+          if (!sparseOff) {
+            type = HLLType.SPARSE;
+            sparseProbabilisticStorage = other.sparseProbabilisticStorage.clone();
+          } else {
+            initializeStorage(HLLType.FULL);
+            for (IntByteCursor c : other.sparseProbabilisticStorage) {
+              final int registerIndex = c.key;
+              final byte registerValue = c.value;
+              probabilisticStorage.setMaxRegister(registerIndex, registerValue);
+            }
           }
+          return;
+        }
+        default -> { // case FULL
+          // src:  FULL
+          // dest: EMPTY
+
+          type = HLLType.FULL;
+          probabilisticStorage = other.probabilisticStorage.clone();
+          return;
+        }
       }
     } else if (HLLType.EMPTY.equals(other.getType())) {
       // source is empty, so just return destination since it is unchanged
@@ -761,94 +728,89 @@ public class HLL implements Cloneable {
     // ....................................................................
     // NOTE: Since EMPTY is handled above, the HLLs are non-EMPTY below
     switch (type) {
-      case EXPLICIT:
-        {
-          // src:  FULL/SPARSE
-          // dest: EXPLICIT
-          // "Storing into destination" cannot be done (since destination
-          // is by definition of smaller capacity than source), so a clone
-          // of source is made and values from destination are inserted
-          // into that.
+      case EXPLICIT -> {
+        // src:  FULL/SPARSE
+        // dest: EXPLICIT
+        // "Storing into destination" cannot be done (since destination
+        // is by definition of smaller capacity than source), so a clone
+        // of source is made and values from destination are inserted
+        // into that.
 
-          // Determine source and destination storage.
-          // NOTE:  destination storage may change through promotion if
-          //        source is SPARSE.
-          if (HLLType.SPARSE.equals(other.getType())) {
-            if (!sparseOff) {
-              type = HLLType.SPARSE;
-              sparseProbabilisticStorage = other.sparseProbabilisticStorage.clone();
-            } else {
-              initializeStorage(HLLType.FULL);
-              for (IntByteCursor c : other.sparseProbabilisticStorage) {
-                final int registerIndex = c.key;
-                final byte registerValue = c.value;
-                probabilisticStorage.setMaxRegister(registerIndex, registerValue);
-              }
-            }
-          } else /*source is HLLType.FULL*/ {
-            type = HLLType.FULL;
-            probabilisticStorage = other.probabilisticStorage.clone();
-          }
-          for (LongCursor c : explicitStorage) {
-            addRaw(c.value);
-          }
-          explicitStorage = null;
-          return;
-        }
-      case SPARSE:
-        {
-          if (HLLType.EXPLICIT.equals(other.getType())) {
-            // src:  EXPLICIT
-            // dest: SPARSE
-            // Add the raw values from the source to the destination.
-
-            for (LongCursor c : other.explicitStorage) {
-              addRaw(c.value);
-            }
-            // NOTE:  addRaw will handle promotion cleanup
-          } else /*source is HLLType.FULL*/ {
-            // src:  FULL
-            // dest: SPARSE
-            // "Storing into destination" cannot be done (since destination
-            // is by definition of smaller capacity than source), so a
-            // clone of source is made and registers from the destination
-            // are merged into the clone.
-
-            type = HLLType.FULL;
-            probabilisticStorage = other.probabilisticStorage.clone();
-            for (IntByteCursor c : sparseProbabilisticStorage) {
-              final int registerIndex = c.key;
-              final byte registerValue = c.value;
-              probabilisticStorage.setMaxRegister(registerIndex, registerValue);
-            }
-            sparseProbabilisticStorage = null;
-          }
-          return;
-        }
-      default /*destination is HLLType.FULL*/:
-        {
-          if (HLLType.EXPLICIT.equals(other.getType())) {
-            // src:  EXPLICIT
-            // dest: FULL
-            // Add the raw values from the source to the destination.
-            // Promotion is not possible, so don't bother checking.
-
-            for (LongCursor c : other.explicitStorage) {
-              addRaw(c.value);
-            }
-          } else /*source is HLLType.SPARSE*/ {
-            // src:  SPARSE
-            // dest: FULL
-            // Merge the registers from the source into the destination.
-            // Promotion is not possible, so don't bother checking.
-
+        // Determine source and destination storage.
+        // NOTE:  destination storage may change through promotion if
+        //        source is SPARSE.
+        if (HLLType.SPARSE.equals(other.getType())) {
+          if (!sparseOff) {
+            type = HLLType.SPARSE;
+            sparseProbabilisticStorage = other.sparseProbabilisticStorage.clone();
+          } else {
+            initializeStorage(HLLType.FULL);
             for (IntByteCursor c : other.sparseProbabilisticStorage) {
               final int registerIndex = c.key;
               final byte registerValue = c.value;
               probabilisticStorage.setMaxRegister(registerIndex, registerValue);
             }
           }
+        } else { // source is HLLType.FULL
+          type = HLLType.FULL;
+          probabilisticStorage = other.probabilisticStorage.clone();
         }
+        for (LongCursor c : explicitStorage) {
+          addRaw(c.value);
+        }
+        explicitStorage = null;
+      }
+      case SPARSE -> {
+        if (HLLType.EXPLICIT.equals(other.getType())) {
+          // src:  EXPLICIT
+          // dest: SPARSE
+          // Add the raw values from the source to the destination.
+
+          for (LongCursor c : other.explicitStorage) {
+            addRaw(c.value);
+          }
+          // NOTE:  addRaw will handle promotion cleanup
+        } else { // source is HLLType.FULL
+          // src:  FULL
+          // dest: SPARSE
+          // "Storing into destination" cannot be done (since destination
+          // is by definition of smaller capacity than source), so a
+          // clone of source is made and registers from the destination
+          // are merged into the clone.
+
+          type = HLLType.FULL;
+          probabilisticStorage = other.probabilisticStorage.clone();
+          for (IntByteCursor c : sparseProbabilisticStorage) {
+            final int registerIndex = c.key;
+            final byte registerValue = c.value;
+            probabilisticStorage.setMaxRegister(registerIndex, registerValue);
+          }
+          sparseProbabilisticStorage = null;
+        }
+      }
+      default -> { // destination is HLLType.FULL
+        if (HLLType.EXPLICIT.equals(other.getType())) {
+          // src:  EXPLICIT
+          // dest: FULL
+          // Add the raw values from the source to the destination.
+          // Promotion is not possible, so don't bother checking.
+
+          for (LongCursor c : other.explicitStorage) {
+            addRaw(c.value);
+          }
+        } else { // source is HLLType.SPARSE
+          // src:  SPARSE
+          // dest: FULL
+          // Merge the registers from the source into the destination.
+          // Promotion is not possible, so don't bother checking.
+
+          for (IntByteCursor c : other.sparseProbabilisticStorage) {
+            final int registerIndex = c.key;
+            final byte registerValue = c.value;
+            probabilisticStorage.setMaxRegister(registerIndex, registerValue);
+          }
+        }
+      }
     }
   }
 
@@ -860,16 +822,16 @@ public class HLL implements Cloneable {
    */
   private void homogeneousUnion(final HLL other) {
     switch (type) {
-      case EMPTY:
+      case EMPTY -> {
         // union of empty and empty is empty
-        return;
-      case EXPLICIT:
+      }
+      case EXPLICIT -> {
         for (LongCursor c : other.explicitStorage) {
           addRaw(c.value);
         }
         // NOTE:  #addRaw() will handle promotion, if necessary
-        return;
-      case SPARSE:
+      }
+      case SPARSE -> {
         for (IntByteCursor c : other.sparseProbabilisticStorage) {
           final int registerIndex = c.key;
           final byte registerValue = c.value;
@@ -889,15 +851,14 @@ public class HLL implements Cloneable {
           }
           sparseProbabilisticStorage = null;
         }
-        return;
-      case FULL:
+      }
+      case FULL -> {
         for (int i = 0; i < m; i++) {
           final long registerValue = other.probabilisticStorage.getRegister(i);
           probabilisticStorage.setMaxRegister(i, registerValue);
         }
-        return;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+      }
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
   }
 
@@ -923,51 +884,42 @@ public class HLL implements Cloneable {
   public byte[] toBytes(final ISchemaVersion schemaVersion) {
     final byte[] bytes;
     switch (type) {
-      case EMPTY:
-        bytes = new byte[schemaVersion.paddingBytes(type)];
-        break;
-      case EXPLICIT:
-        {
-          final IWordSerializer serializer =
-              schemaVersion.getSerializer(type, Long.SIZE, explicitStorage.size());
+      case EMPTY -> bytes = new byte[schemaVersion.paddingBytes(type)];
+      case EXPLICIT -> {
+        final IWordSerializer serializer =
+            schemaVersion.getSerializer(type, Long.SIZE, explicitStorage.size());
 
-          final long[] values = explicitStorage.toArray();
-          Arrays.sort(values);
-          for (final long value : values) {
-            serializer.writeWord(value);
-          }
-
-          bytes = serializer.getBytes();
-          break;
+        final long[] values = explicitStorage.toArray();
+        Arrays.sort(values);
+        for (final long value : values) {
+          serializer.writeWord(value);
         }
-      case SPARSE:
-        {
-          final IWordSerializer serializer =
-              schemaVersion.getSerializer(type, shortWordLength, sparseProbabilisticStorage.size());
 
-          final int[] indices = sparseProbabilisticStorage.keys().toArray();
-          Arrays.sort(indices);
-          for (final int registerIndex : indices) {
-            assert sparseProbabilisticStorage.containsKey(registerIndex);
-            final long registerValue = sparseProbabilisticStorage.get(registerIndex);
-            // pack index and value into "short word"
-            final long shortWord = ((registerIndex << regwidth) | registerValue);
-            serializer.writeWord(shortWord);
-          }
+        bytes = serializer.getBytes();
+      }
+      case SPARSE -> {
+        final IWordSerializer serializer =
+            schemaVersion.getSerializer(type, shortWordLength, sparseProbabilisticStorage.size());
 
-          bytes = serializer.getBytes();
-          break;
+        final int[] indices = sparseProbabilisticStorage.keys().toArray();
+        Arrays.sort(indices);
+        for (final int registerIndex : indices) {
+          assert sparseProbabilisticStorage.containsKey(registerIndex);
+          final long registerValue = sparseProbabilisticStorage.get(registerIndex);
+          // pack index and value into "short word"
+          final long shortWord = ((registerIndex << regwidth) | registerValue);
+          serializer.writeWord(shortWord);
         }
-      case FULL:
-        {
-          final IWordSerializer serializer = schemaVersion.getSerializer(type, regwidth, m);
-          probabilisticStorage.getRegisterContents(serializer);
 
-          bytes = serializer.getBytes();
-          break;
-        }
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+        bytes = serializer.getBytes();
+      }
+      case FULL -> {
+        final IWordSerializer serializer = schemaVersion.getSerializer(type, regwidth, m);
+        probabilisticStorage.getRegisterContents(serializer);
+
+        bytes = serializer.getBytes();
+      }
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
 
     final IHLLMetadata metadata =
@@ -1020,24 +972,17 @@ public class HLL implements Cloneable {
       return hll;
     }
 
-    final int wordLength;
-    switch (type) {
-      case EXPLICIT:
-        wordLength = Long.SIZE;
-        break;
-      case SPARSE:
-        wordLength = hll.shortWordLength;
-        break;
-      case FULL:
-        wordLength = hll.regwidth;
-        break;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
-    }
+    final int wordLength =
+        switch (type) {
+          case EXPLICIT -> Long.SIZE;
+          case SPARSE -> hll.shortWordLength;
+          case FULL -> hll.regwidth;
+          default -> throw new RuntimeException("Unsupported HLL type " + type);
+        };
 
     final IWordDeserializer deserializer = schemaVersion.getDeserializer(type, wordLength, bytes);
     switch (type) {
-      case EXPLICIT:
+      case EXPLICIT -> {
         // NOTE:  This should not exceed expthresh and this will always
         //        be exactly the number of words that were encoded,
         //        because the word length is at least a byte wide.
@@ -1045,8 +990,8 @@ public class HLL implements Cloneable {
         for (int i = 0; i < deserializer.totalWordCount(); i++) {
           hll.explicitStorage.add(deserializer.readWord());
         }
-        break;
-      case SPARSE:
+      }
+      case SPARSE -> {
         // NOTE:  If the shortWordLength were smaller than 8 bits
         //        (1 byte) there would be a possibility (because of
         //        padding arithmetic) of having one or more extra
@@ -1061,8 +1006,8 @@ public class HLL implements Cloneable {
             hll.sparseProbabilisticStorage.put((int) (shortWord >>> hll.regwidth), registerValue);
           }
         }
-        break;
-      case FULL:
+      }
+      case FULL -> {
         // NOTE:  Iteration is done using m (register count) and NOT
         //        deserializer#totalWordCount() because regwidth may be
         //        less than 8 and as such the padding on the 'last' byte
@@ -1072,9 +1017,8 @@ public class HLL implements Cloneable {
         for (long i = 0; i < hll.m; i++) {
           hll.probabilisticStorage.setRegister(i, deserializer.readWord());
         }
-        break;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+      }
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
 
     return hll;
@@ -1108,20 +1052,13 @@ public class HLL implements Cloneable {
     }
     final HLL copy = new HLL(log2m, regwidth, copyExpthresh, !sparseOff /*sparseOn*/, type);
     switch (type) {
-      case EMPTY:
+      case EMPTY -> {
         // nothing to be done
-        break;
-      case EXPLICIT:
-        copy.explicitStorage = this.explicitStorage.clone();
-        break;
-      case SPARSE:
-        copy.sparseProbabilisticStorage = this.sparseProbabilisticStorage.clone();
-        break;
-      case FULL:
-        copy.probabilisticStorage = this.probabilisticStorage.clone();
-        break;
-      default:
-        throw new RuntimeException("Unsupported HLL type " + type);
+      }
+      case EXPLICIT -> copy.explicitStorage = this.explicitStorage.clone();
+      case SPARSE -> copy.sparseProbabilisticStorage = this.sparseProbabilisticStorage.clone();
+      case FULL -> copy.probabilisticStorage = this.probabilisticStorage.clone();
+      default -> throw new RuntimeException("Unsupported HLL type " + type);
     }
     return copy;
   }

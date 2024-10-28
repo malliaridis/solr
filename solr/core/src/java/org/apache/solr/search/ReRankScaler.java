@@ -238,16 +238,11 @@ public class ReRankScaler {
       float reRankScore,
       double reRankScaleWeight,
       ReRankOperator reRankOperator) {
-    switch (reRankOperator) {
-      case ADD:
-        return (float) (orginalScore + reRankScaleWeight * reRankScore);
-      case REPLACE:
-        return (float) (reRankScaleWeight * reRankScore);
-      case MULTIPLY:
-        return (float) (orginalScore * reRankScaleWeight * reRankScore);
-      default:
-        return -1;
-    }
+    return switch (reRankOperator) {
+      case ADD -> (float) (orginalScore + reRankScaleWeight * reRankScore);
+      case REPLACE -> (float) (reRankScaleWeight * reRankScore);
+      case MULTIPLY -> (float) (orginalScore * reRankScaleWeight * reRankScore);
+    };
   }
 
   public static final class ReRankScalerExplain {

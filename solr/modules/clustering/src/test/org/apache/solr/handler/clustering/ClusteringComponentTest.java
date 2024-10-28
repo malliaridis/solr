@@ -409,28 +409,17 @@ public class ClusteringComponentTest extends SolrTestCaseJ4 {
     v.forEach(
         (key, value) -> {
           switch (key) {
-            case ClusteringResponse.DOCS_NODE:
-              ((List<String>) value).forEach(docId -> c.addDocument(idToDoc.get(docId)));
-              break;
-            case ClusteringResponse.LABELS_NODE:
-              ((List<String>) value).forEach(c::addLabel);
-              break;
-            case ClusteringResponse.SCORE_NODE:
-              c.setScore(((Number) value).doubleValue());
-              break;
-            case ClusteringResponse.CLUSTERS_NODE:
-              ((List<NamedList<Object>>) value)
-                  .forEach(
-                      sub -> {
-                        c.addCluster(toCluster(sub, idToDoc));
-                      });
-              break;
-            case ClusteringResponse.IS_OTHER_TOPICS:
+            case ClusteringResponse.DOCS_NODE -> ((List<String>) value)
+                .forEach(docId -> c.addDocument(idToDoc.get(docId)));
+            case ClusteringResponse.LABELS_NODE -> ((List<String>) value).forEach(c::addLabel);
+            case ClusteringResponse.SCORE_NODE -> c.setScore(((Number) value).doubleValue());
+            case ClusteringResponse.CLUSTERS_NODE -> ((List<NamedList<Object>>) value)
+                .forEach(sub -> c.addCluster(toCluster(sub, idToDoc)));
+            case ClusteringResponse.IS_OTHER_TOPICS -> {
               // Just ignore the attribute.
-              break;
-            default:
-              throw new RuntimeException(
-                  "Unknown output property " + key + " in cluster: " + v.jsonStr());
+            }
+            default -> throw new RuntimeException(
+                "Unknown output property " + key + " in cluster: " + v.jsonStr());
           }
         });
     return c;

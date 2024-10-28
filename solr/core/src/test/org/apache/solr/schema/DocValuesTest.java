@@ -309,64 +309,58 @@ public class DocValuesTest extends SolrTestCaseJ4 {
         assertU(commit()); // to have several segments
       }
       switch (i % 3) {
-        case 0:
-          assertU(
-              adoc(
-                  "id",
-                  "1000" + i,
-                  "floatdv",
-                  "" + i,
-                  "intdv",
-                  "" + i,
-                  "doubledv",
-                  "" + i,
-                  "longdv",
-                  "" + i,
-                  "datedv",
-                  (1900 + i) + "-12-31T23:59:59.999Z",
-                  "stringdv",
-                  "abc" + i,
-                  "booldv",
-                  "false"));
-          break;
-        case 1:
-          assertU(
-              adoc(
-                  "id",
-                  "1000" + i,
-                  "floatdv",
-                  "" + i,
-                  "intdv",
-                  "" + i,
-                  "doubledv",
-                  "" + i,
-                  "longdv",
-                  "" + i,
-                  "datedv",
-                  (1900 + i) + "-12-31T23:59:59.999Z",
-                  "stringdv",
-                  "abc" + i,
-                  "booldv",
-                  "true"));
-          break;
-        case 2:
-          assertU(
-              adoc(
-                  "id",
-                  "1000" + i,
-                  "floatdv",
-                  "" + i,
-                  "intdv",
-                  "" + i,
-                  "doubledv",
-                  "" + i,
-                  "longdv",
-                  "" + i,
-                  "datedv",
-                  (1900 + i) + "-12-31T23:59:59.999Z",
-                  "stringdv",
-                  "abc" + i));
-          break;
+        case 0 -> assertU(
+            adoc(
+                "id",
+                "1000" + i,
+                "floatdv",
+                "" + i,
+                "intdv",
+                "" + i,
+                "doubledv",
+                "" + i,
+                "longdv",
+                "" + i,
+                "datedv",
+                (1900 + i) + "-12-31T23:59:59.999Z",
+                "stringdv",
+                "abc" + i,
+                "booldv",
+                "false"));
+        case 1 -> assertU(
+            adoc(
+                "id",
+                "1000" + i,
+                "floatdv",
+                "" + i,
+                "intdv",
+                "" + i,
+                "doubledv",
+                "" + i,
+                "longdv",
+                "" + i,
+                "datedv",
+                (1900 + i) + "-12-31T23:59:59.999Z",
+                "stringdv",
+                "abc" + i,
+                "booldv",
+                "true"));
+        case 2 -> assertU(
+            adoc(
+                "id",
+                "1000" + i,
+                "floatdv",
+                "" + i,
+                "intdv",
+                "" + i,
+                "doubledv",
+                "" + i,
+                "longdv",
+                "" + i,
+                "datedv",
+                (1900 + i) + "-12-31T23:59:59.999Z",
+                "stringdv",
+                "abc" + i));
       }
     }
     assertU(commit());

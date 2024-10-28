@@ -469,15 +469,9 @@ public class ShardSplitTest extends BasicDistributedZkTest {
         .forEach(
             r -> {
               switch (r.getType()) {
-                case NRT:
-                  actualNrt.incrementAndGet();
-                  break;
-                case TLOG:
-                  actualTlog.incrementAndGet();
-                  break;
-                case PULL:
-                  actualPull.incrementAndGet();
-                  break;
+                case NRT -> actualNrt.incrementAndGet();
+                case TLOG -> actualTlog.incrementAndGet();
+                case PULL -> actualPull.incrementAndGet();
               }
             });
     assertEquals("actual NRT", numNrt, actualNrt.get());

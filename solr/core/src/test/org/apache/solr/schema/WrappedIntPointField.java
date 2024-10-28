@@ -44,19 +44,13 @@ public class WrappedIntPointField extends IntPointField {
   }
 
   private static DoubleValuesSource fromSortField(SortField field) {
-    switch (field.getType()) {
-      case INT:
-        return DoubleValuesSource.fromIntField(field.getField());
-      case LONG:
-        return DoubleValuesSource.fromLongField(field.getField());
-      case FLOAT:
-        return DoubleValuesSource.fromFloatField(field.getField());
-      case DOUBLE:
-        return DoubleValuesSource.fromDoubleField(field.getField());
-      case SCORE:
-        return DoubleValuesSource.SCORES;
-      default:
-        throw new UnsupportedOperationException();
-    }
+    return switch (field.getType()) {
+      case INT -> DoubleValuesSource.fromIntField(field.getField());
+      case LONG -> DoubleValuesSource.fromLongField(field.getField());
+      case FLOAT -> DoubleValuesSource.fromFloatField(field.getField());
+      case DOUBLE -> DoubleValuesSource.fromDoubleField(field.getField());
+      case SCORE -> DoubleValuesSource.SCORES;
+      default -> throw new UnsupportedOperationException();
+    };
   }
 }

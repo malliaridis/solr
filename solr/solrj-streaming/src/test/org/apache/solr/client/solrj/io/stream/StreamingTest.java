@@ -2528,17 +2528,14 @@ public class StreamingTest extends SolrCloudTestCase {
 
       // note if hashing algo changes this might break
       switch (tuples.size()) {
-        case 5: // 1 shard
-          assertOrder(tuples, 4, 3, 2, 1, 0);
-          break;
-        case 3: // 2 shards case 1 (randomized)
-          assertOrder(tuples, 4, 1, 0);
-          break;
-        case 2: // 2 shards case 2 (randomized)
-          assertOrder(tuples, 3, 2);
-          break;
-        default: // nope, no way, no how, never good.
-          fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
+        case 5 -> // 1 shard
+        assertOrder(tuples, 4, 3, 2, 1, 0);
+        case 3 -> // 2 shards case 1 (randomized)
+        assertOrder(tuples, 4, 1, 0);
+        case 2 -> // 2 shards case 2 (randomized)
+        assertOrder(tuples, 3, 2);
+        default -> // nope, no way, no how, never good.
+        fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
       }
 
       // With Ascending Sort
@@ -2549,17 +2546,14 @@ public class StreamingTest extends SolrCloudTestCase {
 
       // note if hashing algo changes this might break
       switch (tuples.size()) {
-        case 5: // 1 shard
-          assertOrder(tuples, 0, 1, 2, 3, 4);
-          break;
-        case 3: // 2 shards case 1 (randomized)
-          assertOrder(tuples, 0, 1, 4);
-          break;
-        case 2: // 2 shards case 2 (randomized)
-          assertOrder(tuples, 2, 3);
-          break;
-        default: // nope, no way, no how, never good.
-          fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
+        case 5 -> // 1 shard
+        assertOrder(tuples, 0, 1, 2, 3, 4);
+        case 3 -> // 2 shards case 1 (randomized)
+        assertOrder(tuples, 0, 1, 4);
+        case 2 -> // 2 shards case 2 (randomized)
+        assertOrder(tuples, 2, 3);
+        default -> // nope, no way, no how, never good.
+        fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
       }
 
       // Test compound sort
@@ -2570,17 +2564,14 @@ public class StreamingTest extends SolrCloudTestCase {
 
       // note if hashing algo changes this might break
       switch (tuples.size()) {
-        case 5: // 1 shard
-          assertOrder(tuples, 2, 0, 1, 3, 4);
-          break;
-        case 3: // 2 shards case 1 (randomized)
-          assertOrder(tuples, 0, 1, 4);
-          break;
-        case 2: // 2 shards case 2 (randomized)
-          assertOrder(tuples, 2, 3);
-          break;
-        default: // nope, no way, no how, never good.
-          fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
+        case 5 -> // 1 shard
+        assertOrder(tuples, 2, 0, 1, 3, 4);
+        case 3 -> // 2 shards case 1 (randomized)
+        assertOrder(tuples, 0, 1, 4);
+        case 2 -> // 2 shards case 2 (randomized)
+        assertOrder(tuples, 2, 3);
+        default -> // nope, no way, no how, never good.
+        fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
       }
 
       sParams = params("q", "*:*", "fl", "id,a_s,a_i,a_f", "sort", "a_f asc,a_i asc");
@@ -2590,17 +2581,14 @@ public class StreamingTest extends SolrCloudTestCase {
 
       // note if hashing algo changes this might break
       switch (tuples.size()) {
-        case 5: // 1 shard
-          assertOrder(tuples, 0, 2, 1, 3, 4);
-          break;
-        case 3: // 2 shards case 1 (randomized)
-          assertOrder(tuples, 0, 1, 4);
-          break;
-        case 2: // 2 shards case 2 (randomized)
-          assertOrder(tuples, 2, 3);
-          break;
-        default: // nope, no way, no how, never good.
-          fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
+        case 5 -> // 1 shard
+        assertOrder(tuples, 0, 2, 1, 3, 4);
+        case 3 -> // 2 shards case 1 (randomized)
+        assertOrder(tuples, 0, 1, 4);
+        case 2 -> // 2 shards case 2 (randomized)
+        assertOrder(tuples, 2, 3);
+        default -> // nope, no way, no how, never good.
+        fail("should have 3, 5 or 2 tuples, has hashing algorithm changed?");
       }
 
     } finally {

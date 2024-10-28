@@ -95,16 +95,13 @@ public class TestSampleDocumentsLoader extends SolrTestCase {
     int dotAt = name.lastIndexOf('.');
     if (dotAt != -1) {
       final String ext = name.substring(dotAt + 1);
-      switch (ext) {
-        case "csv":
-          return "text/csv";
-        case "txt":
-          return "text/plain";
-        case "json":
-          return "application/json";
-        case "xml":
-          return "text/xml";
-      }
+      return switch (ext) {
+        case "csv" -> "text/csv";
+        case "txt" -> "text/plain";
+        case "json" -> "application/json";
+        case "xml" -> "text/xml";
+        default -> "application/octet-stream";
+      };
     }
     return "application/octet-stream";
   }
