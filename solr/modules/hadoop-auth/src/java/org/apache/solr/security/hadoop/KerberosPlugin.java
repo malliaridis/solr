@@ -16,14 +16,10 @@
  */
 package org.apache.solr.security.hadoop;
 
+import static org.apache.solr.delegator.Delegates.filter;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.google.common.annotations.VisibleForTesting;
-import java.lang.invoke.MethodHandles;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -31,6 +27,13 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.invoke.MethodHandles;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import org.apache.hadoop.security.authentication.util.KerberosName;
 import org.apache.hadoop.security.token.delegation.web.DelegationTokenAuthenticationHandler;
 import org.apache.http.HttpRequest;
@@ -50,6 +53,7 @@ import org.apache.solr.security.AuthenticationPlugin;
 import org.apache.solr.security.HttpClientBuilderPlugin;
 import org.apache.solr.servlet.SolrDispatchFilter;
 import org.eclipse.jetty.client.Request;
+import org.eclipse.jetty.http.HttpFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -209,11 +213,11 @@ public class KerberosPlugin extends AuthenticationPlugin implements HttpClientBu
       servletContext.setAttribute(DELEGATION_TOKEN_ZK_CLIENT, controller.getZkClient());
     }
     if (delegationTokenEnabled) {
-      kerberosFilter = new DelegationTokenKerberosFilter();
+      kerberosFilter = filter(new DelegationTokenKerberosFilter());
       // pass an attribute-enabled context in order to pass the zkClient
       // and because the filter may pass a curator instance.
     } else {
-      kerberosFilter = new KerberosFilter(coreContainer);
+      kerberosFilter = filter(new KerberosFilter(coreContainer));
     }
     log.info("Params: {}", params);
 
@@ -285,15 +289,15 @@ public class KerberosPlugin extends AuthenticationPlugin implements HttpClientBu
 
   @Override
   public boolean interceptInternodeRequest(HttpRequest httpRequest, HttpContext httpContext) {
-    return intercept(httpRequest::setHeader);
+    return interceptOld(httpRequest::setHeader);
   }
 
   @Override
   protected boolean interceptInternodeRequest(Request request) {
-    return intercept(request::header);
+    return intercept(request::headers);
   }
 
-  private boolean intercept(BiConsumer<String, String> header) {
+  private boolean interceptOld(BiConsumer<String, String> header) {
     SolrRequestInfo info = SolrRequestInfo.getRequestInfo();
     if (info != null
         && (info.getAction() == SolrDispatchFilter.Action.FORWARD
@@ -303,6 +307,23 @@ public class KerberosPlugin extends AuthenticationPlugin implements HttpClientBu
           log.info("Setting original user principal: {}", info.getUserPrincipal().getName());
         }
         header.accept(ORIGINAL_USER_PRINCIPAL_HEADER, info.getUserPrincipal().getName());
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean intercept(Consumer<Consumer<HttpFields.Mutable>> header) {
+    SolrRequestInfo info = SolrRequestInfo.getRequestInfo();
+    if (info != null
+        && (info.getAction() == SolrDispatchFilter.Action.FORWARD
+            || info.getAction() == SolrDispatchFilter.Action.REMOTEQUERY)) {
+      if (info.getUserPrincipal() != null) {
+        if (log.isInfoEnabled()) {
+          log.info("Setting original user principal: {}", info.getUserPrincipal().getName());
+        }
+        header.accept(
+            h -> h.put(ORIGINAL_USER_PRINCIPAL_HEADER, info.getUserPrincipal().getName()));
         return true;
       }
     }

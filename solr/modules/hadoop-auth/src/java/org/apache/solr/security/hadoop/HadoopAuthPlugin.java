@@ -16,10 +16,18 @@
  */
 package org.apache.solr.security.hadoop;
 
+import static org.apache.solr.delegator.Delegates.filter;
 import static org.apache.solr.security.hadoop.HadoopAuthFilter.DELEGATION_TOKEN_ZK_CLIENT;
 import static org.apache.solr.security.hadoop.RequestContinuesRecorderAuthenticationHandler.REQUEST_CONTINUES_ATTR;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
@@ -28,12 +36,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.hadoop.security.authentication.server.AuthenticationFilter;
 import org.apache.hadoop.security.token.delegation.web.DelegationTokenAuthenticationHandler;
 import org.apache.solr.client.solrj.impl.Krb5HttpClientBuilder;
@@ -110,7 +112,7 @@ public class HadoopAuthPlugin extends AuthenticationPlugin {
    */
   private static final boolean TRACE_HTTP = Boolean.getBoolean("hadoopauth.tracehttp");
 
-  private AuthenticationFilter authFilter;
+  private Filter authFilter;
   protected final CoreContainer coreContainer;
   private boolean delegationTokenEnabled;
 
@@ -123,7 +125,10 @@ public class HadoopAuthPlugin extends AuthenticationPlugin {
     try {
       delegationTokenEnabled =
           Boolean.parseBoolean((String) pluginConfig.get(DELEGATION_TOKEN_ENABLED_PROPERTY));
-      authFilter = delegationTokenEnabled ? new HadoopAuthFilter() : new AuthenticationFilter();
+      authFilter =
+          delegationTokenEnabled
+              ? filter(new HadoopAuthFilter())
+              : filter(new AuthenticationFilter());
 
       // Initialize kerberos before initializing curator instance.
       boolean initKerberosZk =

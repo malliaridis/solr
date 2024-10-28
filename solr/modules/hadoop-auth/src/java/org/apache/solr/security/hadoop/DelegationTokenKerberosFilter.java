@@ -25,12 +25,12 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.AuthInfo;
 import org.apache.curator.framework.CuratorFramework;
@@ -143,8 +143,9 @@ public class DelegationTokenKerberosFilter extends DelegationTokenAuthentication
   }
 
   @Override
-  protected void initializeAuthHandler(String authHandlerClassName, FilterConfig filterConfig)
-      throws ServletException {
+  protected void initializeAuthHandler(
+      String authHandlerClassName, javax.servlet.FilterConfig filterConfig)
+      throws javax.servlet.ServletException {
     // set the internal authentication handler in order to record whether the request should
     // continue
     super.initializeAuthHandler(authHandlerClassName, filterConfig);

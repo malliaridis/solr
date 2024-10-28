@@ -60,8 +60,7 @@ dependencies {
   implementation 'org.apache.httpcomponents:httpcore'
   implementation 'io.opentelemetry:opentelemetry-api'
 
-  //implementation 'org.eclipse.jetty.toolchain:jetty-servlet-api'
-  implementation 'org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api'
+  implementation 'jakarta.servlet:jakarta.servlet-api'
   implementation 'org.eclipse.jetty:jetty-server'
   api 'org.eclipse.jetty.ee10:jetty-ee10-servlet'
   implementation 'org.eclipse.jetty:jetty-util'
@@ -70,12 +69,11 @@ dependencies {
     exclude group: "org.eclipse.jetty.alpn", module: "alpn-api"
   })
   implementation 'org.eclipse.jetty:jetty-rewrite'
+  implementation 'org.eclipse.jetty:jetty-session'
   implementation 'org.eclipse.jetty.http2:jetty-http2-server'
   implementation 'org.eclipse.jetty.http2:jetty-http2-common'
 
   implementation 'com.carrotsearch.randomizedtesting:randomizedtesting-runner'
   implementation 'junit:junit'
   implementation 'org.hamcrest:hamcrest'
-
-  //testImplementation 'org.eclipse.jetty.toolchain:jetty-servlet-api'
 }

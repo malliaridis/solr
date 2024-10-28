@@ -16,6 +16,9 @@
  */
 package org.apache.solr.security.hadoop;
 
+import static org.apache.solr.delegator.Delegates.filter;
+import static org.apache.solr.delegator.Delegates.filterConfig;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -25,16 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.hadoop.security.authentication.client.AuthenticationException;
 import org.apache.hadoop.security.authentication.server.AuthenticationFilter;
 import org.apache.hadoop.security.authentication.server.AuthenticationHandler;
@@ -89,7 +92,7 @@ public class HttpParamDelegationTokenPlugin extends KerberosPlugin {
   @Override
   public void init(Map<String, Object> pluginConfig) {
     try {
-      final FilterConfig initConf = getInitFilterConfig(pluginConfig, true);
+      final FilterConfig initConf = filterConfig(getInitFilterConfig(pluginConfig, true));
 
       FilterConfig conf =
           new FilterConfig() {
@@ -118,7 +121,7 @@ public class HttpParamDelegationTokenPlugin extends KerberosPlugin {
           };
       Filter kerberosFilter = new HttpParamToRequestFilter();
       kerberosFilter.init(conf);
-      setKerberosFilter(kerberosFilter);
+      setKerberosFilter(filter(kerberosFilter));
     } catch (ServletException e) {
       throw new SolrException(
           SolrException.ErrorCode.SERVER_ERROR,
@@ -156,7 +159,8 @@ public class HttpParamDelegationTokenPlugin extends KerberosPlugin {
         new HttpListenerFactory.RequestResponseListener() {
           @Override
           public void onQueued(Request request) {
-            getPrincipal().ifPresent(usr -> request.header(INTERNAL_REQUEST_HEADER, usr));
+            getPrincipal()
+                .ifPresent(usr -> request.headers(h -> h.put(INTERNAL_REQUEST_HEADER, usr)));
           }
         };
     client.addListenerFactory(() -> listener);

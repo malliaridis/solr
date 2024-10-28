@@ -21,6 +21,7 @@ import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
@@ -114,85 +115,6 @@ public class HttpSolrCallCloudTest extends SolrCloudTestCase {
     assertEquals(numCores, coreNames.size());
   }
 
-  /*private static class TestResponse extends HttpServletResponseWrapper {
-
-    public TestResponse() {
-      super(null);
-    }
-
-    @Override
-    public ServletOutputStream getOutputStream() {
-      return new ServletOutputStream() {
-        @Override
-        public boolean isReady() {
-          return true;
-        }
-
-        @Override
-        public void setWriteListener(WriteListener writeListener) {}
-
-        @Override
-        public void write(int b) {}
-      };
-    }
-
-    @Override
-    public boolean isCommitted() {
-      return true;
-    }
-  }*/
-
-  /*private static class TestRequest extends HttpServletRequestWrapper {
-    private String path;
-
-    public TestRequest(String path) {
-      super(null);
-      this.path = path;
-    }
-
-    @Override
-    public String getQueryString() {
-      return "version=2";
-    }
-
-    @Override
-    public String getContentType() {
-      return "application/json";
-    }
-
-    @Override
-    public String getServletPath() {
-      return path;
-    }
-
-    @Override
-    public String getRequestURI() {
-      return path;
-    }
-
-    @Override
-    public ServletInputStream getInputStream() {
-      return new ServletInputStream() {
-        @Override
-        public boolean isFinished() {
-          return true;
-        }
-
-        @Override
-        public boolean isReady() {
-          return true;
-        }
-
-        @Override
-        public void setReadListener(ReadListener readListener) {}
-
-        @Override
-        public int read() {
-          return 0;
-        }
-      };
-    }
-  }*/
   public static class TestRequest implements HttpServletRequest {
     private final String path;
 
@@ -322,11 +244,6 @@ public class HttpSolrCallCloudTest extends SolrCloudTestCase {
 
     @Override
     public boolean isRequestedSessionIdFromURL() {
-      return false;
-    }
-
-    @Override
-    public boolean isRequestedSessionIdFromUrl() {
       return false;
     }
 
@@ -495,11 +412,6 @@ public class HttpSolrCallCloudTest extends SolrCloudTestCase {
     }
 
     @Override
-    public String getRealPath(String path) {
-      return "";
-    }
-
-    @Override
     public int getRemotePort() {
       return 0;
     }
@@ -554,6 +466,21 @@ public class HttpSolrCallCloudTest extends SolrCloudTestCase {
     public DispatcherType getDispatcherType() {
       return null;
     }
+
+    @Override
+    public String getRequestId() {
+      return "";
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+      return "";
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
+      return null;
+    }
   }
 
   public static class TestResponse implements HttpServletResponse {
@@ -573,16 +500,6 @@ public class HttpSolrCallCloudTest extends SolrCloudTestCase {
 
     @Override
     public String encodeRedirectURL(String url) {
-      return "";
-    }
-
-    @Override
-    public String encodeUrl(String url) {
-      return "";
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url) {
       return "";
     }
 
@@ -615,9 +532,6 @@ public class HttpSolrCallCloudTest extends SolrCloudTestCase {
 
     @Override
     public void setStatus(int sc) {}
-
-    @Override
-    public void setStatus(int sc, String sm) {}
 
     @Override
     public int getStatus() {

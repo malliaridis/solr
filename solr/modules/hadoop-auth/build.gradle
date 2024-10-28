@@ -15,9 +15,22 @@
  * limitations under the License.
  */
 
+plugins {
+  id 'java-library'
+  id 'com.gradleup.shadow' version '8.3.3'
+}
+
 apply plugin: 'java-library'
 
 description = 'Hadoop Authentication Module'
+
+configurations {
+  shadowedLib
+}
+
+shadowJar {
+  configurations = [project.configurations.implementation, project.configurations.shadowedLib]
+}
 
 dependencies {
   // Spotbugs Annotations are only needed for old findbugs
@@ -33,6 +46,7 @@ dependencies {
   implementation project(':solr:core')
   implementation project(':solr:solrj')
   implementation project(':solr:solrj-zookeeper')
+  implementation project(':solr:modules:jetty-delegator')
 
   implementation 'org.slf4j:slf4j-api'
 
@@ -45,6 +59,11 @@ dependencies {
   implementation 'org.apache.httpcomponents:httpcore'
 
   implementation 'org.eclipse.jetty:jetty-client'
+  // Add and shadow Jetty 10 to support Hadoop with Jetty 10 and
+  // Solr with Jetty 12 via jetty-delegator
+  shadowedLib 'org.eclipse.jetty:jetty-client:10.0.24'
+  implementation 'org.eclipse.jetty:jetty-http'
+  implementation 'org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api'
 
   // ZooKeeper & Curator
   implementation('org.apache.zookeeper:zookeeper', {
@@ -102,6 +121,8 @@ dependencies {
     exclude group:'org.jline', module:'jline'
     exclude group:'com.jcraft', module:'jsch'
   })
+
+  testImplementation 'jakarta.servlet:jakarta.servlet-api'
 
   // Zookeeper dependency - some tests like HdfsCloudBackupRestore need this
   testImplementation('org.apache.zookeeper:zookeeper', {
