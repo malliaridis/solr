@@ -37,7 +37,6 @@ object CommandChecker {
      */
     suspend fun BaseCliktCommand<*>.commandExists(command: String): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
-            System.setProperty("tests.security.manager", "")
             // Run 'command -v' or 'which' with the command you want to check
             val processBuilder = ProcessBuilder(
                 "bash", "-c",

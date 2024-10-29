@@ -17,8 +17,4 @@ class UserLimitsCheckerTest {
             assertTrue(result.isSuccess)
         }
     }
-
-    @Test
-    fun getUserLimits() {
-    }
 }

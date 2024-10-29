@@ -24,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.solr.cli.data.UserLimits
 import org.apache.solr.cli.data.UserLimits.UserLimitType
+import org.apache.solr.cli.exceptions.CommandNotFoundException
 import org.apache.solr.cli.processes.CommandChecker.commandExists
 
 internal object UserLimitsChecker {
@@ -97,6 +98,11 @@ internal object UserLimitsChecker {
         withContext(Dispatchers.IO) {
             try {
                 commandExists("ulimit")
+                    .onSuccess { exists ->
+                        if (!exists)return@withContext Result.failure(
+                            CommandNotFoundException(command = "ulimit")
+                        )
+                    }
                     .onFailure { return@withContext Result.failure(it) }
 
                 return@withContext Result.success(
@@ -119,16 +125,16 @@ internal object UserLimitsChecker {
 
     private suspend fun getUserLimitFor(limitType: UserLimitType): Long =
         withContext(Dispatchers.IO) {
-            val processBuilder = ProcessBuilder("sh", "-c", "ulimit -${limitType.flag}")
+            val processBuilder = ProcessBuilder("bash", "-c", "ulimit -${limitType.flag}")
             val process = processBuilder.start()
 
             // Read and print the output
             val value: Long
             BufferedReader(InputStreamReader(process.inputStream)).use {
-                value = it.readLine().toLongOrNull() ?: -1
+                val line = it.readLine()
+                value = line.toLongOrNull() ?: -1
+                // If there’s output, the command exists; otherwise, it doesn’t
+                return@withContext value
             }
-
-            process.waitFor()
-            return@withContext value
         }
 }
