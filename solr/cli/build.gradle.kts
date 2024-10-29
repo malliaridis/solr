@@ -53,6 +53,10 @@ kotlin {
     jvmToolchain(21)
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 application {
     applicationName = "solr"
     mainClass.set("org.apache.solr.cli.MainKt")

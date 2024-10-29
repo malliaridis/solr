@@ -6,10 +6,13 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.apache.solr.cli.TestCliCommand
 import org.apache.solr.cli.processes.UserLimitsChecker.getUserLimits
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
 
 class UserLimitsCheckerTest {
 
     @Test
+    @DisabledOnOs(OS.WINDOWS, disabledReason = "ulimit not applicable on Windows OS.")
     fun simpleCheckUserLimitsSucceeds() = runTest {
         TestCliCommand.parse(emptyList())
         with(TestCliCommand) {
