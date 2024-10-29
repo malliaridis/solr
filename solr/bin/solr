@@ -51,7 +51,7 @@ verbose=false
 THIS_OS=$(uname -s)
 
 # What version of Java is required to run this version of Solr.
-JAVA_VER_REQ=11
+JAVA_VER_REQ=21
 
 stop_all=false
 
@@ -1058,31 +1058,13 @@ fi
 
 # Establish default GC logging opts if no env var set (otherwise init to sensible default)
 if [ -z "${GC_LOG_OPTS}" ]; then
-  if [[ "$JAVA_VER_NUM" -lt "9" ]] ; then
-    GC_LOG_OPTS=('-verbose:gc' '-XX:+PrintHeapAtGC' '-XX:+PrintGCDetails' \
-                 '-XX:+PrintGCDateStamps' '-XX:+PrintGCTimeStamps' '-XX:+PrintTenuringDistribution' \
-                 '-XX:+PrintGCApplicationStoppedTime')
-  else
-    GC_LOG_OPTS=('-Xlog:gc*')
-  fi
-else
-  # TODO: Should probably not overload GC_LOG_OPTS as both string and array, but leaving it be for now
-  # shellcheck disable=SC2128
-  GC_LOG_OPTS=($GC_LOG_OPTS)
+  GC_LOG_OPTS=('-Xlog:gc*')
 fi
 
 # if verbose gc logging enabled, setup the location of the log file and rotation
 if [ "${#GC_LOG_OPTS[@]}" -gt 0 ]; then
-  if [[ "$JAVA_VER_NUM" -lt "9" ]] || [ "$JAVA_VENDOR" == "OpenJ9" ]; then
-    gc_log_flag="-Xloggc"
-    if [ "$JAVA_VENDOR" == "OpenJ9" ]; then
-      gc_log_flag="-Xverbosegclog"
-    fi
-    if [ -z ${JAVA8_GC_LOG_FILE_OPTS+x} ]; then
-      GC_LOG_OPTS+=("$gc_log_flag:$SOLR_LOGS_DIR/solr_gc.log" '-XX:+UseGCLogFileRotation' '-XX:NumberOfGCLogFiles=9' '-XX:GCLogFileSize=20M')
-    else
-      GC_LOG_OPTS+=($JAVA8_GC_LOG_FILE_OPTS)
-    fi
+  if [ "$JAVA_VENDOR" == "OpenJ9" ]; then
+    GC_LOG_OPTS+=("-Xverbosegclog:$SOLR_LOGS_DIR/solr_gc.log" '-XX:+UseGCLogFileRotation' '-XX:NumberOfGCLogFiles=9' '-XX:GCLogFileSize=20M')
   else
     # https://openjdk.java.net/jeps/158
     for i in "${!GC_LOG_OPTS[@]}";
@@ -1326,18 +1308,8 @@ function start_solr() {
     exit 1
   fi
 
-  # Workaround for JIT crash, see https://issues.apache.org/jira/browse/SOLR-16463
-  if [[ "$JAVA_VER_NUM" -ge "17" ]] ; then
-    SCRIPT_SOLR_OPTS+=("-XX:CompileCommand=exclude,com.github.benmanes.caffeine.cache.BoundedLocalCache::put")
-    echo "Java $JAVA_VER_NUM detected. Enabled workaround for SOLR-16463"
-  fi
-
-  # Vector optimizations are only supported for Java 20 and 21 for now.
-  # This will need to change as Lucene is upgraded and newer Java versions are released
-  if [[ "$JAVA_VER_NUM" -ge "20" ]] && [[ "$JAVA_VER_NUM" -le "21" ]] ; then
-    SCRIPT_SOLR_OPTS+=("--add-modules" "jdk.incubator.vector")
-    echo "Java $JAVA_VER_NUM detected. Incubating Panama Vector APIs have been enabled"
-  fi
+  # Add vector optimizations module
+  SCRIPT_SOLR_OPTS+=("--add-modules" "jdk.incubator.vector")
 
   SOLR_START_OPTS=('-server' "${JAVA_MEM_OPTS[@]}" "${GC_TUNE_ARR[@]}" "${GC_LOG_OPTS[@]}" "${IP_ACL_OPTS[@]}" \
     "${REMOTE_JMX_OPTS[@]}" "${CLOUD_MODE_OPTS[@]}" -Dsolr.log.dir="$SOLR_LOGS_DIR" \

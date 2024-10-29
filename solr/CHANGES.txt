@@ -108,6 +108,8 @@ Other Changes
 
 * SOLR-17285: SolrJ RemoteSolrException moved to SolrClient. (@samuelrivascoding)
 
+* SOLR-17321: Minimum Java version for Apache Solr is now 21, and for SolrJ, it is 17. (Sanjay Dutt, David Smiley)
+
 ==================  9.8.0 ==================
 New Features
 ---------------------
@@ -168,6 +170,8 @@ Optimizations
 
 * SOLR-17441: Improve system metrics collection by skipping unreadable MXBean properties, making /admin/info/system calls faster (Haythem Khiri)
 
+* SOLR-16503: Switched from HTTP1 to HTTP2 in SolrClientCloudManager by replacing CloudLegacySolrClient with CloudHttp2SolrClient. (Sanjay Dutt, David Smiley)
+
 Bug Fixes
 ---------------------
 * SOLR-12429: Uploading a configset with a symbolic link produces a IOException. Now a error message to user generated instead. (Eric Pugh)
@@ -182,6 +186,8 @@ Bug Fixes
 * SOLR-6962: bin/solr stop/start/restart should complain about missing value for options that expect a value. (Eric Pugh, Rahul Goswami)
 
 * SOLR-17464: Fixed Http2SolrClient bug in that 'requestAsync' triggered NPE when using a shared Jetty client (Jason Gerlowski, James Dyer)
+
+* SOLR-17413: Fixed UpdateLog replay bug that shared thread-unsafe SolrQueryRequest objects across threads (Jason Gerlowski, David Smiley, Houston Putman)
 
 Dependency Upgrades
 ---------------------
