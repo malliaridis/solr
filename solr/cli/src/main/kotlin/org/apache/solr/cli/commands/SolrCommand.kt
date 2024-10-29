@@ -27,7 +27,7 @@ class SolrCommand: SuspendingCliktCommand(name = "solr") {
     val log: KLogger = KotlinLogging.logger {}
 
     override suspend fun run() {
-        echo("Solr World!")
+        // TODO Verify java min version requirement
     }
 
     override fun helpEpilog(context: Context): String {
