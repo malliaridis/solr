@@ -26,6 +26,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.5.4")
     implementation("com.github.ajalt.clikt:clikt:5.0.1")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
     runtimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl")
@@ -40,10 +41,15 @@ dependencies {
     testImplementation(project(":solr:test-framework"))
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 application {
