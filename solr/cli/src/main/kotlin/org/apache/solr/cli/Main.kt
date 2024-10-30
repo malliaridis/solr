@@ -56,10 +56,10 @@ import org.apache.solr.cli.commands.zookeeper.UpdateAclsCommand
 
 suspend fun main(args: Array<String>) = SolrCommand()
     .subcommands(
+        VersionCommand(), // TODO Validate usage of version command
         StartCommand()
             .subcommands(
                 ExampleCommand(),
-                VersionCommand(), // TODO Validate usage of version command
             ),
         RestartCommand(),
         StopCommand(),
