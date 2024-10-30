@@ -29,9 +29,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.apache.solr.composeui.components.environment.data.JavaProperty
+import org.apache.solr.composeui.components.environment.JavaPropertiesComponent
+import org.apache.solr.composeui.data.JavaProperty
 import org.apache.solr.composeui.ui.components.SolrCard
 import org.apache.solr.composeui.ui.theme.SolrTheme
 
@@ -43,12 +46,15 @@ import org.apache.solr.composeui.ui.theme.SolrTheme
  */
 @Composable
 internal fun JavaPropertiesCard(
-    properties: List<JavaProperty>,
+    component: JavaPropertiesComponent,
     modifier: Modifier = Modifier,
 ) = SolrCard(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp)
 ) {
+
+    val model by component.model.collectAsState()
+
     Text(
         text = "Java Properties",
         style = MaterialTheme.typography.headlineSmall,
@@ -58,7 +64,7 @@ internal fun JavaPropertiesCard(
         modifier = Modifier.fillMaxWidth()
             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
     ) {
-        properties.forEachIndexed { index, property ->
+        model.properties.forEachIndexed { index, property ->
             JavaPropertyEntry(
                 property = property,
                 isOdd = index % 2 == 0,

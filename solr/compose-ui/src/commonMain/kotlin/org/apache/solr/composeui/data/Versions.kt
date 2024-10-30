@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.data
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- * Response class of the `java-properties` API endpoint.
- *
- * @property properties List if key-value pairs / Map that represent java properties.
- */
 @Serializable
-data class JavaPropertiesResponse(
-    @SerialName("system.properties")
-    val properties: Map<String, String> = emptyMap(),
+data class Versions(
+    @SerialName("solr-spec-version")
+    val solrSpecVersion: String = "",
+    @SerialName("solr-impl-version")
+    val solrImplVersion: String = "",
+    @SerialName("lucene-spec-version")
+    val luceneSpecVersion: String = "",
+    @SerialName("lucene-impl-version")
+    val luceneImplVersion: String = "",
 )

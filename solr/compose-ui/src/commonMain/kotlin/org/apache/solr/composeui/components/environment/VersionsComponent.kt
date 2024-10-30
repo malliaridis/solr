@@ -15,11 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.components.environment
 
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.flow.StateFlow
 
-@Serializable
-data class SecurityConfig(
-    val tls: Boolean = false,
-)
+interface VersionsComponent {
+
+    val model: StateFlow<Model>
+
+    /**
+     * State class that holds values of the [VersionsComponent]'s sate.
+     */
+    data class Model(
+        val solrSpec: String = "",
+        val solrImpl: String = "",
+        val luceneSpec: String = "",
+        val luceneImpl: String = "",
+        val jvmName: String = "",
+        val jvmVersion: String = "",
+    )
+}

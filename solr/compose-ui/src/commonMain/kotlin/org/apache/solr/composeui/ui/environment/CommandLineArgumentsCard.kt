@@ -28,8 +28,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.apache.solr.composeui.components.environment.CommandLineArgsComponent
 import org.apache.solr.composeui.ui.components.SolrCard
 import org.apache.solr.composeui.ui.theme.SolrTheme
 
@@ -42,11 +45,13 @@ import org.apache.solr.composeui.ui.theme.SolrTheme
 @Composable
 internal fun CommandLineArgumentsCard(
     modifier: Modifier = Modifier,
-    arguments: List<String>,
+    component: CommandLineArgsComponent,
 ) = SolrCard(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp)
 ) {
+    val model by component.model.collectAsState()
+
     Text(
         text = "Command Line Arguments",
         style = MaterialTheme.typography.headlineSmall,
@@ -56,7 +61,7 @@ internal fun CommandLineArgumentsCard(
         modifier = Modifier.fillMaxWidth()
             .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
     ) {
-        arguments.forEachIndexed { index, argument ->
+        model.arguments.forEachIndexed { index, argument ->
             Text(
                 modifier = Modifier.fillMaxWidth()
                     .background(

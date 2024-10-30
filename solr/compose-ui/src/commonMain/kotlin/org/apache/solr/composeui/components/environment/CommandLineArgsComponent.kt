@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.components.environment
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.flow.StateFlow
 
-@Serializable
-data class SystemData(
-    val mode: SystemMode = SystemMode.Unknown,
-    val zkHost: String = "",
-    @SerialName("solr_home")
-    val solrHome: String = "",
-    @SerialName("core_root")
-    val coreRoot: String = "",
-    val lucene: Versions = Versions(),
-    val jvm: JvmData = JvmData(),
-    val security: SecurityConfig = SecurityConfig(),
-    val system: SystemInformation = SystemInformation(),
-    val node: String = "",
-)
+interface CommandLineArgsComponent {
+
+    val model: StateFlow<Model>
+
+    /**
+     * State class that holds values of the [CommandLineArgsComponent]'s sate.
+     */
+    data class Model(
+        val arguments: List<String> = emptyList(),
+    )
+}

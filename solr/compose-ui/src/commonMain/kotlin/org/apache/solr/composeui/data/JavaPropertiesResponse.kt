@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.data
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/**
+ * Response class of the `java-properties` API endpoint.
+ *
+ * @property properties List if key-value pairs / Map that represent java properties.
+ */
 @Serializable
-data class JvmMemory(
-    val free: String = "",
-    val total: String = "",
-    val max: String = "",
-    val used: String = "",
-    val raw: JvmMemoryRaw = JvmMemoryRaw(),
+data class JavaPropertiesResponse(
+    @SerialName("system.properties")
+    val properties: Map<String, String> = emptyMap(),
 )

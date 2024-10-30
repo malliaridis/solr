@@ -17,13 +17,30 @@
 
 package org.apache.solr.composeui.components.environment.integration
 
-import org.apache.solr.composeui.components.environment.EnvironmentComponent
-import org.apache.solr.composeui.components.environment.store.EnvironmentStore
+import org.apache.solr.composeui.components.environment.CommandLineArgsComponent
+import org.apache.solr.composeui.components.environment.JavaPropertiesComponent
+import org.apache.solr.composeui.components.environment.VersionsComponent
+import org.apache.solr.composeui.stores.nodes.NodesStore
 
-internal val environmentStateToModel: (EnvironmentStore.State) -> EnvironmentComponent.Model = {
-    EnvironmentComponent.Model(
-        versions = it.lucene,
-        jvm = it.jvm,
-        javaProperties = it.javaProperties,
+internal val nodesStoreStateToVersionsModel: (NodesStore.State) -> VersionsComponent.Model = {
+    VersionsComponent.Model(
+        solrSpec = it.systemData.lucene.solrSpecVersion,
+        solrImpl = it.systemData.lucene.solrImplVersion,
+        luceneSpec = it.systemData.lucene.luceneSpecVersion,
+        luceneImpl = it.systemData.lucene.luceneImplVersion,
+        jvmName = it.systemData.jvm.name,
+        jvmVersion = it.systemData.jvm.version,
+    )
+}
+
+internal val nodesStoreStateToJavaPropsModel: (NodesStore.State) -> JavaPropertiesComponent.Model = {
+    JavaPropertiesComponent.Model(
+        properties = it.javaProperties,
+    )
+}
+
+internal val nodesStoreStateToCommandLineArgsModel: (NodesStore.State) -> CommandLineArgsComponent.Model = {
+    CommandLineArgsComponent.Model(
+        arguments = it.systemData.jvm.jmx.commandLineArgs,
     )
 }

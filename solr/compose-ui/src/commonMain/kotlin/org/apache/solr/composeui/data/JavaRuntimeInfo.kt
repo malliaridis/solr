@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment
+package org.apache.solr.composeui.data
 
-/**
- * Component interface that manages a group of components related to the environment section.
- */
-interface EnvironmentComponent {
+import kotlinx.serialization.Serializable
 
-    val javaProperties: JavaPropertiesComponent
-
-    val versions: VersionsComponent
-
-    val commandLineArgs: CommandLineArgsComponent
-}
+@Serializable
+data class JavaRuntimeInfo(
+    val version: String = "",
+    val vendor: String = "",
+    val name: String? = null,
+)

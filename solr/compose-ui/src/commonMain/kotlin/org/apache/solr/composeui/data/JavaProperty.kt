@@ -15,16 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.data
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-enum class SystemMode {
-    Unknown,
-    @SerialName("solrcloud")
-    SolrCloud,
-    @SerialName("std")
-    Standalone,
-}
+/**
+ * Typealias of JavaProperty, which are simple key-value pairs.
+ *
+ * This alias is used for better readability in code.
+ */
+typealias JavaProperty = Pair<String, String>

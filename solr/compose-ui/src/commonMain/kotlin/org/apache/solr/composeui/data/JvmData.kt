@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.data
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class JvmMemoryRaw(
-    val free: Int = 0,
-    val total: Int = 0,
-    val max: Int = 0,
-    val used: Int = 0,
-    @SerialName("used%")
-    val usedPercentage: Double = 0.0,
+data class JvmData(
+    val version: String = "",
+    val name: String = "",
+    val spec: JavaRuntimeInfo = JavaRuntimeInfo(),
+    val jre: JavaRuntimeInfo = JavaRuntimeInfo(),
+    val vm: JavaRuntimeInfo = JavaRuntimeInfo(),
+    val processors: Int = 0,
+    val memory: JvmMemory = JvmMemory(),
+    val jmx: Jmx = Jmx(),
 )

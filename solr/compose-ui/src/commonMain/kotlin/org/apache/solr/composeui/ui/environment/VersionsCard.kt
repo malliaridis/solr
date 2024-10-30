@@ -24,11 +24,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.apache.solr.composeui.components.environment.data.JvmData
-import org.apache.solr.composeui.components.environment.data.Versions
+import org.apache.solr.composeui.components.environment.VersionsComponent
+import org.apache.solr.composeui.data.JvmData
+import org.apache.solr.composeui.data.Versions
 import org.apache.solr.composeui.ui.components.SolrCard
 
 /**
@@ -40,13 +43,14 @@ import org.apache.solr.composeui.ui.components.SolrCard
  */
 @Composable
 internal fun VersionsCard(
-    versions: Versions,
-    jvm: JvmData,
+    component: VersionsComponent,
     modifier: Modifier = Modifier,
 ) = SolrCard(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp)
 ) {
+    val model by component.model.collectAsState()
+
     Text(
         text = "Versions",
         style = MaterialTheme.typography.headlineSmall,
@@ -54,23 +58,23 @@ internal fun VersionsCard(
     )
     VersionEntry(
         label = "solr-spec",
-        value = versions.solrSpecVersion,
+        value = model.solrSpec,
     )
     VersionEntry(
         label = "solr-impl",
-        value = versions.solrImplVersion,
+        value = model.solrImpl,
     )
     VersionEntry(
         label = "lucene-spec",
-        value = versions.luceneSpecVersion,
+        value = model.luceneSpec,
     )
     VersionEntry(
         label = "lucene-impl",
-        value = versions.luceneImplVersion,
+        value = model.luceneImpl,
     )
     VersionEntry(
         label = "Runtime",
-        value = "${jvm.name} ${jvm.version}",
+        value = "${model.jvmName} ${model.jvmVersion}",
     )
 }
 

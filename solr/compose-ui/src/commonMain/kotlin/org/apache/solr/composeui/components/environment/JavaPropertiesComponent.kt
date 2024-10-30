@@ -17,14 +17,17 @@
 
 package org.apache.solr.composeui.components.environment
 
-/**
- * Component interface that manages a group of components related to the environment section.
- */
-interface EnvironmentComponent {
+import kotlinx.coroutines.flow.StateFlow
+import org.apache.solr.composeui.data.JavaProperty
 
-    val javaProperties: JavaPropertiesComponent
+interface JavaPropertiesComponent {
 
-    val versions: VersionsComponent
+    val model: StateFlow<Model>
 
-    val commandLineArgs: CommandLineArgsComponent
+    /**
+     * State class that holds values of the [JavaPropertiesComponent]'s sate.
+     */
+    data class Model(
+        val properties: List<JavaProperty> = emptyList(),
+    )
 }

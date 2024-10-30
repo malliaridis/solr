@@ -48,7 +48,6 @@ fun EnvironmentContent(
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    val model by component.model.collectAsState()
 
     val minChildWidth: Dp = 400.dp
     val maxChildWidth: Dp = 800.dp
@@ -56,17 +55,16 @@ fun EnvironmentContent(
     VersionsCard(
         modifier = Modifier.weight(1f)
             .widthIn(min = minChildWidth, max = maxChildWidth),
-        versions = model.versions,
-        jvm = model.jvm,
+        component = component.versions,
     )
     CommandLineArgumentsCard(
         modifier = Modifier.weight(1f)
             .widthIn(min = minChildWidth, max = maxChildWidth),
-        arguments = model.jvm.jmx.commandLineArgs,
+        component = component.commandLineArgs,
     )
     JavaPropertiesCard(
         modifier = Modifier.weight(1f)
             .widthIn(min = minChildWidth, max = maxChildWidth),
-        properties = model.javaProperties,
+        component = component.javaProperties
     )
 }

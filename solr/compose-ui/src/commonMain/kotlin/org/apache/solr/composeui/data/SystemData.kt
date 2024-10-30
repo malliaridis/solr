@@ -15,16 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment
+package org.apache.solr.composeui.data
 
-/**
- * Component interface that manages a group of components related to the environment section.
- */
-interface EnvironmentComponent {
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-    val javaProperties: JavaPropertiesComponent
-
-    val versions: VersionsComponent
-
-    val commandLineArgs: CommandLineArgsComponent
-}
+@Serializable
+data class SystemData(
+    val mode: SystemMode = SystemMode.Unknown,
+    val zkHost: String = "",
+    @SerialName("solr_home")
+    val solrHome: String = "",
+    @SerialName("core_root")
+    val coreRoot: String = "",
+    val lucene: Versions = Versions(),
+    val jvm: JvmData = JvmData(),
+    val security: SecurityConfig = SecurityConfig(),
+    val system: SystemInformation = SystemInformation(),
+    val node: String = "",
+)

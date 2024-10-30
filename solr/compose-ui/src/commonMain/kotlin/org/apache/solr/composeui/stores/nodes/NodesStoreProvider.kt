@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.store
+package org.apache.solr.composeui.stores.nodes
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
@@ -25,30 +25,30 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.solr.composeui.components.environment.data.JavaProperty
-import org.apache.solr.composeui.components.environment.data.SystemData
-import org.apache.solr.composeui.components.environment.store.EnvironmentStore.Intent
-import org.apache.solr.composeui.components.environment.store.EnvironmentStore.State
+import org.apache.solr.composeui.data.JavaProperty
+import org.apache.solr.composeui.data.SystemData
+import org.apache.solr.composeui.stores.nodes.NodesStore.Intent
+import org.apache.solr.composeui.stores.nodes.NodesStore.State
 
 /**
- * Store provider that [provide]s instances of [EnvironmentStore].
+ * Store provider that [provide]s instances of [NodesStore].
  *
  * @property storeFactory Store factory to use for creating the store.
  * @property client Client implementation to use for resolving [Intent]s and [Action]s.
  * @property ioContext Coroutine context used for IO activity.
  */
-internal class EnvironmentStoreProvider(
+internal class NodesStoreProvider(
     private val storeFactory: StoreFactory,
     private val client: Client,
     private val ioContext: CoroutineContext,
 ) {
 
-    fun provide(): EnvironmentStore = object :
-        EnvironmentStore,
+    fun provide(): NodesStore = object :
+        NodesStore,
         Store<Intent, State, Nothing> by storeFactory.create(
-            name = "EnvironmentStore",
+            name = "NodesStore",
             initialState = State(),
-            bootstrapper = SimpleBootstrapper(Action.FetchInitialSystemData),
+            bootstrapper = SimpleBootstrapper(Action.FetchNodeState),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl,
         ) {}
@@ -58,7 +58,7 @@ internal class EnvironmentStoreProvider(
         /**
          * Action used for initiating the initial fetch of environment data.
          */
-        data object FetchInitialSystemData: Action
+        data object FetchNodeState: Action
     }
 
     private sealed interface Message {
@@ -81,7 +81,7 @@ internal class EnvironmentStoreProvider(
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Message, Nothing>() {
 
         override fun executeAction(action: Action) = when(action) {
-            Action.FetchInitialSystemData -> {
+            Action.FetchNodeState -> {
                 fetchSystemData()
                 fetchJavaProperties()
             }
@@ -89,10 +89,9 @@ internal class EnvironmentStoreProvider(
 
         override fun executeIntent(intent: Intent) {
             when (intent) {
-                Intent.FetchSystemData -> {
-                    fetchSystemData()
-                    fetchJavaProperties()
-                }
+                Intent.FetchSystemData,
+                Intent.FetchVersions -> fetchSystemData()
+                Intent.FetchJavaProperties -> fetchJavaProperties()
             }
         }
 
@@ -107,12 +106,6 @@ internal class EnvironmentStoreProvider(
                     client.getSystemData()
                 }.onSuccess {
                     dispatch(Message.SystemDataUpdated(it))
-                }
-
-                withContext(ioContext) {
-                    client.getJavaProperties()
-                }.onSuccess {
-                    dispatch(Message.JavaPropertiesUpdated(it))
                 }
                 // TODO Add error handling
             }
@@ -141,15 +134,7 @@ internal class EnvironmentStoreProvider(
     private object ReducerImpl : Reducer<State, Message> {
         override fun State.reduce(msg: Message): State = when (msg) {
             is Message.SystemDataUpdated -> copy(
-                mode = msg.data.mode,
-                zkHost = msg.data.zkHost,
-                solrHome = msg.data.solrHome,
-                coreRoot = msg.data.coreRoot,
-                lucene = msg.data.lucene,
-                jvm = msg.data.jvm,
-                security = msg.data.security,
-                system = msg.data.system,
-                node = msg.data.node,
+                systemData = msg.data,
             )
             is Message.JavaPropertiesUpdated -> copy(
                 javaProperties = msg.properties,

@@ -15,11 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.data
 
-/**
- * Typealias of JavaProperty, which are simple key-value pairs.
- *
- * This alias is used for better readability in code.
- */
-typealias JavaProperty = Pair<String, String>
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class SystemInformation(
+    val name: String = "",
+    val arch: String = "",
+    val availableProcessors: Int = 0,
+    val systemLoadAverage: Double = 0.0,
+    val version: String = "",
+    val committedVirtualMemorySize: Long = 0,
+    val cpuLoad: Float = 0f,
+    val freeMemorySize: Long = 0,
+    val freePhysicalMemorySize: Long = 0,
+    val freeSwapSpaceSize: Long = 0,
+    val processCpuLoad: Float = 0f,
+    val processCpuTime: Long = 0,
+    val systemCpuLoad: Float = 0f,
+    val totalMemorySize: Long = 0,
+    val totalPhysicalMemorySize: Long = 0,
+    val totalSwapSpaceSize: Long = 0,
+    val maxFileDescriptorCount: Long = 0,
+    val openFileDescriptorCount: Long = 0,
+)

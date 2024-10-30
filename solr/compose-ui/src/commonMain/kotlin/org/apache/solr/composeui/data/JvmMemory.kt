@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.data
+package org.apache.solr.composeui.data
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class JavaRuntimeInfo(
-    val version: String = "",
-    val vendor: String = "",
-    val name: String? = null,
+data class JvmMemory(
+    val free: String = "",
+    val total: String = "",
+    val max: String = "",
+    val used: String = "",
+    val raw: JvmMemoryRaw = JvmMemoryRaw(),
 )

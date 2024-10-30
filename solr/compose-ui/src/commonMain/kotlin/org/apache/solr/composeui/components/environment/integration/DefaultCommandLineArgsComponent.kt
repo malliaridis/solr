@@ -17,36 +17,37 @@
 
 package org.apache.solr.composeui.components.environment.integration
 
-import com.arkivanov.decompose.childContext
+import com.arkivanov.mvikotlin.core.instancekeeper.getStore
 import com.arkivanov.mvikotlin.core.store.StoreFactory
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import io.ktor.client.HttpClient
-import org.apache.solr.composeui.components.environment.EnvironmentComponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.apache.solr.composeui.components.environment.CommandLineArgsComponent
+import org.apache.solr.composeui.stores.integration.HttpNodesStoreClient
+import org.apache.solr.composeui.stores.nodes.NodesStoreProvider
 import org.apache.solr.composeui.utils.AppComponentContext
+import org.apache.solr.composeui.utils.coroutineScope
+import org.apache.solr.composeui.utils.map
 
 /**
  * Default implementation of the [EnvironmentComponent].
  */
-class DefaultEnvironmentComponent(
+class DefaultCommandLineArgsComponent(
     componentContext: AppComponentContext,
     storeFactory: StoreFactory,
     httpClient: HttpClient,
-) : EnvironmentComponent, AppComponentContext by componentContext {
+) : CommandLineArgsComponent, AppComponentContext by componentContext {
 
-    override val javaProperties = DefaultJavaPropertiesComponent(
-        componentContext = childContext("javaProperties"),
-        storeFactory = storeFactory,
-        httpClient = httpClient,
-    )
+    private val mainScope = coroutineScope(mainContext)
 
-    override val versions = DefaultVersionsComponent(
-        componentContext = childContext("versions"),
-        storeFactory = storeFactory,
-        httpClient = httpClient,
-    )
+    private val store = instanceKeeper.getStore {
+        NodesStoreProvider(
+            storeFactory = storeFactory,
+            client = HttpNodesStoreClient(httpClient),
+            ioContext = ioContext,
+        ).provide()
+    }
 
-    override val commandLineArgs = DefaultCommandLineArgsComponent(
-        componentContext = childContext("commandLineArgs"),
-        storeFactory = storeFactory,
-        httpClient = httpClient,
-    )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val model = store.stateFlow.map(mainScope, nodesStoreStateToCommandLineArgsModel)
 }

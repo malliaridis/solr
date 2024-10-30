@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.solr.composeui.components.environment.integration
+package org.apache.solr.composeui.stores.integration
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.isSuccess
-import org.apache.solr.composeui.components.environment.data.JavaPropertiesResponse
-import org.apache.solr.composeui.components.environment.data.JavaProperty
-import org.apache.solr.composeui.components.environment.data.SystemData
-import org.apache.solr.composeui.components.environment.store.EnvironmentStoreProvider
+import org.apache.solr.composeui.data.JavaPropertiesResponse
+import org.apache.solr.composeui.data.JavaProperty
+import org.apache.solr.composeui.data.SystemData
+import org.apache.solr.composeui.stores.nodes.NodesStoreProvider
 
 /**
- * Client implementation of the [EnvironmentStoreProvider.Client] that makes use
+ * Client implementation of the [NodesStoreProvider.Client] that makes use
  * of a preconfigured HTTP client for accessing the Solr API.
  *
  * @property httpClient HTTP client to use for accessing the API. The client has to be
@@ -35,9 +35,9 @@ import org.apache.solr.composeui.components.environment.store.EnvironmentStorePr
  * should also include the necessary authentication data if authentication / authorization
  * is enabled.
  */
-class HttpEnvironmentStoreClient(
+class HttpNodesStoreClient(
     private val httpClient: HttpClient,
-) : EnvironmentStoreProvider.Client {
+) : NodesStoreProvider.Client {
 
     override suspend fun getSystemData(): Result<SystemData> {
         val response = httpClient.get("api/node/system")
@@ -62,6 +62,7 @@ class HttpEnvironmentStoreClient(
 
                 Result.success(javaProperties)
             }
+
             else -> Result.failure(Exception("Unknown error"))
             // TODO Add proper error handling
         }
