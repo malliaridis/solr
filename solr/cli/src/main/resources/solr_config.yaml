@@ -28,34 +28,47 @@ solr:
         factory:
     # Can be undefined, basic or kerberos.
     type:
+  cores:
+    deleteUnknown: false
   default:
     confdir:
   data:
     home:
-  deleteUnknownCores: false
-  gc:
-    log:
-      options:
-        # If append is true, the value is appended to a default set of GC log options.
-        append: true
-        value: "-Xlog:gc*"
-    options:
-      value: "
-      -XX:+UseG1GC
-      -XX:+PerfDisableSharedMem
-      -XX:+ParallelRefProcEnabled
-      -XX:MaxGCPauseMillis=250
-      -XX:+UseLargePages
-      -XX:+AlwaysPreTouch
-      -XX:+ExplicitGCInvokesConcurrent"
-  heap:
-    dump:
-      dir:
+  features:
+    newui:
+      enabled: true
+  gzip:
+    enabled: true
   host: "127.0.0.1"
   install:
     # Solr install directory. Leave undefined / empty to use Solr tip.
     dir:
     symDir:
+  java:
+    gc:
+      log:
+        options:
+          # If append is true, the value is appended to a default set of GC log options.
+          append: true
+          value: "-Xlog:gc*"
+      options:
+        value: "
+        -XX:+PerfDisableSharedMem
+        -XX:+ParallelRefProcEnabled
+        -XX:MaxGCPauseMillis=250
+        -XX:+UseLargePages
+        -XX:+AlwaysPreTouch
+        -XX:+ExplicitGCInvokesConcurrent"
+    memory:
+      allocation:
+        initial: "512m"
+        max: "512m"
+      heap:
+        value: "512m"
+        dump:
+          dir:
+    stack:
+      size: "256k"
   jetty:
     # Leave undefined / empty to use solr server dir.
     home:
@@ -81,11 +94,15 @@ solr:
     placement: default
   script:
     remoteStreaming: true
+  security:
+    manager:
+      enabled: false
   server:
-    # Directory that points to the Solr server installation
     dir: ""
   ssl:
     enabled: false
+    reload:
+      enabled: true
     port:
   stop:
     # Stop key used for identifying Solr processes
@@ -96,8 +113,9 @@ solr:
     waitMs: 180000
   timezone: "UTC"
   ulimit:
-    # Enable or disable ulimit checks.
-    checks: true
+    checks:
+      # Whether to check user resource limits.
+      enabled: true
     # Recommended user limits (ulimit). Negative values are interpreted as unlimited.
     recommended:
       openFiles: 65000
@@ -105,19 +123,20 @@ solr:
       maxMemory: -1
       virtualMemory: -1
   zk:
+    client:
+      timeoutMs: 30000
     embedded:
       enabled: true
       createChroot: true
       # TODO Host should be an array instead
       host: "127.0.0.1:9983"
-    client:
-      timeoutMs: 30000
 
 # TODO See if these are necessary and should be configured here
 com:
   sun:
     management:
       jmxremote:
+        enabled: false
         local:
           only: false
         ssl: false
