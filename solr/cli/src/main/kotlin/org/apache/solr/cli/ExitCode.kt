@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.processes
+package org.apache.solr.cli
 
-import org.apache.solr.cli.enums.SolrMode
-
-object SolrStarter {
+object ExitCode {
 
     /**
-     * Starts Solr based on the configuration provided.
+     * Indicates that the command or program executed successfully without any errors.
      */
-    suspend fun start(mode: SolrMode = SolrMode.Cloud) {
-        TODO("Not yet implemented")
+    const val SUCCESS = 0
 
-        /*
-        "$JAVA" "${SOLR_START_OPTS[@]}" $SOLR_ADDL_ARGS -Dsolr.log.muteconsole \
-        -jar start.jar "${SOLR_JETTY_CONFIG[@]}" $SOLR_JETTY_ADDL_CONFIG \
-        1>"$SOLR_LOGS_DIR/solr-$SOLR_PORT-console.log" 2>&1 & echo $! > "$SOLR_PID_DIR/solr-$SOLR_PORT.pid"
-         */
-    }
+    /**
+     * A catch-all exit code for a variety of general errors. Often used when the command or program
+     * encounters an error, but no specific exit code is available for the situation.
+     */
+    const val GENERAL_ERROR = 1
+
+    /**
+     * The command was found, but it could not be executed, possibly due to insufficient permissions
+     * or other issues.
+     */
+    const val COMMAND_CANNOT_EXECUTE  = 126
+
+    /**
+     * The command was not found in the system's PATH, indicating that either the command does not
+     * exist or the PATH variable is incorrectly set.
+     */
+    const val COMMAND_NOT_FOUND = 127
 }

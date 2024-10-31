@@ -35,7 +35,7 @@ object CommandChecker {
      * @return Whether the command exists or not. Result fails with error if checking fails
      * with an error.
      */
-    suspend fun BaseCliktCommand<*>.commandExists(command: String): Result<Boolean> = withContext(Dispatchers.IO) {
+    suspend fun commandExists(command: String): Result<Boolean> = withContext(Dispatchers.IO) {
         try {
             // Run 'command -v' or 'which' with the command you want to check
             val processBuilder = ProcessBuilder(
@@ -50,8 +50,6 @@ object CommandChecker {
                 return@withContext Result.success(line != null && line.isNotEmpty())
             }
         } catch (exception: Exception) {
-            echo(message = "An error occurred while checking the presence of a command", err = true)
-            echo(message = exception.message, err = true)
             return@withContext Result.failure(exception)
         }
     }
