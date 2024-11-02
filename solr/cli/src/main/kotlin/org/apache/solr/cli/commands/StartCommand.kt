@@ -617,7 +617,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private suspend fun checkFiles() {
         val solrXmlExists = solrHome.resolve("solr.xml").toFile().exists()
-        if (userManagedMode && isSolrXmlRequired && solrXmlExists) {
+        if (userManagedMode && isSolrXmlRequired && !solrXmlExists) {
             echo(
                 message = "Solr home directory ${solrHome.absolutePathString()} must contain a solr.xml file!",
                 err = true,
