@@ -23,9 +23,9 @@ solr:
     # there are any issues.
     experimental: true
   auth:
-    httpclient:
+    client:
       builder:
-        factory:
+    options:
     # Can be undefined, basic or kerberos.
     type:
   cores:
@@ -35,8 +35,13 @@ solr:
   data:
     home:
   features:
-    newui:
-      enabled: true
+    experimental:
+      newui:
+        enabled: true
+    remoteStreaming:
+      enabled: false
+    streamBody:
+      enabled: false
   gzip:
     enabled: true
   host: "127.0.0.1"
@@ -60,12 +65,12 @@ solr:
         -XX:+AlwaysPreTouch
         -XX:+ExplicitGCInvokesConcurrent"
     memory:
-      allocation:
-        initial: "512m"
-        max: "512m"
+      options:
+        value:
       heap:
         value: "512m"
         dump:
+          enabled:
           dir:
     stack:
       size: "256k"
@@ -76,34 +81,53 @@ solr:
     host:
     https:
       port:
-    inetaccess:
-      includes:
-      excludes:
   jmx:
     enabled: false
     rmi:
       port: 18983
   log:
     dir:
+  log4j:
+    props:
   modules:
     - "jdk.incubator.vector"
   port:
     bind: 8983
     advertise:
   plugins:
-    placement: default
-  script:
-    remoteStreaming: true
+    placement:
+      enabled: false
+      mode: simple
   security:
+    acls:
+      allow:
+      deny:
     manager:
       enabled: false
   server:
     dir: ""
+  solrxml:
+    required: false
   ssl:
+    checkPeerName:
+    client:
+      hostnameVerification: true
+      needAuth:
+      wantAuth:
+      keyStore:
+      keyStorePassword:
+      keyStoreType:
     enabled: false
-    reload:
-      enabled: true
+    # TODO See if the solr.ssl.keyStore can be merged with solr.jetty.keyStore.*
+    keyStore:
+    # TODO See if keyStore values can be an object
+    keyStorePassword:
+    keyStoreType:
     port:
+    reload: true
+    trustStore:
+    trustStorePassword:
+    trustStoreType:
   stop:
     # Stop key used for identifying Solr processes
     key: SolrRocks
@@ -127,9 +151,11 @@ solr:
       timeoutMs: 30000
     embedded:
       enabled: true
-      createChroot: true
+      chroot:
+        create: true
       # TODO Host should be an array instead
       host: "127.0.0.1:9983"
+    wait: 30
 
 # TODO See if these are necessary and should be configured here
 com:
