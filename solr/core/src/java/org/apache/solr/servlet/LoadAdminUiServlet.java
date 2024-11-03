@@ -17,6 +17,7 @@
 package org.apache.solr.servlet;
 
 import com.google.common.net.HttpHeaders;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -36,7 +37,7 @@ import org.apache.solr.core.SolrCore;
  *
  * @since solr 4.0
  */
-public final class LoadAdminUiServlet extends BaseSolrServlet {
+public final class LoadAdminUiServlet extends HttpServlet {
 
   // check system properties for whether or not admin UI is disabled, default is false
   private static final boolean disabled =
@@ -45,16 +46,16 @@ public final class LoadAdminUiServlet extends BaseSolrServlet {
   public static final String SYSPROP_CSP_CONNECT_SRC_URLS = "solr.ui.headers.csp.connect-src.urls";
 
   @Override
-  public void doGet(HttpServletRequest _request, HttpServletResponse _response) throws IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     if (disabled) {
-      _response.sendError(
+      response.sendError(
           404,
           "Solr Admin UI is disabled. To enable it, change the default value of SOLR_ADMIN_UI_"
               + "ENABLED in bin/solr.in.sh or solr.in.cmd.");
       return;
     }
-    HttpServletRequest request = ServletUtils.closeShield(_request, false);
-    HttpServletResponse response = ServletUtils.closeShield(_response, false);
+    request = ServletUtils.closeShield(request);
+    response = ServletUtils.closeShield(response);
 
     response.addHeader(
         "X-Frame-Options", "DENY"); // security: SOLR-7966 - avoid clickjacking for admin interface

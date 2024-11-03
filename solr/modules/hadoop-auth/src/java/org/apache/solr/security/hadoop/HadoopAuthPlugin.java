@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.hadoop.security.authentication.server.AuthenticationFilter;
+import org.apache.hadoop.security.authentication.util.ZKSignerSecretProvider;
 import org.apache.hadoop.security.token.delegation.web.DelegationTokenAuthenticationHandler;
 import org.apache.solr.client.solrj.impl.Krb5HttpClientBuilder;
 import org.apache.solr.cloud.ZkController;
@@ -195,6 +196,7 @@ public class HadoopAuthPlugin extends AuthenticationPlugin {
     ZkController controller = coreContainer.getZkController();
     if (controller != null) {
       servletContext.setAttribute(DELEGATION_TOKEN_ZK_CLIENT, controller.getZkClient());
+      params.put(ZKSignerSecretProvider.DISCONNECT_FROM_ZOOKEEPER_ON_SHUTDOWN, "false");
     }
 
     FilterConfig conf =

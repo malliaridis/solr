@@ -26,9 +26,8 @@ import com.google.common.annotations.VisibleForTesting;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.UnavailableException;
+import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -69,7 +68,7 @@ import org.slf4j.LoggerFactory;
 // servlets that are more focused in scope. This should become possible now that we have a
 // ServletContextListener for startup/shutdown of CoreContainer that sets up a service from which
 // things like CoreContainer can be requested. (or better yet injected)
-public class SolrDispatchFilter extends BaseSolrFilter implements PathExcluder {
+public class SolrDispatchFilter extends HttpFilter implements PathExcluder {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private CoreContainerProvider containerProvider;
@@ -161,37 +160,28 @@ public class SolrDispatchFilter extends BaseSolrFilter implements PathExcluder {
   }
 
   @Override
-  public void destroy() {
-    // CoreService shuts itself down as a ContextListener. The filter does not own anything with a
-    // lifecycle anymore! Yay!
-  }
-
-  @Override
   @SuppressForbidden(
       reason =
           "Set the thread contextClassLoader for all 3rd party dependencies that we cannot control")
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+  public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
       throws IOException, ServletException {
+    if (excludedPath(excludePatterns, request, response, chain)) {
+      return;
+    }
+
     try (var mdcSnapshot = MDCSnapshot.create()) {
       assert null != mdcSnapshot; // prevent compiler warning
       MDCLoggingContext.reset();
       MDCLoggingContext.setNode(getCores());
       Thread.currentThread().setContextClassLoader(getCores().getResourceLoader().getClassLoader());
 
-      doFilter(request, response, chain, false);
+      doFilterRetry(closeShield(request), closeShield(response), chain, false);
     }
   }
 
-  public void doFilter(
-      ServletRequest _request, ServletResponse _response, FilterChain chain, boolean retry)
+  protected void doFilterRetry(
+      HttpServletRequest request, HttpServletResponse response, FilterChain chain, boolean retry)
       throws IOException, ServletException {
-    if (!(_request instanceof HttpServletRequest)) return;
-    HttpServletRequest request = closeShield((HttpServletRequest) _request, retry);
-    HttpServletResponse response = closeShield((HttpServletResponse) _response, retry);
-
-    if (excludedPath(excludePatterns, request, response, chain)) {
-      return;
-    }
     setTracer(request, getCores().getTracer());
     RateLimitManager rateLimitManager = containerProvider.getRateLimitManager();
     try {
@@ -248,7 +238,7 @@ public class SolrDispatchFilter extends BaseSolrFilter implements PathExcluder {
           break;
         case RETRY:
           span.addEvent("SolrDispatchFilter RETRY");
-          doFilter(request, response, chain, true); // RECURSION
+          doFilterRetry(request, response, chain, true); // RECURSION
           break;
         case FORWARD:
           span.addEvent("SolrDispatchFilter FORWARD");

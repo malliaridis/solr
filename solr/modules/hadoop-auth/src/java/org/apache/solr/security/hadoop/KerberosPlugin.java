@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.apache.hadoop.security.authentication.util.KerberosName;
+import org.apache.hadoop.security.authentication.util.ZKSignerSecretProvider;
 import org.apache.hadoop.security.token.delegation.web.DelegationTokenAuthenticationHandler;
 import org.apache.http.HttpRequest;
 import org.apache.http.protocol.HttpContext;
@@ -162,6 +163,8 @@ public class KerberosPlugin extends AuthenticationPlugin implements HttpClientBu
               "/token");
           // ensure krb5 is setup properly before running curator
           getHttpClientBuilder(SolrHttpClientBuilder.create());
+
+          params.put(ZKSignerSecretProvider.DISCONNECT_FROM_ZOOKEEPER_ON_SHUTDOWN, "false");
         }
       } else {
         log.info(

@@ -14,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.solr.servlet;
+package org.apache.solr.common.cloud;
 
-import jakarta.servlet.Filter;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
 
-/**
- * All Solr filters available to the user's webapp should extend this class and not just implement
- * {@link Filter}. This class ensures that the logging configuration is correct before any Solr
- * specific code is executed.
- */
-abstract class BaseSolrFilter implements Filter {
+public interface OnDisconnect extends ConnectionStateListener {
+  public void command();
 
-  static {
-    CheckLoggingConfiguration.check();
+  @Override
+  default void stateChanged(CuratorFramework client, ConnectionState newState) {
+    if (newState == ConnectionState.LOST) {
+      command();
+    }
   }
 }

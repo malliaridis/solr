@@ -18,12 +18,13 @@ package org.apache.solr.servlet;
 
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /** A Simple redirection servlet to help us deprecate old UI elements */
-public class RedirectServlet extends BaseSolrServlet {
+public class RedirectServlet extends HttpServlet {
 
   static final String CONTEXT_KEY = "${context}";
 

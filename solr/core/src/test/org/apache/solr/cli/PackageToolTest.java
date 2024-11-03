@@ -167,7 +167,7 @@ public class PackageToolTest extends SolrCloudTestCase {
           "-y",
           "--collections",
           "abc",
-          "-p",
+          "--param",
           "RH-HANDLER-PATH=" + rhPath,
           "--credentials",
           SecurityJson.USER_PASS
