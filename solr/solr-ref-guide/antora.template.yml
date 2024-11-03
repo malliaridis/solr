@@ -45,7 +45,7 @@ asciidoc:
     java-javadocs: https://docs.oracle.com/en/java/javase/11/docs/api/java.base/
     solr-docs-version: '${solr_version_major}.${solr_version_minor}'
     solr-full-version: '${solr_version}'
-
+    dep-version-hadoop: '${dep_version_hadoop}'
     dep-version-commons-codec: '${dep_version_commons_codec}'
     dep-version-dropwizard: '${dep_version_dropwizard}'
     dep-version-log4j: '${dep_version_log4j}'
