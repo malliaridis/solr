@@ -44,6 +44,7 @@ import org.apache.solr.cli.enums.AuthType
 import org.apache.solr.cli.enums.PlacementPluginMode
 import org.apache.solr.cli.enums.UrlScheme
 import org.apache.solr.cli.processes.CommandChecker
+import org.apache.solr.cli.processes.JavaExecutor
 import org.apache.solr.cli.processes.PrivilegeChecker
 import org.apache.solr.cli.processes.UserLimitsChecker.checkUserLimits
 
@@ -443,9 +444,9 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private val gcOptions by option(
         envvar = "SOLR_GC_OPTS",
-        valueSourceKey = "solr.java.gc.options.value",
+        valueSourceKey = "solr.java.gc.options",
         hidden = true,
-    ).defaultLazy {
+    ).multiple(
         listOf(
             "-XX:+PerfDisableSharedMem",
             "-XX:+ParallelRefProcEnabled",
@@ -453,8 +454,8 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             "-XX:+UseLargePages",
             "-XX:+AlwaysPreTouch",
             "-XX:+ExplicitGCInvokesConcurrent",
-        ).joinToString(" ")
-    }
+        )
+    )
 
     private val gcLogOptions by option(
         envvar = "SOLR_GC_LOG_OPTS",
@@ -462,7 +463,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         hidden = true,
     ).defaultLazy {
         """-Xlog:gc*:file=${logsDir.absolutePathString()}\solr_gc.log:time,level,tags:filecount=9,filesize=20M"""
-    }
+    } // TODO May require multiple() instead of string
 
     // TODO Consider merging plugin properties into a data class
     private val isPlacementPluginEnabled by option(
@@ -639,10 +640,9 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
      */
     private suspend fun start() {
         val startArguments = arrayOf(
-            javaExec,
             "-server",
             *composeMemoryOptions(),
-            gcOptions,
+            *gcOptions.toTypedArray(),
             gcLogOptions,
             *composeAclsArguments(),
             *composeJmxArguments(),
@@ -665,7 +665,8 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             "-DwaitForZk=$zkWait",
             "-Dsolr.data.home=${dataHome.absolutePathString()}", // TODO Is there a change data-home to be not set?
             "-Dsolr.deleteUnknownCores=$deleteUnknownCores",
-            "--add-modules jdk.incubator.vector",
+            "--add-modules",
+            "jdk.incubator.vector",
             *composeSecurityArguments(),
             *composeAuthArguments(),
             *internalOptions.toTypedArray(),
@@ -694,7 +695,18 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             // TODO 1>"$SOLR_LOGS_DIR/solr-$SOLR_PORT-console.log" 2>&1 & echo $! > "$SOLR_PID_DIR/solr-$SOLR_PORT.pid"
         )
 
-        // TODO Execute command
+        if (foreground) JavaExecutor.executeInForeground(
+            command = command,
+            workingDir = serverDir,
+        ) else JavaExecutor.executeInBackground(
+            command = command,
+            workingDir = serverDir,
+            logsDir = logsDir,
+            pidDir = installDir.resolve("bin"),
+            identifier = port.toString(),
+        )
+        echo("Solr server started.")
+
         // TODO Linux: Check for low entropy
         // TODO Wait for Solr to come online
     }

@@ -57,13 +57,12 @@ solr:
           append: true
           value: "-Xlog:gc*"
       options:
-        value: "
-        -XX:+PerfDisableSharedMem
-        -XX:+ParallelRefProcEnabled
-        -XX:MaxGCPauseMillis=250
-        -XX:+UseLargePages
-        -XX:+AlwaysPreTouch
-        -XX:+ExplicitGCInvokesConcurrent"
+        - "-XX:+PerfDisableSharedMem"
+        - "-XX:+ParallelRefProcEnabled"
+        - "-XX:MaxGCPauseMillis=250"
+        - "-XX:+UseLargePages"
+        - "-XX:+AlwaysPreTouch"
+        - "-XX:+ExplicitGCInvokesConcurrent"
     memory:
       options:
         value:
