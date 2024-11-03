@@ -17,6 +17,7 @@
 
 package org.apache.solr.delegator;
 
+import java.lang.invoke.MethodHandles;
 import static org.apache.solr.delegator.Delegates.dynamicFilterRegistration;
 import static org.apache.solr.delegator.Delegates.dynamicServletRegistration;
 import static org.apache.solr.delegator.Delegates.filter;
@@ -46,8 +47,12 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.SessionCookieConfig;
 import javax.servlet.SessionTrackingMode;
 import javax.servlet.descriptor.JspConfigDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ServletContextJavaxDelegate implements ServletContext {
+
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final jakarta.servlet.ServletContext delegate;
 
@@ -201,6 +206,7 @@ class ServletContextJavaxDelegate implements ServletContext {
 
   @Override
   public ServletRegistration.Dynamic addServlet(String servletName, String className) {
+    log.warn("Critical delegate method called.");
     return dynamicServletRegistration(delegate.addServlet(servletName, className));
   }
 
@@ -241,6 +247,7 @@ class ServletContextJavaxDelegate implements ServletContext {
 
   @Override
   public FilterRegistration.Dynamic addFilter(String filterName, String className) {
+    log.warn("Critical delegate method called.");
     return dynamicFilterRegistration(delegate.addFilter(filterName, className));
   }
 
@@ -303,6 +310,7 @@ class ServletContextJavaxDelegate implements ServletContext {
 
   @Override
   public void addListener(String className) {
+    log.warn("Critical delegate method called.");
     delegate.addListener(className);
   }
 

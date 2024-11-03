@@ -19,13 +19,18 @@ package org.apache.solr.delegator;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterRegistration;
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FilterRegistrationDynamicJakartaDelegate implements FilterRegistration.Dynamic {
+
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final javax.servlet.FilterRegistration.Dynamic delegate;
 
@@ -73,6 +78,7 @@ public class FilterRegistrationDynamicJakartaDelegate implements FilterRegistrat
 
   @Override
   public String getClassName() {
+    log.warn("Critical delegate method called.");
     return delegate.getClassName();
   }
 

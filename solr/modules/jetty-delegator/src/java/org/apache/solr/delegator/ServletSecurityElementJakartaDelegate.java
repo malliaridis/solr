@@ -17,8 +17,12 @@
 
 package org.apache.solr.delegator;
 
+import static org.apache.solr.delegator.Delegates.emptyRoleSemantic;
+import static org.apache.solr.delegator.Delegates.transportGuarantee;
+
 import jakarta.servlet.HttpMethodConstraintElement;
 import jakarta.servlet.ServletSecurityElement;
+import jakarta.servlet.annotation.ServletSecurity;
 import java.util.Collection;
 
 public class ServletSecurityElementJakartaDelegate extends ServletSecurityElement {
@@ -44,5 +48,15 @@ public class ServletSecurityElementJakartaDelegate extends ServletSecurityElemen
   @Override
   public String[] getRolesAllowed() {
     return delegate.getRolesAllowed();
+  }
+
+  @Override
+  public ServletSecurity.EmptyRoleSemantic getEmptyRoleSemantic() {
+    return emptyRoleSemantic(delegate.getEmptyRoleSemantic());
+  }
+
+  @Override
+  public ServletSecurity.TransportGuarantee getTransportGuarantee() {
+    return transportGuarantee(delegate.getTransportGuarantee());
   }
 }

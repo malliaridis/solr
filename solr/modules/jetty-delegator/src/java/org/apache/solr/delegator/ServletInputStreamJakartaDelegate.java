@@ -50,4 +50,9 @@ class ServletInputStreamJakartaDelegate extends ServletInputStream {
   public int read() throws IOException {
     return delegate.read();
   }
+
+  @Override
+  public int readLine(byte[] b, int off, int len) throws IOException {
+    return delegate.readLine(b, off, len);
+  }
 }

@@ -524,4 +524,41 @@ public class Delegates {
       return new HttpMethodConstraintElementJavaxDelegate(element);
     }
   }
+
+  public static jakarta.servlet.annotation.ServletSecurity.EmptyRoleSemantic emptyRoleSemantic(
+      javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic semantic) {
+    return switch (semantic) {
+      case DENY -> jakarta.servlet.annotation.ServletSecurity.EmptyRoleSemantic.DENY;
+      case PERMIT -> jakarta.servlet.annotation.ServletSecurity.EmptyRoleSemantic.PERMIT;
+      default -> null;
+    };
+  }
+
+  public static javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic emptyRoleSemantic(
+      jakarta.servlet.annotation.ServletSecurity.EmptyRoleSemantic guarantee) {
+    return switch (guarantee) {
+      case DENY -> javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic.DENY;
+      case PERMIT -> javax.servlet.annotation.ServletSecurity.EmptyRoleSemantic.PERMIT;
+      default -> null;
+    };
+  }
+
+  public static jakarta.servlet.annotation.ServletSecurity.TransportGuarantee transportGuarantee(
+      javax.servlet.annotation.ServletSecurity.TransportGuarantee guarantee) {
+    return switch (guarantee) {
+      case NONE -> jakarta.servlet.annotation.ServletSecurity.TransportGuarantee.NONE;
+      case CONFIDENTIAL -> jakarta.servlet.annotation.ServletSecurity.TransportGuarantee
+          .CONFIDENTIAL;
+      default -> null;
+    };
+  }
+
+  public static javax.servlet.annotation.ServletSecurity.TransportGuarantee transportGuarantee(
+      jakarta.servlet.annotation.ServletSecurity.TransportGuarantee guarantee) {
+    return switch (guarantee) {
+      case NONE -> javax.servlet.annotation.ServletSecurity.TransportGuarantee.NONE;
+      case CONFIDENTIAL -> javax.servlet.annotation.ServletSecurity.TransportGuarantee.CONFIDENTIAL;
+      default -> null;
+    };
+  }
 }

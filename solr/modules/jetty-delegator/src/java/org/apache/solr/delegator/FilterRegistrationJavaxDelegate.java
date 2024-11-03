@@ -17,6 +17,7 @@
 
 package org.apache.solr.delegator;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
@@ -24,8 +25,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.DispatcherType;
 import javax.servlet.FilterRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FilterRegistrationJavaxDelegate implements FilterRegistration {
+
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final jakarta.servlet.FilterRegistration delegate;
 
@@ -74,6 +79,7 @@ public class FilterRegistrationJavaxDelegate implements FilterRegistration {
 
   @Override
   public String getClassName() {
+    log.warn("Critical delegate method called.");
     return delegate.getClassName();
   }
 

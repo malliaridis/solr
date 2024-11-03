@@ -17,6 +17,7 @@
 
 package org.apache.solr.delegator;
 
+import java.lang.invoke.MethodHandles;
 import static org.apache.solr.delegator.Delegates.multipartConfigElement;
 import static org.apache.solr.delegator.Delegates.servletSecurityElement;
 
@@ -26,8 +27,12 @@ import jakarta.servlet.ServletSecurityElement;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServletRegistrationDynamicJakartaDelegate implements ServletRegistration.Dynamic {
+
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final javax.servlet.ServletRegistration.Dynamic delegate;
 
@@ -58,6 +63,7 @@ public class ServletRegistrationDynamicJakartaDelegate implements ServletRegistr
 
   @Override
   public String getClassName() {
+    log.warn("Critical delegate method called.");
     return delegate.getClassName();
   }
 

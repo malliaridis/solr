@@ -18,11 +18,16 @@
 package org.apache.solr.delegator;
 
 import jakarta.servlet.ServletRegistration;
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServletRegistrationJakartaDelegate implements ServletRegistration {
+
+  private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final javax.servlet.ServletRegistration delegate;
 
@@ -52,6 +57,7 @@ public class ServletRegistrationJakartaDelegate implements ServletRegistration {
 
   @Override
   public String getClassName() {
+    log.warn("Critical delegate method called.");
     return delegate.getClassName();
   }
 
