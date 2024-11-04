@@ -665,12 +665,13 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             "-DwaitForZk=$zkWait",
             "-Dsolr.data.home=${dataHome.absolutePathString()}", // TODO Is there a change data-home to be not set?
             "-Dsolr.deleteUnknownCores=$deleteUnknownCores",
+            *composeSecurityArguments(),
             "--add-modules",
             "jdk.incubator.vector",
-            *composeSecurityArguments(),
             *composeAuthArguments(),
             *internalOptions.toTypedArray(),
             *composeHeapDumpArguments(),
+            *composeSecurityManagerOptions(),
             // TODO Solr AdminUI options
             // TODO Solr options
         )
@@ -698,17 +699,19 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         if (foreground) JavaExecutor.executeInForeground(
             command = command,
             workingDir = serverDir,
-        ) else JavaExecutor.executeInBackground(
-            command = command,
-            workingDir = serverDir,
-            logsDir = logsDir,
-            pidDir = installDir.resolve("bin"),
-            identifier = port.toString(),
-        )
-        echo("Solr server started.")
+        ) else {
+            JavaExecutor.executeInBackground(
+                command = command,
+                workingDir = serverDir,
+                logsDir = logsDir,
+                pidDir = installDir.resolve("bin"),
+                identifier = port.toString(),
+            )
 
-        // TODO Linux: Check for low entropy
-        // TODO Wait for Solr to come online
+            // TODO Linux: Check for low entropy
+            // TODO Wait for Solr to come online
+            echo("Solr server started.")
+        }
     }
 
     private fun composeMemoryOptions(): Array<String> {
@@ -885,25 +888,26 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             // TODO Is the security manager check here not relevant for parent directory?
         }
 
-        if (isSecurityManagerEnabled) arguments.addAll(
-            listOf(
-                "-Djava.security.manager",
-                "-Djava.security.policy=${
-                    Path(serverDir.absolutePathString(), "etc", "security.policy")
-                        .absolutePathString()
-                }",
-                "-Djava.security.properties=${
-                    Path(serverDir.absolutePathString(), "etc", "security.properties")
-                        .absolutePathString()
-                }",
-                "-Dsolr.internal.network.permission=*",
-            )
-        )
-
         // If using SSL and solr.jetty.https.port not set explicitly, use the jetty.port
         arguments.add("-Dsolr.jetty.https.port=$port")
 
         return arguments.toTypedArray()
+    }
+
+    private fun composeSecurityManagerOptions(): Array<String> {
+        return if (!isSecurityManagerEnabled) emptyArray()
+        else arrayOf(
+            "-Djava.security.manager",
+            "-Djava.security.policy=${
+                Path(serverDir.absolutePathString(), "etc", "security.policy")
+                    .absolutePathString()
+            }",
+            "-Djava.security.properties=${
+                Path(serverDir.absolutePathString(), "etc", "security.properties")
+                    .absolutePathString()
+            }",
+            "-Dsolr.internal.network.permission=*",
+        )
     }
 
     private fun composeAuthArguments(suppressWarnings: Boolean = false): Array<String> {
