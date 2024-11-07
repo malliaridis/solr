@@ -15,7 +15,16 @@
  * limitations under the License.
  */
 
-apply plugin: 'java-library'
+plugins {
+  id 'com.gradleup.shadow' version '8.3.3'
+  // id 'org.hibernate.jakarta-transformer' version '0.9.6'
+  id 'java-library'
+}
+
+shadowJar {
+  relocate 'javax.servlet', 'jakarta.servlet'
+  relocate 'org.apache.solr.security.hadoop.ShadowedAuthenticationPlugin', 'org.apache.solr.security.AuthenticationPlugin'
+}
 
 description = 'Hadoop Authentication Module'
 
@@ -36,7 +45,9 @@ dependencies {
 
   implementation 'org.slf4j:slf4j-api'
 
-  api 'org.eclipse.jetty.toolchain:jetty-servlet-api'
+  api 'org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api'
+  permitUnusedDeclared('org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api')
+  api 'org.eclipse.jetty.toolchain:jetty-servlet-api:4.0.6'
 
   implementation 'com.fasterxml.jackson.core:jackson-core'
   implementation 'com.google.guava:guava'
@@ -45,6 +56,7 @@ dependencies {
   implementation 'org.apache.httpcomponents:httpcore'
 
   implementation 'org.eclipse.jetty:jetty-client'
+  implementation 'org.eclipse.jetty:jetty-client:10.0.22'
 
   // ZooKeeper & Curator
   implementation('org.apache.zookeeper:zookeeper', {
@@ -133,3 +145,5 @@ tasks.register('copySolrCoreTestResources', Copy) {
 tasks.named('processTestResources').configure {
   dependsOn copySolrCoreTestResources
 }
+
+assemble.dependsOn shadowJar

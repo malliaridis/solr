@@ -43,7 +43,6 @@ import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrException.ErrorCode;
 import org.apache.solr.common.util.EnvUtils;
 import org.apache.solr.core.CoreContainer;
-import org.apache.solr.security.AuthenticationPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +63,7 @@ import org.slf4j.LoggerFactory;
  * used. If this plugin is used in the SolrCloud mode, it will use PKI based authentication
  * mechanism for Solr internal communication.
  */
-public class HadoopAuthPlugin extends AuthenticationPlugin {
+public class HadoopAuthPlugin extends ShadowedAuthenticationPlugin {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /** A property specifying the type of authentication scheme to be configured. */

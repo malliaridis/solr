@@ -23,11 +23,13 @@ import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.solr.cloud.ZkSolrResourceLoader;
 import org.apache.solr.common.SolrException;
 import org.apache.solr.common.SolrException.ErrorCode;
@@ -100,8 +102,12 @@ public class ShowFileRequestHandler extends RequestHandlerBase implements Permis
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static {
-    KNOWN_MIME_TYPES = new HashSet<>(MimeTypes.getKnownMimeTypes());
-    KNOWN_MIME_TYPES.add("text/xml");
+    KNOWN_MIME_TYPES =
+        Arrays.stream(MimeTypes.Type.values())
+            .map(MimeTypes.Type::toString)
+            .collect(Collectors.toSet());
+    KNOWN_MIME_TYPES.add("text/csv");
+    KNOWN_MIME_TYPES.add("application/xhtml+xml");
     KNOWN_MIME_TYPES.add("text/javascript");
   }
 

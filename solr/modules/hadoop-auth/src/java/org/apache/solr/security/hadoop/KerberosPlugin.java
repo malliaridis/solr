@@ -47,14 +47,14 @@ import org.apache.solr.common.cloud.SecurityAwareZkACLProvider;
 import org.apache.solr.common.util.EnvUtils;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.request.SolrRequestInfo;
-import org.apache.solr.security.AuthenticationPlugin;
 import org.apache.solr.security.HttpClientBuilderPlugin;
 import org.apache.solr.servlet.SolrDispatchFilter;
 import org.eclipse.jetty.client.api.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KerberosPlugin extends AuthenticationPlugin implements HttpClientBuilderPlugin {
+public class KerberosPlugin extends ShadowedAuthenticationPlugin
+    implements HttpClientBuilderPlugin {
   private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   Krb5HttpClientBuilder kerberosBuilder = new Krb5HttpClientBuilder();

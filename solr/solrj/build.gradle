@@ -74,7 +74,7 @@ dependencies {
   testImplementation 'commons-io:commons-io'
   testImplementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-cbor'
 
-  testImplementation 'org.eclipse.jetty.toolchain:jetty-servlet-api'
+  testImplementation 'org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api'
 
   testImplementation 'org.eclipse.jetty:jetty-server'
   testImplementation 'org.eclipse.jetty:jetty-servlet'
