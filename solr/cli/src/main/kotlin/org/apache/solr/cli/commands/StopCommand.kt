@@ -27,15 +27,17 @@ import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.long
-import kotlinx.coroutines.time.withTimeout
 import kotlinx.coroutines.withTimeout
 import org.apache.solr.cli.Environment
+import org.apache.solr.cli.exceptions.ProcessesNotFoundException
 import org.apache.solr.cli.options.AuthOptions
 import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityOptions
 import org.apache.solr.cli.options.SolrContextOptions
 import org.apache.solr.cli.options.StopOptions
 import org.apache.solr.cli.processes.JavaExecutor
+import org.apache.solr.cli.processes.ProcessAnalyzer
+import org.apache.solr.cli.utils.Utils
 
 // TODO Consider stop command for remote server as well?
 internal class StopCommand : SuspendingCliktCommand(name = "stop") {
@@ -66,6 +68,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
 
     private val all by option("--all")
         .help("Find and stop all running Solr servers on this host")
+        .flag()
 
     private val force by option("-f", "--force")
         .help("Force option in case Solr is run as root.")
@@ -82,14 +85,24 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         .default(180000)
 
     override suspend fun run() {
-        val solrInstances = findSolrInstances()
-        solrInstances.forEach { pid ->
+        if (all) {
+            val solrProcesses = ProcessAnalyzer.findProcesses("java", "start.jar")
+                .getOrNull()
+            if (solrProcesses.isNullOrEmpty()) throw ProcessesNotFoundException()
+            solrProcesses.forEach { pid ->
+                val jettyPort = Utils.getJettyPort(pid)
+                echo("Solr process found with port $jettyPort")
 
-            // TODO stopSolrInstance(port)
-            // TODO Check if process still running or stop timed out
-            // TODO killSolrProcess(pid)
+                // TODO stopSolrInstance(port)
+                // TODO Check if process still running or stop timed out
+                // TODO killSolrProcess(pid)
+            }
+            stopSolrInstances(solrProcesses)
+        } else {
+            val pid = Utils.findSolrPIDByPort(port)
+            echo("Solr process for port $port found, PID: $pid")
+            // TODO Implement stop logic
         }
-        stopSolrInstances(solrInstances)
 
         // TODO remove pid files from stopped solr instances if present
 
@@ -99,10 +112,6 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
 
     override fun helpEpilog(context: Context): String =
         "NOTE: To see if any Solr servers are running, do: solr status"
-
-    private suspend fun findSolrInstances(): List<String> {
-        TODO("Not yet implemented")
-    }
 
     private suspend fun stopSolrInstance(port: Int, pid: String) {
         echo(
@@ -136,7 +145,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         TODO("Not yet implemented")
     }
 
-    private suspend fun stopSolrInstances(solrInstances: List<String>) {
+    private suspend fun stopSolrInstances(solrInstances: List<Long>) {
         TODO("Not yet implemented")
         /*
 

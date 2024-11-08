@@ -17,6 +17,4 @@
 
 package org.apache.solr.cli.exceptions
 
-internal class CommandNotFoundException(command: String) : RuntimeException(
-    "The command '$command' could not be found."
-)
+internal class ProcessesNotFoundException(): RuntimeException("No Solr processes found.")

@@ -17,7 +17,8 @@
 
 package org.apache.solr.cli.utils
 
-import org.apache.solr.cli.data.OperatingSystem
+import org.apache.solr.cli.exceptions.ProcessesNotFoundException
+import org.apache.solr.cli.processes.ProcessAnalyzer
 
 object Utils {
 
@@ -27,17 +28,32 @@ object Utils {
      * @param port The port the Solr instance is running on.
      * @return Process ID (PID) of the running Solr instance.
      */
-    suspend fun findSolrPIDByPort(port: Int) : String? {
-        TODO("Not yet implemented")
+    suspend fun findSolrPIDByPort(port: Int) : Long? {
+        val solrProcesses = ProcessAnalyzer.findProcesses(
+            "java", "start.jar", "jetty.port=$port"
+        ).getOrNull()
+
+        if (solrProcesses.isNullOrEmpty()) throw ProcessesNotFoundException()
+        return solrProcesses.first() // there can be only one process running on a specified port
     }
 
     /**
-     * Retrieves the Jetty port (jetty.port) from a running Solr instance.
+     * Retrieves the Jetty port (jetty.port) from a running Solr instance via process arguments.
      *
      * @param pid The process ID of the Solr instance to get the port for.
-     * @return The Jetty port (value of `-Djetty.port`).
+     * @return The Jetty port (value of `-Djetty.port`) iff it could be determined by the arguments.
+     * @see ProcessAnalyzer.getProcessArguments
      */
-    suspend fun getJettyPort(pid: String): Int? {
-        TODO("Not yet implemented")
+    suspend fun getJettyPort(pid: Long): Int? {
+        val result = ProcessAnalyzer.getProcessArguments(pid)
+        val arguments = result.getOrNull() ?: return null
+
+        // Get the jetty.port value from the arguments returned
+        val portParam = arguments.firstOrNull { it.contains("jetty.port") } ?: return null
+
+        val keyValue = portParam.split("=")
+
+        if(keyValue.size != 2 || keyValue[1].isBlank()) return null
+        return keyValue[1].toIntOrNull()
     }
 }
