@@ -53,5 +53,6 @@ tasks.test {
 }
 
 application {
+    applicationName = "solr"
     mainClass.set("org.apache.solr.cli.MainKt")
 }
