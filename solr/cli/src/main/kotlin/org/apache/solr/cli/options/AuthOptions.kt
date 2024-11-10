@@ -27,7 +27,10 @@ import org.apache.solr.cli.enums.AuthType
 
 internal class AuthOptions(
     private val echo: (message: String, ) -> Unit,
-) : OptionGroup() {
+) : OptionGroup(
+    name = "Authentcication options",
+    help = "Options controlling the authentication configuration when starting a Solr instance"
+) {
 
     val authType by option(
         envvar = "SOLR_AUTH_TYPE",

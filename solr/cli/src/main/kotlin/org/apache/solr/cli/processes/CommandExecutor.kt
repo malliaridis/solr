@@ -17,22 +17,17 @@
 
 package org.apache.solr.cli.processes
 
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
 import java.nio.file.Path
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.io.files.SystemFileSystem
 
 /**
  * Collection of functions that allow the execution of commands.
  */
-object JavaExecutor {
+object CommandExecutor {
 
     /**
      * Launches the [command] inside the given [workingDir] in a managed IO coroutine.
@@ -46,13 +41,14 @@ object JavaExecutor {
      */
     suspend fun executeInForeground(
         command: Array<String>,
-        workingDir: Path,
+        workingDir: Path? = null,
     ): Result<Unit> = withContext(Dispatchers.IO) {
         try {
-            val process = ProcessBuilder(*command)
-                .directory(workingDir.toFile())
-                .inheritIO() // Redirects I/O so Ctrl+C works
-                .start()
+            val process = with(ProcessBuilder(*command)) {
+                if (workingDir != null) directory(workingDir.toFile())
+                inheritIO() // Redirects I/O so Ctrl+C works
+                start()
+            }
 
             // Wait for the process to complete
             process.waitFor()
@@ -81,7 +77,7 @@ object JavaExecutor {
     @OptIn(DelicateCoroutinesApi::class)
     fun executeInBackground(
         command: Array<String>,
-        workingDir: Path,
+        workingDir: Path? = null,
         logsDir: Path? = null,
         pidDir: Path? = null,
         identifier: String? = null,
@@ -90,12 +86,13 @@ object JavaExecutor {
             val logFile = logsDir?.let { it.resolve("solr${identifier ?: "-$it"}-console.log").toFile() }
             val pidFile = pidDir?.let { it.resolve("solr${identifier ?: "-$it"}.pid").toFile() }
 
-            val process = ProcessBuilder(*command)
-                .directory(workingDir.toFile())
+            val process = with(ProcessBuilder(*command)) {
+                if(workingDir != null) directory(workingDir.toFile())
                 // Set output and error redirection to the log file
-                .redirectOutput(logFile)
-                .redirectErrorStream(true)
-                .start()
+                redirectOutput(logFile)
+                redirectErrorStream(true)
+                start()
+            }
 
             pidFile?.writeText(process.pid().toString())
         } catch (exception: Exception) {

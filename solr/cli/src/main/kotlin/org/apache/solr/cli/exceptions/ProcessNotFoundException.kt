@@ -17,6 +17,9 @@
 
 package org.apache.solr.cli.exceptions
 
-internal class ProcessNotFoundException(pid: Long): RuntimeException(
-    "Process with PID $pid not found."
-)
+internal class ProcessNotFoundException(
+    message: String = "No Solr process found.",
+): RuntimeException(message) {
+
+    constructor(pid: Long) : this("Process with PID $pid not found.")
+}

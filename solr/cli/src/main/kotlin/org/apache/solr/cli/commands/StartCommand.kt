@@ -37,6 +37,7 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
+import org.apache.solr.cli.Constants
 import org.apache.solr.cli.ExitCode
 import org.apache.solr.cli.data.MemoryAllocation
 import org.apache.solr.cli.data.UserLimits
@@ -44,7 +45,7 @@ import org.apache.solr.cli.enums.AuthType
 import org.apache.solr.cli.enums.PlacementPluginMode
 import org.apache.solr.cli.enums.UrlScheme
 import org.apache.solr.cli.processes.CommandChecker
-import org.apache.solr.cli.processes.JavaExecutor
+import org.apache.solr.cli.processes.CommandExecutor
 import org.apache.solr.cli.processes.PrivilegeChecker
 import org.apache.solr.cli.processes.UserLimitsChecker.checkUserLimits
 
@@ -99,7 +100,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     ).help("Specify the port to start the Solr HTTP listener on.")
         .int()
         .restrictTo(0, UShort.MAX_VALUE.toInt())
-        .default(8983)
+        .default(Constants.DEFAULT_SOLR_PORT)
 
     private val zkHost by option(
         "-z", "--zk-host",
@@ -107,7 +108,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.zk.host",
     ).help("Zookeeper connection string.")
 
-    private val installDir by option(
+    private val installDirectory by option(
         "--install-dir",
         envvar = "SOLR_INSTALL_DIR",
         valueSourceKey = "solr.install.dir",
@@ -115,13 +116,13 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     ).path(mustExist = true, canBeDir = true, canBeFile = false)
         .defaultLazy { Path("..") }
 
-    private val serverDir by option(
+    private val serverDirectory by option(
         "--server-dir",
         envvar = "SOLR_SERVER_DIR",
         valueSourceKey = "solr.server.dir",
     ).help("Path to the Solr server directory.")
         .path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { installDir.resolve("server") }
+        .defaultLazy { installDirectory.resolve("server") }
 
     private val solrHome by option(
         "--solr-home",
@@ -138,7 +139,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
            server/<dir>.
         """.trimIndent()
     }.path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { serverDir.resolve("solr") }
+        .defaultLazy { serverDirectory.resolve("solr") }
 
     private val dataHome by option()
         .help(
@@ -148,14 +149,14 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         ).path(canBeFile = false, canBeDir = true, mustExist = true)
         .defaultLazy { solrHome.resolve("data") }
 
-    private val confDir by option(
+    private val configDirectory by option(
         "--conf-dir",
         envvar = "SOLR_DEFAULT_CONFDIR",
         valueSourceKey = "solr.default.confdir",
     ).path(canBeFile = false, canBeDir = true)
         .defaultLazy {
             Path(
-                serverDir.absolutePathString(),
+                serverDirectory.absolutePathString(),
                 "solr",
                 "configsets",
                 "_default",
@@ -163,12 +164,18 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             )
         }
 
-    private val logsDir by option(
+    private val logsDirectory by option(
         "--logs-dir",
         envvar = "SOLR_LOGS_DIR",
         valueSourceKey = "solr.logs.dir",
     ).path(canBeFile = false, canBeDir = true)
-        .defaultLazy { serverDir.resolve("logs") }
+        .defaultLazy { serverDirectory.resolve("logs") }
+
+    private val pidDirectory by option(
+        envvar = "SOLR_PID_DIR",
+        valueSourceKey = "solr.pid.dir",
+    ).path(canBeFile = false, canBeDir = true)
+        .defaultLazy { installDirectory.resolve("bin") }
 
     private val userManagedMode by option("--user-managed")
         .help(
@@ -462,7 +469,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.java.gc.log.options.value",
         hidden = true,
     ).defaultLazy {
-        """-Xlog:gc*:file=${logsDir.absolutePathString()}\solr_gc.log:time,level,tags:filecount=9,filesize=20M"""
+        """-Xlog:gc*:file=${logsDirectory.absolutePathString()}\solr_gc.log:time,level,tags:filecount=9,filesize=20M"""
     } // TODO May require multiple() instead of string
 
     // TODO Consider merging plugin properties into a data class
@@ -527,7 +534,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.heap.dump.dir",
         hidden = true,
     ).path(canBeDir = true, canBeFile = false)
-        .defaultLazy { logsDir.resolve("dumps") }
+        .defaultLazy { logsDirectory.resolve("dumps") }
 
     private val internalOptions by option(
         envvar = "SOLR_INTERNAL_OPTS",
@@ -630,7 +637,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     private suspend fun prepareLogging(failOnError: Boolean = false) {
         // TODO Make sure logsDir not reserved path (contexts|etc|lib|modules|resources|scripts|solr|solr-webapp)
         // TODO Create and make writeable logs dir
-        errorFile = logsDir.resolve("jvm_crash_%p.log")
+        errorFile = logsDirectory.resolve("jvm_crash_%p.log")
 
         // TODO If heap dump dir set, make writeable
     }
@@ -647,7 +654,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             *composeAclsArguments(),
             *composeJmxArguments(),
             *composeSolrModeArguments(),
-            "-Dsolr.log.dir=${logsDir.absolutePathString()}",
+            "-Dsolr.log.dir=${logsDirectory.absolutePathString()}",
             "-Djetty.port=$port",
             "-DSTOP.PORT=$stopPort", // TODO Update STOP.PORT to solr.stop.port globally
             "-DSTOP.KEY=$stopKey", // TODO Update STOP.KEY to solr.stop.key globally
@@ -656,7 +663,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             "-XX:-OmitStackTraceInFastThrow", // ensures stack traces in errors
             "-XX:+CrashOnOutOfMemoryError", // ensures that Solr crashes whenever OOME is thrown
             "-XX:ErrorFile=${errorFile.absolutePathString()}",
-            "-Djetty.home=${serverDir.absolutePathString()}",
+            "-Djetty.home=${serverDirectory.absolutePathString()}",
             *composeLog4JArguments(),
             *composePluginArguments(),
             *composeFeatureArguments(),
@@ -696,15 +703,15 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             // TODO 1>"$SOLR_LOGS_DIR/solr-$SOLR_PORT-console.log" 2>&1 & echo $! > "$SOLR_PID_DIR/solr-$SOLR_PORT.pid"
         )
 
-        if (foreground) JavaExecutor.executeInForeground(
+        if (foreground) CommandExecutor.executeInForeground(
             command = command,
-            workingDir = serverDir,
+            workingDir = serverDirectory,
         ) else {
-            JavaExecutor.executeInBackground(
+            CommandExecutor.executeInBackground(
                 command = command,
-                workingDir = serverDir,
-                logsDir = logsDir,
-                pidDir = installDir.resolve("bin"),
+                workingDir = serverDirectory,
+                logsDir = logsDirectory,
+                pidDir = pidDirectory,
                 identifier = port.toString(),
             )
 
@@ -785,7 +792,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         val arguments = mutableListOf<String>()
         if (isSslEnabled) {
             arguments.add("--module=https")
-            arguments.add("--lib=$serverDir/solr-webapp/webapp/WEB-INF/lib/*")
+            arguments.add("--lib=$serverDirectory/solr-webapp/webapp/WEB-INF/lib/*")
             if (isSslReload) {
                 arguments.add("--module=ssl-reload")
             }
@@ -899,11 +906,11 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         else arrayOf(
             "-Djava.security.manager",
             "-Djava.security.policy=${
-                Path(serverDir.absolutePathString(), "etc", "security.policy")
+                Path(serverDirectory.absolutePathString(), "etc", "security.policy")
                     .absolutePathString()
             }",
             "-Djava.security.properties=${
-                Path(serverDir.absolutePathString(), "etc", "security.properties")
+                Path(serverDirectory.absolutePathString(), "etc", "security.properties")
                     .absolutePathString()
             }",
             "-Dsolr.internal.network.permission=*",

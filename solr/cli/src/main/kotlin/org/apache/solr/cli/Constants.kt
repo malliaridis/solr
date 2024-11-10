@@ -44,7 +44,7 @@ object Constants {
      *
      * @see Environment.SOLR_STOP_WAIT
      */
-    const val DEFAULT_SOLR_STOP_WAIT = 180;
+    const val DEFAULT_SOLR_STOP_WAITMS = 180000L;
 
     /**
      * Default number of seconds that the solr script will wait for Solr to start.

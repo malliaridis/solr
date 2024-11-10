@@ -23,6 +23,8 @@ import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.clikt.parameters.types.long
+import org.apache.solr.cli.Constants
 
 internal class StopOptions(private val port: () -> Int) : OptionGroup() {
 
@@ -41,4 +43,9 @@ internal class StopOptions(private val port: () -> Int) : OptionGroup() {
     ).int()
         .defaultLazy { port() - 1000 }
 
+    val waitTimeMs by option(
+        envvar = "SOLR_STOP_WAIT",
+        valueSourceKey = "solr.stop.waitMs",
+    ).long()
+        .default(Constants.DEFAULT_SOLR_STOP_WAITMS)
 }

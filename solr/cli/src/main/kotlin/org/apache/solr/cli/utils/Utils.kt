@@ -17,7 +17,7 @@
 
 package org.apache.solr.cli.utils
 
-import org.apache.solr.cli.exceptions.ProcessesNotFoundException
+import org.apache.solr.cli.exceptions.ProcessNotFoundException
 import org.apache.solr.cli.processes.ProcessAnalyzer
 
 object Utils {
@@ -33,7 +33,7 @@ object Utils {
             "java", "start.jar", "jetty.port=$port"
         ).getOrNull()
 
-        if (solrProcesses.isNullOrEmpty()) throw ProcessesNotFoundException()
+        if (solrProcesses.isNullOrEmpty()) throw ProcessNotFoundException()
         return solrProcesses.first() // there can be only one process running on a specified port
     }
 
