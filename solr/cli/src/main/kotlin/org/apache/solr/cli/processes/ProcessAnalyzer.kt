@@ -22,6 +22,7 @@ import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.solr.cli.data.OperatingSystem
+import org.apache.solr.cli.enums.ProcessState
 import org.apache.solr.cli.exceptions.ProcessNotFoundException
 
 /**
@@ -52,6 +53,22 @@ internal object ProcessAnalyzer {
                 return@withContext Result.failure(exception)
             }
         }
+    }
+
+    /**
+     * Fetches the state of a process with a given ID.
+     *
+     * @param pid Process ID to look for.
+     * @return A result with the process state.
+     */
+    suspend fun getProcessState(pid: Long): Result<ProcessState> {
+        TODO("Not yet implemented")
+        /*
+        STAT=$( (ps -o stat='' -p "$SOLR_PID" || :) | tr -d ' ')
+        if STAT is not empty and contains Z -> Zombie thread
+        else if STAT not emtpy -> Not stopped
+        else if STAT empty --> Stopped
+         */
     }
 
     /**

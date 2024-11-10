@@ -44,7 +44,7 @@ object Environment {
      */
     val SOLR_STOP_WAIT = env.getOrDefault(
         "SOLR_STOP_WAIT",
-        Constants.DEFAULT_SOLR_STOP_WAIT.toString(),
+        Constants.DEFAULT_SOLR_STOP_WAITMS.toString(),
     ).toInt()
 
     /**

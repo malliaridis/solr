@@ -21,21 +21,26 @@ import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
-import com.github.ajalt.clikt.parameters.types.long
-import kotlinx.coroutines.withTimeout
-import org.apache.solr.cli.Environment
-import org.apache.solr.cli.exceptions.ProcessesNotFoundException
+import com.github.ajalt.clikt.parameters.types.path
+import com.github.ajalt.clikt.parameters.types.restrictTo
+import java.nio.file.Path
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
+import org.apache.solr.cli.Constants
+import org.apache.solr.cli.exceptions.ProcessNotFoundException
 import org.apache.solr.cli.options.AuthOptions
 import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityOptions
 import org.apache.solr.cli.options.SolrContextOptions
 import org.apache.solr.cli.options.StopOptions
-import org.apache.solr.cli.processes.JavaExecutor
+import org.apache.solr.cli.processes.CommandChecker
+import org.apache.solr.cli.processes.CommandExecutor
 import org.apache.solr.cli.processes.ProcessAnalyzer
 import org.apache.solr.cli.utils.Utils
 
@@ -46,16 +51,23 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
 
     private val contextOptions by SolrContextOptions()
 
-    private val port by option("-p", "--port")
-        .help("Specify the port the Solr HTTP listener is bound to.")
+    /**
+     * [port] in stop command is used to calculate the [StopOptions.stopPort].
+     *
+     * TODO Check if [port]  and [StopOptions.stopPort] should be mutually exclusive here.
+     */
+    private val port by option(
+        "-p", "--port",
+        envvar = "SOLR_PORT",
+        valueSourceKey = "solr.port",
+    ).help("Specify the port the Solr HTTP listener is bound to.")
         .int()
-        .default(
-            value = Environment.SOLR_PORT,
-            defaultForHelp = "Uses environment variable SOLR_PORT if present and falls back to 8983."
-        )
+        .restrictTo(0, UShort.MAX_VALUE.toInt())
+        .default(Constants.DEFAULT_SOLR_PORT)
 
     private val securityOptions by SecurityOptions(port = { port })
 
+    // TODO See if these auth options are required for the stop commmand
     private val authOptions by AuthOptions(echo = { echo(message = it) })
 
     private val stopOptions by StopOptions(port = { port })
@@ -78,49 +90,53 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         .help("Enable verbose command output.")
         .flag()
 
-    private val waitTimeMs by option(
-        envvar = "SOLR_STOP_WAIT",
-        valueSourceKey = "solr.stop.waitMs",
-    ).long()
-        .default(180000)
+    private val installDirectory by option(
+        "--install-dir",
+        envvar = "SOLR_INSTALL_DIR",
+        valueSourceKey = "solr.install.dir",
+        hidden = true,
+    ).path(mustExist = true, canBeDir = true, canBeFile = false)
+        .defaultLazy { kotlin.io.path.Path("..") }
+
+    private val pidDirectory by option(
+        envvar = "SOLR_PID_DIR",
+        valueSourceKey = "solr.pid.dir",
+    ).path(canBeFile = false, canBeDir = true)
+        .defaultLazy { installDirectory.resolve("bin") }
 
     override suspend fun run() {
         if (all) {
             val solrProcesses = ProcessAnalyzer.findProcesses("java", "start.jar")
                 .getOrNull()
-            if (solrProcesses.isNullOrEmpty()) throw ProcessesNotFoundException()
+            if (solrProcesses.isNullOrEmpty()) throw ProcessNotFoundException()
             solrProcesses.forEach { pid ->
                 val jettyPort = Utils.getJettyPort(pid)
-                echo("Solr process found with port $jettyPort")
+                echo(message = "Solr process found with port $jettyPort")
 
-                // TODO stopSolrInstance(port)
-                // TODO Check if process still running or stop timed out
-                // TODO killSolrProcess(pid)
+                stopSolrInstance(pid, pidDirectory)
             }
-            stopSolrInstances(solrProcesses)
         } else {
             val pid = Utils.findSolrPIDByPort(port)
-            echo("Solr process for port $port found, PID: $pid")
-            // TODO Implement stop logic
+                ?: throw ProcessNotFoundException("No Solr process for port $port found.")
+
+            echo(message = "Solr process for port $port found, PID: $pid")
+            stopSolrInstance(pid, pidDirectory)
         }
-
-        // TODO remove pid files from stopped solr instances if present
-
-        TODO("Not yet implemented")
-
     }
 
     override fun helpEpilog(context: Context): String =
         "NOTE: To see if any Solr servers are running, do: solr status"
 
-    private suspend fun stopSolrInstance(port: Int, pid: String) {
+    private suspend fun stopSolrInstance(pid: Long, pidDirectory: Path) {
         echo(
-            message = """Sending stop command to Solr running on port $port ... waiting up to
-                         $waitTimeMs seconds to allow Jetty process $pid to stop gracefully.
-                         """.trimMargin(),
+            message = """Sending stop command to Solr running with stop port ${stopOptions.stopPort}
+            | ... waiting up to ${stopOptions.waitTimeMs} seconds to allow Jetty process $pid to
+            | stop gracefully.
+            |""".trimMargin(),
             err = true,
         )
 
+        // Try to stop solr gracefully
         val stopArguments = arrayOf<String>(
             javaOptions.javaExec,
             *securityOptions.composeSecurityArguments(),
@@ -132,59 +148,97 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
             "STOP.KEY=${stopOptions.stopKey}",
             "--stop"
         )
-        withTimeout(waitTimeMs) {
-            JavaExecutor.executeInForeground(
-                command = stopArguments,
-                workingDir = contextOptions.serverDir,
-            )
+
+        val result = CommandExecutor.executeInForeground(
+            command = stopArguments,
+            workingDir = contextOptions.serverDir,
+        )
+
+        if (result.isSuccess && hasStopped(pid)) {
+//            if(isTimedOut) {
+//                // TODO Cleanup pid file that may not have been deleted yet
+//            }
+            // TODO Exit process successfully.
         }
-        TODO("Not yet implemented")
+
+        // Process has not stopped, likely due to timeout
+        threadDump(pid)
+        killSolrProcess(pid)
+        removePidFile(pid, pidDirectory)
+
+        if (hasStopped(pid)) {
+            // TODO Successfully stopped process by killing it
+        } else {
+            // TODO Failed to forcefully stop process, exit with error
+        }
     }
 
-    private suspend fun killSolrProcess(pid: String) {
-        TODO("Not yet implemented")
+    /**
+     * Threaddumps with jstack or jattach (if available) the process provided.
+     *
+     * @param pid Process ID of a java process.
+     */
+    private suspend fun threadDump(pid: Long) {
+        val jstackExists = CommandChecker.commandExists(javaOptions.jstackExec)
+            .let { it.getOrNull() == true }
+
+        if (jstackExists) {
+            echo(
+                message = "Solr process $pid is still running; jstacking it now.",
+                err = true,
+            )
+            CommandExecutor.executeInForeground(
+                command = arrayOf(javaOptions.jstackExec, "$pid"),
+            )
+        } else {
+            TODO("Try jattach if available")
+//            echo(
+//                message = "Solr process $pid is still running; jattach threaddumping it now.",
+//                err = true,
+//            )
+        }
     }
 
-    private suspend fun stopSolrInstances(solrInstances: List<Long>) {
-        TODO("Not yet implemented")
+    /**
+     * Forcefully stops the process with the given [pid].
+     *
+     * @param pid Process ID of the process to kill.
+     */
+    private suspend fun killSolrProcess(pid: Long) {
         /*
+        echo -e "Solr process $SOLR_PID is still running; forcefully killing it now."
+        kill -9 "$SOLR_PID"
+        echo "Killed process $SOLR_PID"
+        rm -f "$SOLR_PID_DIR/solr-$SOLR_PORT.pid"
+        sleep 10
+         */
+        TODO("Not yet implemented")
+    }
+
+    private suspend fun removePidFile(pid: Long, pidDirectory: Path) {
+        TODO("Not yet implemented")
+    }
+
+    private suspend fun hasStopped(pid: Long, waitMs: Long = -1): Boolean {
+        val hasStopped = withTimeoutOrNull(waitMs) {
+            do {
+                delay(500)
+            } while(!(ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning == true))
+            return@withTimeoutOrNull true
+        } ?: false
+
+        // Check one last time, in case waitMs is negative it will be checked exactly once
+        if (!hasStopped) return ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning == true
+        return hasStopped
+    }
+
+    /*
 
       DIR="$1"
       SOLR_PORT="$2"
       THIS_STOP_PORT="${STOP_PORT:-$((SOLR_PORT - 1000))}"
       STOP_KEY="$3"
       SOLR_PID="$4"
-
-      if [ -n "$SOLR_PID"  ]; then
-        echo -e "Sending stop command to Solr running on port $SOLR_PORT ... waiting up to $SOLR_STOP_WAIT seconds to allow Jetty process $SOLR_PID to stop gracefully."
-        # shellcheck disable=SC2086
-        "$JAVA" $SOLR_SSL_OPTS $AUTHC_OPTS ${SOLR_TOOL_OPTS:-} -jar "$DIR/start.jar" "STOP.PORT=$THIS_STOP_PORT" "STOP.KEY=$STOP_KEY" --stop || true
-          (loops=0
-          while true
-          do
-            # Check if a process is running with the specified PID.
-            # -o stat will output the STAT, where Z indicates a zombie
-            # stat='' removes the header (--no-headers isn't supported on all platforms)
-            # Note the space after '$('. It is needed to avoid confusion with special bash eval syntax
-            STAT=$( (ps -o stat='' -p "$SOLR_PID" || :) | tr -d ' ')
-            if [[ "${STAT:-Z}" != "Z" ]]; then
-              slept=$((loops * 2))
-              if [ $slept -lt $SOLR_STOP_WAIT ]; then
-                sleep 2
-                loops=$((loops+1))
-              else
-                exit # subshell!
-              fi
-            else
-              exit # subshell!
-            fi
-          done) &
-        spinner $!
-        rm -f "$SOLR_PID_DIR/solr-$SOLR_PORT.pid"
-      else
-        echo -e "No Solr nodes found to stop."
-        exit 0
-      fi
 
       # Note the space after '$('. It is needed to avoid confusion with special bash eval syntax
       STAT=$( (ps -o stat='' -p "$SOLR_PID" || :) | tr -d ' ')
@@ -214,6 +268,5 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         echo "ERROR: Failed to kill previous Solr Java process $SOLR_PID ... script fails."
         exit 1
       fi
-         */
-    }
+     */
 }
