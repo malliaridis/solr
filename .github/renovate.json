@@ -6,10 +6,11 @@
   "enabledManagers": ["gradle", "github-actions"],
   "includePaths": ["versions.*", "build.gradle", ".github/workflows/*"],
   "postUpgradeTasks": {
-    "commands": ["./gradlew updateLicenses"],
+    "commands": ["./gradlew writeLocks", "./gradlew updateLicenses"],
     "fileFilters": ["solr/licenses/*.sha1"],
     "executionMode": "branch"
   },
+  "updateLockFiles": false,
   "packageRules": [
     {
       "description": "Fix for non-semantic versions for older artifacts",
