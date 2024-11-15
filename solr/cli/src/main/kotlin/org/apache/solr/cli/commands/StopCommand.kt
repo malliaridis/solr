@@ -30,6 +30,7 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.path
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import java.nio.file.Path
+import kotlin.io.path.absolutePathString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import org.apache.solr.cli.Constants
@@ -42,6 +43,7 @@ import org.apache.solr.cli.options.StopOptions
 import org.apache.solr.cli.processes.CommandChecker
 import org.apache.solr.cli.processes.CommandExecutor
 import org.apache.solr.cli.processes.ProcessAnalyzer
+import org.apache.solr.cli.processes.ProcessKiller
 import org.apache.solr.cli.utils.Utils
 
 // TODO Consider stop command for remote server as well?
@@ -113,21 +115,21 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
                 val jettyPort = Utils.getJettyPort(pid)
                 echo(message = "Solr process found with port $jettyPort")
 
-                stopSolrInstance(pid, pidDirectory)
+                stopSolrInstance(pid)
             }
         } else {
             val pid = Utils.findSolrPIDByPort(port)
                 ?: throw ProcessNotFoundException("No Solr process for port $port found.")
 
             echo(message = "Solr process for port $port found, PID: $pid")
-            stopSolrInstance(pid, pidDirectory)
+            stopSolrInstance(pid)
         }
     }
 
     override fun helpEpilog(context: Context): String =
         "NOTE: To see if any Solr servers are running, do: solr status"
 
-    private suspend fun stopSolrInstance(pid: Long, pidDirectory: Path) {
+    private suspend fun stopSolrInstance(pid: Long) {
         echo(
             message = """Sending stop command to Solr running with stop port ${stopOptions.stopPort}
             | ... waiting up to ${stopOptions.waitTimeMs} seconds to allow Jetty process $pid to
@@ -164,7 +166,6 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         // Process has not stopped, likely due to timeout
         threadDump(pid)
         killSolrProcess(pid)
-        removePidFile(pid, pidDirectory)
 
         if (hasStopped(pid)) {
             // TODO Successfully stopped process by killing it
@@ -190,12 +191,21 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
             CommandExecutor.executeInForeground(
                 command = arrayOf(javaOptions.jstackExec, "$pid"),
             )
-        } else {
-            TODO("Try jattach if available")
-//            echo(
-//                message = "Solr process $pid is still running; jattach threaddumping it now.",
-//                err = true,
-//            )
+            return
+        }
+
+        // If jstack does not exist continue with jattach
+        val jattachExists = CommandChecker.commandExists("jattach")
+            .let { it.getOrNull() == true }
+
+        if (jattachExists) {
+            echo(
+                message = "Solr process $pid is still running; jattach threaddumping it now.",
+                err = true,
+            )
+            CommandExecutor.executeInForeground(
+                command = arrayOf("jattach", "$pid", "threaddump"),
+            )
         }
     }
 
@@ -205,25 +215,28 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
      * @param pid Process ID of the process to kill.
      */
     private suspend fun killSolrProcess(pid: Long) {
-        /*
-        echo -e "Solr process $SOLR_PID is still running; forcefully killing it now."
-        kill -9 "$SOLR_PID"
-        echo "Killed process $SOLR_PID"
-        rm -f "$SOLR_PID_DIR/solr-$SOLR_PORT.pid"
-        sleep 10
-         */
-        TODO("Not yet implemented")
+        echo(
+            message = "Solr process $pid is still running; forcefully killing it now.",
+            err = true,
+        )
+
+        val result = ProcessKiller.killProcess(pid)
+
+        if (result.isSuccess) echo("Killed process with PID $pid.")
+        else echo(message = "Failed to kill process with PID $pid.", err = true)
     }
 
-    private suspend fun removePidFile(pid: Long, pidDirectory: Path) {
+    private suspend fun removePidFile() {
         TODO("Not yet implemented")
+        // val pidFile = Path.of(pidDirectory.absolutePathString(), "solr-$port.pid").toFile()
+        // TODO Implement process for deleting file / PID file
     }
 
     private suspend fun hasStopped(pid: Long, waitMs: Long = -1): Boolean {
         val hasStopped = withTimeoutOrNull(waitMs) {
             do {
                 delay(500)
-            } while(!(ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning == true))
+            } while (!(ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning == true))
             return@withTimeoutOrNull true
         } ?: false
 
