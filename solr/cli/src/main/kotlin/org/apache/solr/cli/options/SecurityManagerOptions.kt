@@ -24,7 +24,8 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
-internal class SecurityManagerOptions(private val serverDir: () -> Path) : OptionGroup() {
+@Deprecated(message = "Security manager is deprecated and will be removed in the future.")
+internal class SecurityManagerOptions(private val serverDirectory: () -> Path) : OptionGroup() {
 
     val isSecurityManagerEnabled by option(
         envvar = "SOLR_SECURITY_MANAGER_ENABLED",
@@ -37,11 +38,11 @@ internal class SecurityManagerOptions(private val serverDir: () -> Path) : Optio
         else arrayOf(
             "-Djava.security.manager",
             "-Djava.security.policy=${
-                Path(serverDir().absolutePathString(), "etc", "security.policy")
+                Path(serverDirectory().absolutePathString(), "etc", "security.policy")
                     .absolutePathString()
             }",
             "-Djava.security.properties=${
-                Path(serverDir().absolutePathString(), "etc", "security.properties")
+                Path(serverDirectory().absolutePathString(), "etc", "security.properties")
                     .absolutePathString()
             }",
             "-Dsolr.internal.network.permission=*",

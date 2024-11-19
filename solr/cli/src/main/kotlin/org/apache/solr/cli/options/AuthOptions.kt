@@ -57,10 +57,10 @@ internal class AuthOptions(
             && this@AuthOptions.authOptions.isNotEmpty()
         ) echo(
             """[WARNING] SOLR_AUTHENTICATION_OPTS environment variable configured without
-                associated SOLR_AUTH_TYPE variable. Please configure SOLR_AUTH_TYPE environment
-                variable with the authentication type to be used. Currently supported authentication
-                types are [kerberos, basic]
-                """.trimIndent()
+            | associated SOLR_AUTH_TYPE variable. Please configure SOLR_AUTH_TYPE environment
+            | variable with the authentication type to be used. Currently supported authentication
+            | types are [kerberos, basic]
+            """.trimMargin()
         )
 
         if (
@@ -69,11 +69,11 @@ internal class AuthOptions(
             && this@AuthOptions.authClientBuilder != null
         ) echo(
             """[WARNING] SOLR_AUTHENTICATION_CLIENT_BUILDER and SOLR_AUTH_TYPE environment
-                variables are configured together. Use SOLR_AUTH_TYPE environment variable to
-                configure authentication type to be used. Currently supported authentication types
-                are [kerberos, basic]. The value of SOLR_AUTHENTICATION_CLIENT_BUILDER environment
-                variable will be ignored.
-                """.trimIndent()
+            | variables are configured together. Use SOLR_AUTH_TYPE environment variable to
+            | configure authentication type to be used. Currently supported authentication types
+            | are [kerberos, basic]. The value of SOLR_AUTHENTICATION_CLIENT_BUILDER environment
+            | variable will be ignored.
+            """.trimMargin()
         )
 
         val arguments = mutableListOf<String>()

@@ -18,6 +18,7 @@
 package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.defaultLazy
@@ -44,6 +45,10 @@ import org.apache.solr.cli.data.UserLimits
 import org.apache.solr.cli.enums.AuthType
 import org.apache.solr.cli.enums.PlacementPluginMode
 import org.apache.solr.cli.enums.UrlScheme
+import org.apache.solr.cli.options.AuthOptions
+import org.apache.solr.cli.options.JavaOptions
+import org.apache.solr.cli.options.SecurityManagerOptions
+import org.apache.solr.cli.options.SecurityOptions
 import org.apache.solr.cli.processes.CommandChecker
 import org.apache.solr.cli.processes.CommandExecutor
 import org.apache.solr.cli.processes.PrivilegeChecker
@@ -53,31 +58,10 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     override val invokeWithoutSubcommand = true
 
-    private val javaHome by option(
-        envvar = "JAVA_HOME",
-        valueSourceKey = "java.home",
-        hidden = true,
-    ).path()
+    private val javaOptions by JavaOptions()
 
-    private val solrJavaHome by option(
-        envvar = "SOLR_JAVA_HOME",
-        valueSourceKey = "solr.java.home",
-        hidden = true,
-    ).path(canBeFile = false, canBeDir = true)
-
-    private val javaExec by option(hidden = true)
-        .defaultLazy {
-            val javaDir = solrJavaHome ?: javaHome ?: return@defaultLazy "java"
-            javaDir.resolve("bin/java").absolutePathString()
-        }
-
-    private val jstackExec by option(hidden = true)
-        .defaultLazy {
-            val javaDir = solrJavaHome ?: javaHome ?: return@defaultLazy "jstack"
-            javaDir.resolve("bin/jstack").absolutePathString()
-        }
-
-    private val urlScheme by option("--url-scheme").help("Solr URL scheme: http or https, defaults to http if not specified.")
+    private val urlScheme by option("--url-scheme")
+        .help("Solr URL scheme: http or https, defaults to http if not specified.")
         .enum<UrlScheme>()
 
     private val jettyHost by option(
@@ -129,24 +113,23 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         envvar = "SOLR_HOME",
         valueSourceKey = "solr.home",
     ).help {
-        // TODO Review line breaks in console output
         """Solr will create core directories under this directory. This allows you to run multiple
-           Solr instances on the same host while reusing the same server directory set using the
-           --server-dir parameter. If set,the specified directory should contain a solr.xml file,
-           unless solr.xml exists in Zookeeper. This parameter is ignored when running examples
-           (-e), as the solr.home depends on which example is run. The default value is server/solr.
-           If passed relative dir, validation with current dir will be done, before trying default
-           server/<dir>.
-        """.trimIndent()
+        | Solr instances on the same host while reusing the same server directory set using the
+        | --server-dir parameter. If set,the specified directory should contain a solr.xml file,
+        | unless solr.xml exists in Zookeeper. This parameter is ignored when running examples
+        | (-e), as the solr.home depends on which example is run. The default value is server/solr.
+        | If passed relative dir, validation with current dir will be done, before trying default
+        | server/<dir>.
+        """.trimMargin()
     }.path(canBeFile = false, canBeDir = true, mustExist = true)
         .defaultLazy { serverDirectory.resolve("solr") }
 
     private val dataHome by option()
-        .help(
+        .help {
             """Sets the directory where Solr will store index data in <instance_dir>/data
-               subdirectories. If not set, Solr uses solr.solr.home for config and data.
-             """.trimIndent(),
-        ).path(canBeFile = false, canBeDir = true, mustExist = true)
+            | subdirectories. If not set, Solr uses solr.solr.home for config and data.
+            """.trimMargin()
+        }.path(canBeFile = false, canBeDir = true, mustExist = true)
         .defaultLazy { solrHome.resolve("data") }
 
     private val configDirectory by option(
@@ -178,21 +161,21 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         .defaultLazy { installDirectory.resolve("bin") }
 
     private val userManagedMode by option("--user-managed")
-        .help(
+        .help {
             """Start Solr in User Managed mode.
-               See the Ref Guide for more details: https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html
-            """.trimIndent()
-        ).flag()
+            | See the Ref Guide for more details: https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html
+            """.trimMargin()
+        }.flag()
 
     private val memory by option(
         "-m", "--memory",
         envvar = "SOLR_HEAP",
         valueSourceKey = "solr.heap.value",
-    ).help(
+    ).help {
         """Sets the min (-Xms) and max (-Xmx) heap size for the JVM, such as: -m 4g results in:
-           -Xms4g -Xmx4g; by default, this script sets the heap size to 512m.
-        """.trimIndent()
-    ).convert { MemoryAllocation(initial = it) }
+        | -Xms4g -Xmx4g; by default, this script sets the heap size to 512m.
+        """.trimMargin()
+    }.convert { MemoryAllocation(initial = it) }
 
     private val jvmMemoryOptions by option(
         envvar = "SOLR_JAVA_MEM",
@@ -201,12 +184,11 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     ).multiple()
 
     private val jvmOptions by option("--jvm-opts")
-        .help(
+        .help {
             """Additional parameters to pass to the JVM when starting Solr.
-               Note that the values need to be quoted.
-            """.trimIndent()
-        )
-        .multiple()
+            | Note that the values need to be quoted.
+            """.trimMargin()
+        }.multiple()
 
     // TODO Consider deprecating this option.
     private val jettyParams by option(
@@ -214,133 +196,34 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     ).help("Additional parameters to pass to Jetty when starting Solr.")
 
     // TODO Consider making foreground mutually exclusive with example
-    private val foreground by option("--foreground").help("Start Solr in foreground; default starts Solr in the background and sends stdout / stderr to solr-PORT-console.log")
+    private val foreground by option("--foreground")
+        .help {
+            """Start Solr in foreground; default starts Solr in the background and sends
+            | stdout / stderr to solr-PORT-console.log
+            """.trimMargin()
+        }
         .flag()
 
     // TODO Move option to ExampleCommand
     // TODO Consider replacing with --prompt and use --no-prompt behavior by default
-    private val noPrompt by option("--no-prompt").help("Don't prompt for input; accept all defaults when running examples that accept user input.")
+    private val noPrompt by option("--no-prompt")
+        .help("Don't prompt for input; accept all defaults when running examples that accept user input.")
         .flag()
 
-    private val force by option("-f", "--force").help("Force option in case Solr is run as root.")
+    private val force by option("-f", "--force")
+        .help("Force option in case Solr is run as root.")
         .flag()
 
-    private val verbose by option("--verbose").help("Enable verbose command output.").flag()
+    private val verbose by option("--verbose")
+        .help("Enable verbose command output.")
+        .flag()
 
     // TODO If this affects solr and not the CLI, consider removing it
     private val quiet by option(
         "-q", "--quiet",
     ).help("Sets default log level of Solr to WARN instead of INFO.")
 
-    private val sslKeyStore by option(
-        envvar = "SOLR_SSL_KEY_STORE",
-        valueSourceKey = "solr.ssl.keyStore",
-        hidden = true,
-    ).path(mustExist = true) // TODO Is this a path or file?
-
-    private val sslKeyStorePassword by option(
-        envvar = "SOLR_SSL_KEY_STORE_PASSWORD",
-        valueSourceKey = "solr.ssl.keyStorePassword",
-        hidden = true,
-    )
-
-    private val sslKeyStoreType by option(
-        envvar = "SOLR_SSL_KEY_STORE_TYPE",
-        valueSourceKey = "solr.ssl.keyStoreType",
-        hidden = true,
-    )
-
-    private val sslCheckPeerName by option(
-        envvar = "SOLR_SSL_CHECK_PEER_NAME",
-        valueSourceKey = "solr.ssl.checkPeerName",
-    ).boolean()
-
-    private val sslTrustStore by option(
-        envvar = "SOLR_SSL_TRUST_STORE",
-        valueSourceKey = "solr.ssl.trustStore",
-        hidden = true,
-    ).path(mustExist = true) // TODO Is this a path or file?
-
-    private val sslTrustStorePassword by option(
-        envvar = "SOLR_SSL_TRUST_STORE_PASSWORD",
-        valueSourceKey = "solr.ssl.trustStorePassword",
-        hidden = true,
-    )
-
-    private val sslTrustStoreType by option(
-        envvar = "SOLR_SSL_TRUST_STORE_TYPE",
-        valueSourceKey = "solr.ssl.trustStoreType",
-        hidden = true,
-    )
-
-    private val verifySslClientHostname by option(
-        envvar = "SOLR_SSL_CLIENT_HOSTNAME_VERIFICATION",
-        valueSourceKey = "solr.ssl.client.hostnameVerification",
-        hidden = true,
-    ).boolean()
-        .default(true)
-
-    private val sslClientNeedAuth by option(
-        envvar = "SOLR_SSL_CLIENT_NEED_AUTH",
-        valueSourceKey = "solr.ssl.client.needAuth",
-        hidden = true,
-    ).boolean()
-
-    private val sslClientWantAuth by option(
-        envvar = "SOLR_SSL_CLIENT_WANT_AUTH",
-        valueSourceKey = "solr.ssl.client.wantAuth",
-        hidden = true,
-    ).boolean()
-
-    private val sslClientKeyStore by option(
-        envvar = "SOLR_SSL_CLIENT_KEY_STORE",
-        valueSourceKey = "solr.ssl.client.keyStore",
-        hidden = true,
-    ).path(mustExist = true) // TODO Is this a path or file?
-
-    private val sslClientKeyStorePassword by option(
-        envvar = "SOLR_SSL_CLIENT_KEY_STORE_PASSWORD",
-        valueSourceKey = "solr.ssl.client.keyStorePassword",
-        hidden = true,
-    )
-
-    private val sslClientKeyStoreType by option(
-        envvar = "SOLR_SSL_CLIENT_KEY_STORE_TYPE",
-        valueSourceKey = "solr.ssl.client.keyStoreType",
-        hidden = true,
-    )
-
-    private val sslClientTrustStore by option(
-        envvar = "SOLR_SSL_CLIENT_KTRUST_STORE",
-        valueSourceKey = "solr.ssl.client.trustStore",
-        hidden = true,
-    ).path(mustExist = true) // TODO Is this a path or file?
-
-    private val sslClientTrustStorePassword by option(
-        envvar = "SOLR_SSL_CLIENT_TRUST_STORE_PASSWORD",
-        valueSourceKey = "solr.ssl.client.trustStorePassword",
-        hidden = true,
-    )
-
-    private val sslClientTrustStoreType by option(
-        envvar = "SOLR_SSL_CLIENT_TRUST_STORE_TYPE",
-        valueSourceKey = "solr.ssl.client.trustStoreType",
-        hidden = true,
-    )
-
-    private val isSslEnabled by option(
-        "--ssl-enabled",
-        envvar = "SOLR_SSL_ENABLED",
-        valueSourceKey = "solr.ssl.enabled",
-        hidden = true,
-    ).flag()
-
-    private val isSslReload by option(
-        "--ssl-reload",
-        envvar = "SOLR_SSL_RELOAD",
-        valueSourceKey = "solr.ssl.reload",
-        hidden = true,
-    ).flag("--disable-ssl-reload", default = true)
+    private val securityOptions by SecurityOptions(port = { port })
 
     private val isUserLimitChecksEnabled by option(
         "--enable-ulimits",
@@ -421,7 +304,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private val rmiPort by option(
         envvar = "SOLR_JMX_RMI_PORT",
-        valueSourceKey =  "solr.jmx.rmi.port",
+        valueSourceKey = "solr.jmx.rmi.port",
         hidden = true,
     ).int()
         .restrictTo(0, UShort.MAX_VALUE.toInt())
@@ -517,11 +400,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         hidden = true,
     ).default("256k")
 
-    private val isSecurityManagerEnabled by option(
-        envvar = "SOLR_SECURITY_MANAGER_ENABLED",
-        valueSourceKey = "solr.security.manager.enabled",
-        hidden = true,
-    ).flag()
+    private val securityManagerOptions by SecurityManagerOptions(serverDirectory = { serverDirectory })
 
     private val isHeapDumpEnabled by option(
         envvar = "SOLR_HEAP_DUMP_ENABLED",
@@ -542,23 +421,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         hidden = true,
     ).multiple()
 
-    private val authType by option(
-        envvar = "SOLR_AUTH_TYPE",
-        valueSourceKey = "solr.auth.type",
-        hidden = true,
-    ).enum<AuthType>()
-
-    private val authOptions by option(
-        envvar = "SOLR_AUTHENTICATION_OPTS",
-        valueSourceKey = "solr.auth.options",
-        hidden = true,
-    ).multiple()
-
-    private val authClientBuilder by option(
-        envvar = "SOLR_AUTHENTICATION_CLIENT_BUILDER",
-        valueSourceKey = "solr.auth.client.builder",
-        hidden = true,
-    )
+    private val authOptions by AuthOptions(::echo)
 
     private val deleteUnknownCores by option(
         envvar = "SOLR_DELETE_UNKNOWN_CORES",
@@ -607,14 +470,14 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
      * @param warnOptionals Echos warn messages for optional commands if `true`.
      */
     private suspend fun checkCommands(warnOptionals: Boolean = true) {
-        CommandChecker.commandExists(javaExec)
+        CommandChecker.commandExists(javaOptions.javaExec)
             .onFailure {
                 echo(
-                    message = """Could not find java executable "$javaExec".
-                        Please make sure if JAVA_HOME or SOLR_JAVA_HOME is set, that they point
-                        to the right directory. Alternatively, if these environment variables are
-                        not set, make sure that the "java" command can be executed. 
-                        """.trimIndent(),
+                    message = """Could not find java executable "${javaOptions.javaExec}".
+                    | Please make sure if JAVA_HOME or SOLR_JAVA_HOME is set, that they point
+                    | to the right directory. Alternatively, if these environment variables are
+                    | not set, make sure that the "java" command can be executed. 
+                    """.trimMargin(),
                     err = true,
                 )
                 exitProcess(ExitCode.COMMAND_NOT_FOUND)
@@ -672,19 +535,19 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             "-DwaitForZk=$zkWait",
             "-Dsolr.data.home=${dataHome.absolutePathString()}", // TODO Is there a change data-home to be not set?
             "-Dsolr.deleteUnknownCores=$deleteUnknownCores",
-            *composeSecurityArguments(),
+            *securityOptions.composeSecurityArguments(),
             "--add-modules",
             "jdk.incubator.vector",
-            *composeAuthArguments(),
+            *authOptions.composeAuthArguments(),
             *internalOptions.toTypedArray(),
             *composeHeapDumpArguments(),
-            *composeSecurityManagerOptions(),
+            *securityManagerOptions.composeSecurityManagerOptions(),
             // TODO Solr AdminUI options
             // TODO Solr options
         )
 
         val command = if (foreground) arrayOf(
-            javaExec,
+            javaOptions.javaExec,
             *startArguments,
             *jvmOptions.toTypedArray(),
             "-jar",
@@ -692,7 +555,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             *composeJettyArguments(),
             // TODO $SOLR_JETTY_ADDL_CONFIG
         ) else arrayOf(
-            javaExec,
+            javaOptions.javaExec,
             *startArguments,
             *jvmOptions.toTypedArray(),
             "-Dsolr.log.muteconsole",
@@ -722,9 +585,9 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     }
 
     private fun composeMemoryOptions(): Array<String> {
-        return memory?.let { arrayOf("-Xms${it.initial}", "-Xmx${it.max}")}
+        return memory?.let { arrayOf("-Xms${it.initial}", "-Xmx${it.max}") }
             ?: if (jvmMemoryOptions.isNotEmpty()) jvmMemoryOptions.toTypedArray()
-        else with (MemoryAllocation()) { arrayOf("-Xms${initial}", "-Xmx${max}") }
+            else with(MemoryAllocation()) { arrayOf("-Xms${initial}", "-Xmx${max}") }
     }
 
     private fun composeAclsArguments(): Array<String> {
@@ -758,7 +621,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         val arguments = mutableListOf<String>()
         arguments.add("-DzkClientTimeout=$zkClientTimeout")
         zkHost?.let { arguments.add("-DzkHost=$it") } ?: run {
-            if(port > UShort.MAX_VALUE.toInt() - 1000) {
+            if (port > UShort.MAX_VALUE.toInt() - 1000) {
                 echo(
                     message = """Zookeeper host is not set and Solr port is $port, which would 
                         |result in an invalid embedded Zookeeper port!""".trimMargin(),
@@ -774,9 +637,10 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
         if (zkCreateChRoot) arguments.add("-DcreateZkChroot=true")
 
-        val bootstrapCollection = Path(solrHome.absolutePathString(), "collection1", "core.properties")
-            .toFile()
-            .exists()
+        val bootstrapCollection =
+            Path(solrHome.absolutePathString(), "collection1", "core.properties")
+                .toFile()
+                .exists()
         if (bootstrapCollection) {
             arguments.add("-Dbootstrap_confdir=./solr/collection1/conf")
             arguments.add("-Dcollection.configName=myconf")
@@ -790,10 +654,10 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private fun composeJettyArguments(): Array<String> {
         val arguments = mutableListOf<String>()
-        if (isSslEnabled) {
+        if (securityOptions.isSslEnabled) {
             arguments.add("--module=https")
             arguments.add("--lib=$serverDirectory/solr-webapp/webapp/WEB-INF/lib/*")
-            if (isSslReload) {
+            if (securityOptions.isSslReload) {
                 arguments.add("--module=ssl-reload")
             }
         } else arguments.add("--module=http")
@@ -836,114 +700,6 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         advertisePort?.let { arguments.add("-Dsolr.port.advertise=$it") }
         jettyHost?.let { arguments.add("-Dsolr.jetty.host=$it") }
         embeddedZkHost?.let { arguments.add("-Dsolr.zk.embedded.host=$it") }
-
-        return arguments.toTypedArray()
-    }
-
-    // TODO See if these properties can all be wrapper inside a CliContext and reused
-    private fun composeSecurityArguments(): Array<String> {
-        if (!isSslEnabled) return emptyArray()
-        val arguments = mutableListOf<String>()
-        arguments.add("-Dsolr.keyStoreReload.enabled=$isSslReload")
-        sslKeyStore?.let {
-            arguments.add("-Dsolr.jetty.keystore=${it.toAbsolutePath()}")
-            if (isSslReload && isSecurityManagerEnabled) {
-                // In this case we need to allow reads from the parent directory of the keystore
-                arguments.add("-Dsolr.jetty.keystoreParentPath=${it.parent.toAbsolutePath()}")
-            }
-        }
-        // TODO Export keystore password if sslKeyStorePassword is set
-        sslKeyStoreType?.let { arguments.add("-Dsolr.jetty.keystore.type=$it") }
-
-        sslTrustStore?.let { arguments.add("-Dsolr.jetty.truststore=$it") }
-        // TODO Export truststore password if sslTrustStorePassword is set
-        sslTrustStoreType?.let { arguments.add("-Dsolr.jetty.truststore.type=$it") }
-        if (verifySslClientHostname)
-            arguments.add("-Dsolr.jetty.ssl.verifyClientHostName=HTTPS")
-
-        sslClientNeedAuth?.let { arguments.add("-Dsolr.jetty.ssl.needClientAuth=$it") }
-        sslClientWantAuth?.let { arguments.add("-Dsolr.jetty.ssl.wantClientAuth=$it") }
-
-        sslClientKeyStore?.let {
-            arguments.add("-Djavax.net.ssl.keyStore=${it.toAbsolutePath()}")
-            // TODO Export SOLR_SSL_CLIENT_KEY_STORE_PASSWORD if sslClientKeyStorePassword is set
-            sslClientKeyStoreType?.let { arguments.add("-Djavax.net.ssl.keyStoreType=$it") }
-
-            if (isSslReload && isSecurityManagerEnabled) {
-                // In this case we need to allow reads from the parent directory of the keystore
-                arguments.add("-Djavax.net.ssl.keyStoreParentPath=${it.toAbsolutePath()}")
-            }
-        } ?: run {
-            sslKeyStore?.let { arguments.add("-Djavax.net.ssl.keyStore=${it.toAbsolutePath()}") }
-            sslKeyStoreType?.let { arguments.add("-Djavax.net.ssl.keyStoreType=$it") }
-            // TODO Is the security manager check here not relevant for parent directory?
-        }
-        sslCheckPeerName?.let {
-            arguments.add("-Dsolr.ssl.checkPeerName=$sslCheckPeerName")
-            arguments.add("-Dsolr.jetty.ssl.sniHostCheck=$sslCheckPeerName")
-        }
-
-        sslClientTrustStore?.let {
-            arguments.add("-Djavax.net.ssl.trustStore=${it.toAbsolutePath()}")
-            // TODO Export SOLR_SSL_CLIENT_TRUST_STORE_PASSWORD if sslClientTrustStorePassword is set
-            sslClientTrustStoreType?.let { arguments.add("-Djavax.net.ssl.trustStoreType=$it") }
-
-            // TODO Is the security manager check here not relevant for parent directory?
-        } ?: run {
-            sslTrustStore?.let { arguments.add("-Djavax.net.ssl.trustStore=${it.toAbsolutePath()}") }
-            sslTrustStoreType?.let { arguments.add("-Djavax.net.ssl.trustStoreType=$it") }
-            // TODO Is the security manager check here not relevant for parent directory?
-        }
-
-        // If using SSL and solr.jetty.https.port not set explicitly, use the jetty.port
-        arguments.add("-Dsolr.jetty.https.port=$port")
-
-        return arguments.toTypedArray()
-    }
-
-    private fun composeSecurityManagerOptions(): Array<String> {
-        return if (!isSecurityManagerEnabled) emptyArray()
-        else arrayOf(
-            "-Djava.security.manager",
-            "-Djava.security.policy=${
-                Path(serverDirectory.absolutePathString(), "etc", "security.policy")
-                    .absolutePathString()
-            }",
-            "-Djava.security.properties=${
-                Path(serverDirectory.absolutePathString(), "etc", "security.properties")
-                    .absolutePathString()
-            }",
-            "-Dsolr.internal.network.permission=*",
-        )
-    }
-
-    private fun composeAuthArguments(suppressWarnings: Boolean = false): Array<String> {
-        if(!suppressWarnings && authType == null && authOptions.isNotEmpty()) echo(
-            message = """[WARNING] SOLR_AUTHENTICATION_OPTS environment variable configured without
-                associated SOLR_AUTH_TYPE variable. Please configure SOLR_AUTH_TYPE environment
-                variable with the authentication type to be used. Currently supported authentication
-                types are [kerberos, basic]
-                """.trimIndent()
-        )
-
-        if (!suppressWarnings && authType != null && authClientBuilder != null) echo(
-            message = """[WARNING] SOLR_AUTHENTICATION_CLIENT_BUILDER and SOLR_AUTH_TYPE environment
-                variables are configured together. Use SOLR_AUTH_TYPE environment variable to
-                configure authentication type to be used. Currently supported authentication types
-                are [kerberos, basic]. The value of SOLR_AUTHENTICATION_CLIENT_BUILDER environment
-                variable will be ignored.
-                """.trimIndent()
-        )
-
-        val arguments = mutableListOf<String>()
-
-        when (authType) {
-            AuthType.Basic -> "org.apache.solr.client.solrj.impl.PreemptiveBasicAuthClientBuilderFactory"
-            AuthType.Kerberos -> "org.apache.solr.client.solrj.impl.Krb5HttpClientBuilder"
-            null -> authClientBuilder
-        }?.let { arguments.add("-Dsolr.httpclient.builder.factory=$it") }
-
-        arguments.addAll(authOptions)
 
         return arguments.toTypedArray()
     }

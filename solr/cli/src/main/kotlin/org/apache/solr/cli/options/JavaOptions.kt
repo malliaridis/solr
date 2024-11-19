@@ -23,7 +23,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.path
 import kotlin.io.path.absolutePathString
 
-class JavaOptions : OptionGroup() {
+internal class JavaOptions : OptionGroup() {
 
     val javaHome by option(
         envvar = "JAVA_HOME",

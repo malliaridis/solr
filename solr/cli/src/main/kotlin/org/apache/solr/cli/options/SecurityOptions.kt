@@ -141,7 +141,6 @@ internal class SecurityOptions(
         hidden = true,
     ).flag("--disable-ssl-reload", default = true)
 
-    // TODO See if these properties can all be wrapper inside a CliContext and reused
     fun composeSecurityArguments(): Array<String> {
         if (!isSslEnabled) return emptyArray()
         val arguments = mutableListOf<String>()

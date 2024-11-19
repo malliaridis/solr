@@ -21,16 +21,12 @@ import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
-import com.github.ajalt.clikt.parameters.types.path
 import com.github.ajalt.clikt.parameters.types.restrictTo
-import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import org.apache.solr.cli.Constants
@@ -92,20 +88,6 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         .help("Enable verbose command output.")
         .flag()
 
-    private val installDirectory by option(
-        "--install-dir",
-        envvar = "SOLR_INSTALL_DIR",
-        valueSourceKey = "solr.install.dir",
-        hidden = true,
-    ).path(mustExist = true, canBeDir = true, canBeFile = false)
-        .defaultLazy { kotlin.io.path.Path("..") }
-
-    private val pidDirectory by option(
-        envvar = "SOLR_PID_DIR",
-        valueSourceKey = "solr.pid.dir",
-    ).path(canBeFile = false, canBeDir = true)
-        .defaultLazy { installDirectory.resolve("bin") }
-
     override suspend fun run() {
         if (all) {
             val solrProcesses = ProcessAnalyzer.findProcesses("java", "start.jar")
@@ -153,7 +135,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
 
         val result = CommandExecutor.executeInForeground(
             command = stopArguments,
-            workingDir = contextOptions.serverDir,
+            workingDir = contextOptions.serverDirectory,
         )
 
         if (result.isSuccess && hasStopped(pid)) {
