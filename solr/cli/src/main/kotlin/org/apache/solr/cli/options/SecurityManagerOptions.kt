@@ -25,7 +25,10 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
 @Deprecated(message = "Security manager is deprecated and will be removed in the future.")
-internal class SecurityManagerOptions(private val serverDirectory: () -> Path) : OptionGroup() {
+internal class SecurityManagerOptions(private val serverDirectory: () -> Path) : OptionGroup(
+    name = "Security Manager Options",
+    help = "Options that configure the security manager."
+) {
 
     val isSecurityManagerEnabled by option(
         envvar = "SOLR_SECURITY_MANAGER_ENABLED",
