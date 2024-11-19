@@ -26,6 +26,7 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.switch
 import com.github.ajalt.clikt.parameters.types.boolean
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
@@ -42,8 +43,8 @@ import org.apache.solr.cli.Constants
 import org.apache.solr.cli.ExitCode
 import org.apache.solr.cli.data.MemoryAllocation
 import org.apache.solr.cli.data.UserLimits
-import org.apache.solr.cli.enums.AuthType
 import org.apache.solr.cli.enums.PlacementPluginMode
+import org.apache.solr.cli.enums.SolrMode
 import org.apache.solr.cli.enums.UrlScheme
 import org.apache.solr.cli.options.AuthOptions
 import org.apache.solr.cli.options.JavaOptions
@@ -160,12 +161,15 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     ).path(canBeFile = false, canBeDir = true)
         .defaultLazy { installDirectory.resolve("bin") }
 
-    private val userManagedMode by option("--user-managed")
-        .help {
+    private val solrMode by option()
+        .switch(
+            "--cloud" to SolrMode.Cloud,
+            "--user-managed" to SolrMode.UserManaged,
+        ).help {
             """Start Solr in User Managed mode.
             | See the Ref Guide for more details: https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html
             """.trimMargin()
-        }.flag()
+        }.default(SolrMode.Cloud)
 
     private val memory by option(
         "-m", "--memory",
@@ -294,7 +298,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.solrxml.required",
         hidden = true,
     ).boolean()
-        .defaultLazy { userManagedMode }
+        .defaultLazy { solrMode.isUserManaged }
 
     private val isRemoteJmxEnabled by option(
         envvar = "SOLR_JMX_ENABLED",
@@ -488,7 +492,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private suspend fun checkFiles() {
         val solrXmlExists = solrHome.resolve("solr.xml").toFile().exists()
-        if (userManagedMode && isSolrXmlRequired && !solrXmlExists) {
+        if (solrMode.isUserManaged && isSolrXmlRequired && !solrXmlExists) {
             echo(
                 message = "Solr home directory ${solrHome.absolutePathString()} must contain a solr.xml file!",
                 err = true,
@@ -616,7 +620,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     }
 
     private fun composeSolrModeArguments(): Array<String> {
-        if (userManagedMode) return emptyArray()
+        if (solrMode.isUserManaged) return emptyArray()
 
         val arguments = mutableListOf<String>()
         arguments.add("-DzkClientTimeout=$zkClientTimeout")
