@@ -19,6 +19,7 @@ package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.parameters.options.defaultLazy
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
@@ -49,6 +50,12 @@ class ExampleCommand : SuspendingCliktCommand(name = "example") {
         // TODO Uncomment .defaultLazy
         // .defaultLazy { File(serverDir.parent, "example") }
     // TODO Test how library behaves if exampleDir default is file and not dir
+
+    // TODO Move option to ExampleCommand
+    // TODO Consider replacing with --prompt and use --no-prompt behavior by default
+    private val noPrompt by option("--no-prompt")
+        .help("Don't prompt for input; accept all defaults when running examples that accept user input.")
+        .flag()
 
     override suspend fun run() {
         echo("Example World!")

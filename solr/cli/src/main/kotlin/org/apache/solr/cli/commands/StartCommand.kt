@@ -208,12 +208,6 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         }
         .flag()
 
-    // TODO Move option to ExampleCommand
-    // TODO Consider replacing with --prompt and use --no-prompt behavior by default
-    private val noPrompt by option("--no-prompt")
-        .help("Don't prompt for input; accept all defaults when running examples that accept user input.")
-        .flag()
-
     private val force by option("-f", "--force")
         .help("Force option in case Solr is run as root.")
         .flag()
@@ -223,9 +217,9 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         .flag()
 
     // TODO If this affects solr and not the CLI, consider removing it
-    private val quiet by option(
-        "-q", "--quiet",
-    ).help("Sets default log level of Solr to WARN instead of INFO.")
+    private val quiet by option("-q", "--quiet")
+        .help("Sets default log level of Solr to WARN instead of INFO.")
+        .flag()
 
     private val securityOptions by SecurityOptions(port = { port })
 
