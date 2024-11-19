@@ -38,6 +38,7 @@ import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
+import kotlin.io.path.createDirectories
 import kotlin.system.exitProcess
 import org.apache.solr.cli.Constants
 import org.apache.solr.cli.ExitCode
@@ -54,6 +55,7 @@ import org.apache.solr.cli.processes.CommandChecker
 import org.apache.solr.cli.processes.CommandExecutor
 import org.apache.solr.cli.processes.PrivilegeChecker
 import org.apache.solr.cli.processes.UserLimitsChecker.checkUserLimits
+import org.apache.solr.cli.utils.ReservedPaths
 
 internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
@@ -496,8 +498,12 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     }
 
     private suspend fun prepareLogging(failOnError: Boolean = false) {
-        // TODO Make sure logsDir not reserved path (contexts|etc|lib|modules|resources|scripts|solr|solr-webapp)
-        // TODO Create and make writeable logs dir
+        val reservedPaths = ReservedPaths.asStringArray()
+        require(ReservedPaths.asStringArray().none { logsDirectory.contains(Path(it)) }) {
+            "Logs directory is set to a reserved path. It cannot contain any of ${reservedPaths.joinToString()}."
+        }
+        logsDirectory.createDirectories()
+        // TODO See how the %p parameter is populated and replace implementation accordingly
         errorFile = logsDirectory.resolve("jvm_crash_%p.log")
 
         // TODO If heap dump dir set, make writeable
