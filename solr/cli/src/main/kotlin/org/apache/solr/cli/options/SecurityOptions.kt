@@ -29,7 +29,10 @@ import kotlin.io.path.absolutePathString
 internal class SecurityOptions(
     private val port: () -> Int,
     private val isSecurityManagerEnabled: () -> Boolean = { false },
-) : OptionGroup() {
+) : OptionGroup(
+    name = "Security Options",
+    help = "Options that are used for security-related configuration."
+) {
 
     val sslKeyStore by option(
         envvar = "SOLR_SSL_KEY_STORE",

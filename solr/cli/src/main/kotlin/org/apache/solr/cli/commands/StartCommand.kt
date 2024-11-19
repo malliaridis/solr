@@ -40,17 +40,17 @@ import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.system.exitProcess
-import org.apache.solr.cli.Constants
 import org.apache.solr.cli.ExitCode
 import org.apache.solr.cli.data.MemoryAllocation
 import org.apache.solr.cli.data.UserLimits
 import org.apache.solr.cli.enums.PlacementPluginMode
 import org.apache.solr.cli.enums.SolrMode
-import org.apache.solr.cli.enums.UrlScheme
 import org.apache.solr.cli.options.AuthOptions
+import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityManagerOptions
 import org.apache.solr.cli.options.SecurityOptions
+import org.apache.solr.cli.options.SolrContextOptions
 import org.apache.solr.cli.processes.CommandChecker
 import org.apache.solr.cli.processes.CommandExecutor
 import org.apache.solr.cli.processes.PrivilegeChecker
@@ -63,105 +63,9 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private val javaOptions by JavaOptions()
 
-    private val urlScheme by option("--url-scheme")
-        .help("Solr URL scheme: http or https, defaults to http if not specified.")
-        .enum<UrlScheme>()
+    private val connectionOptions by ConnectionOptions()
 
-    private val jettyHost by option(
-        envvar = "SOLR_JETTY_HOST",
-        valueSourceKey = "solr.jetty.host",
-        hidden = true,
-    )
-
-    private val host by option(
-        "--host",
-        envvar = "SOLR_HOST",
-        valueSourceKey = "solr.host",
-    ).help("Specify the hostname for this Solr instance.")
-        .defaultLazy { jettyHost ?: "127.0.0.1" }
-
-    private val port by option(
-        "-p", "--port",
-        envvar = "SOLR_PORT",
-        valueSourceKey = "solr.port.bind",
-    ).help("Specify the port to start the Solr HTTP listener on.")
-        .int()
-        .restrictTo(0, UShort.MAX_VALUE.toInt())
-        .default(Constants.DEFAULT_SOLR_PORT)
-
-    private val zkHost by option(
-        "-z", "--zk-host",
-        envvar = "ZK_HOST",
-        valueSourceKey = "solr.zk.host",
-    ).help("Zookeeper connection string.")
-
-    private val installDirectory by option(
-        "--install-dir",
-        envvar = "SOLR_INSTALL_DIR",
-        valueSourceKey = "solr.install.dir",
-        hidden = true,
-    ).path(mustExist = true, canBeDir = true, canBeFile = false)
-        .defaultLazy { Path("..") }
-
-    private val serverDirectory by option(
-        "--server-dir",
-        envvar = "SOLR_SERVER_DIR",
-        valueSourceKey = "solr.server.dir",
-    ).help("Path to the Solr server directory.")
-        .path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { installDirectory.resolve("server") }
-
-    private val solrHome by option(
-        "--solr-home",
-        envvar = "SOLR_HOME",
-        valueSourceKey = "solr.home",
-    ).help {
-        """Solr will create core directories under this directory. This allows you to run multiple
-        | Solr instances on the same host while reusing the same server directory set using the
-        | --server-dir parameter. If set,the specified directory should contain a solr.xml file,
-        | unless solr.xml exists in Zookeeper. This parameter is ignored when running examples
-        | (-e), as the solr.home depends on which example is run. The default value is server/solr.
-        | If passed relative dir, validation with current dir will be done, before trying default
-        | server/<dir>.
-        """.trimMargin()
-    }.path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { serverDirectory.resolve("solr") }
-
-    private val dataHome by option()
-        .help {
-            """Sets the directory where Solr will store index data in <instance_dir>/data
-            | subdirectories. If not set, Solr uses solr.solr.home for config and data.
-            """.trimMargin()
-        }.path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { solrHome.resolve("data") }
-
-    private val configDirectory by option(
-        "--conf-dir",
-        envvar = "SOLR_DEFAULT_CONFDIR",
-        valueSourceKey = "solr.default.confdir",
-    ).path(canBeFile = false, canBeDir = true)
-        .defaultLazy {
-            Path(
-                serverDirectory.absolutePathString(),
-                "solr",
-                "configsets",
-                "_default",
-                "conf",
-            )
-        }
-
-    private val logsDirectory by option(
-        "--logs-dir",
-        envvar = "SOLR_LOGS_DIR",
-        valueSourceKey = "solr.logs.dir",
-    ).path(canBeFile = false, canBeDir = true)
-        .defaultLazy { serverDirectory.resolve("logs") }
-
-    private val pidDirectory by option(
-        envvar = "SOLR_PID_DIR",
-        valueSourceKey = "solr.pid.dir",
-    ).path(canBeFile = false, canBeDir = true)
-        .defaultLazy { installDirectory.resolve("bin") }
+    private val solrContextOptions by SolrContextOptions()
 
     private val solrMode by option()
         .switch(
@@ -169,7 +73,8 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             "--user-managed" to SolrMode.UserManaged,
         ).help {
             """Start Solr in User Managed mode.
-            | See the Ref Guide for more details: https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html
+            | See the Ref Guide for more details:
+            | https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html
             """.trimMargin()
         }.default(SolrMode.Cloud)
 
@@ -205,7 +110,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     private val foreground by option("--foreground")
         .help {
             """Start Solr in foreground; default starts Solr in the background and sends
-            | stdout / stderr to solr-PORT-console.log
+            | stdout / stderr to solr-[PORT]-console.log
             """.trimMargin()
         }
         .flag()
@@ -223,7 +128,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         .help("Sets default log level of Solr to WARN instead of INFO.")
         .flag()
 
-    private val securityOptions by SecurityOptions(port = { port })
+    private val securityOptions by SecurityOptions(port = { connectionOptions.port })
 
     private val isUserLimitChecksEnabled by option(
         "--enable-ulimits",
@@ -265,7 +170,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.stop.port",
         hidden = true,
     ).int()
-        .defaultLazy { port - 1000 }
+        .defaultLazy { connectionOptions.port - 1000 }
 
     private val zkClientTimeout by option(
         envvar = "ZK_CLIENT_TIMEOUT",
@@ -309,7 +214,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     ).int()
         .restrictTo(0, UShort.MAX_VALUE.toInt())
         .defaultLazy {
-            val rmiPort = port + 10_000
+            val rmiPort = connectionOptions.port + 10_000
             if (rmiPort > UShort.MAX_VALUE.toInt()) {
                 echo(
                     message = "RMI port is $rmiPort, which is invalid.",
@@ -352,7 +257,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.java.gc.log.options.value",
         hidden = true,
     ).defaultLazy {
-        """-Xlog:gc*:file=${logsDirectory.absolutePathString()}\solr_gc.log:time,level,tags:filecount=9,filesize=20M"""
+        """-Xlog:gc*:file=${solrContextOptions.logsDirectory.absolutePathString()}\solr_gc.log:time,level,tags:filecount=9,filesize=20M"""
     } // TODO May require multiple() instead of string
 
     // TODO Consider merging plugin properties into a data class
@@ -400,7 +305,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         hidden = true,
     ).default("256k")
 
-    private val securityManagerOptions by SecurityManagerOptions(serverDirectory = { serverDirectory })
+    private val securityManagerOptions by SecurityManagerOptions(serverDirectory = { solrContextOptions.serverDirectory })
 
     private val isHeapDumpEnabled by option(
         envvar = "SOLR_HEAP_DUMP_ENABLED",
@@ -413,7 +318,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         valueSourceKey = "solr.heap.dump.dir",
         hidden = true,
     ).path(canBeDir = true, canBeFile = false)
-        .defaultLazy { logsDirectory.resolve("dumps") }
+        .defaultLazy { solrContextOptions.logsDirectory.resolve("dumps") }
 
     private val internalOptions by option(
         envvar = "SOLR_INTERNAL_OPTS",
@@ -487,10 +392,10 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     }
 
     private suspend fun checkFiles() {
-        val solrXmlExists = solrHome.resolve("solr.xml").toFile().exists()
+        val solrXmlExists = solrContextOptions.solrHome.resolve("solr.xml").toFile().exists()
         if (solrMode.isUserManaged && isSolrXmlRequired && !solrXmlExists) {
             echo(
-                message = "Solr home directory ${solrHome.absolutePathString()} must contain a solr.xml file!",
+                message = "Solr home directory ${solrContextOptions.solrHome.absolutePathString()} must contain a solr.xml file!",
                 err = true,
             )
             exitProcess(ExitCode.GENERAL_ERROR)
@@ -499,12 +404,14 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private suspend fun prepareLogging(failOnError: Boolean = false) {
         val reservedPaths = ReservedPaths.asStringArray()
-        require(ReservedPaths.asStringArray().none { logsDirectory.contains(Path(it)) }) {
+        require(
+            ReservedPaths.asStringArray()
+                .none { solrContextOptions.logsDirectory.contains(Path(it)) }) {
             "Logs directory is set to a reserved path. It cannot contain any of ${reservedPaths.joinToString()}."
         }
-        logsDirectory.createDirectories()
+        solrContextOptions.logsDirectory.createDirectories()
         // TODO See how the %p parameter is populated and replace implementation accordingly
-        errorFile = logsDirectory.resolve("jvm_crash_%p.log")
+        errorFile = solrContextOptions.logsDirectory.resolve("jvm_crash_%p.log")
 
         // TODO If heap dump dir set, make writeable
     }
@@ -521,23 +428,23 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             *composeAclsArguments(),
             *composeJmxArguments(),
             *composeSolrModeArguments(),
-            "-Dsolr.log.dir=${logsDirectory.absolutePathString()}",
-            "-Djetty.port=$port",
+            "-Dsolr.log.dir=${solrContextOptions.logsDirectory.absolutePathString()}",
+            "-Djetty.port=${connectionOptions.port}",
             "-DSTOP.PORT=$stopPort", // TODO Update STOP.PORT to solr.stop.port globally
             "-DSTOP.KEY=$stopKey", // TODO Update STOP.KEY to solr.stop.key globally
-            *composeHostArguments(),
+            *connectionOptions.composeHostArguments(),
             "-Duser.timezone=$timeZone",
             "-XX:-OmitStackTraceInFastThrow", // ensures stack traces in errors
             "-XX:+CrashOnOutOfMemoryError", // ensures that Solr crashes whenever OOME is thrown
             "-XX:ErrorFile=${errorFile.absolutePathString()}",
-            "-Djetty.home=${serverDirectory.absolutePathString()}",
+            "-Djetty.home=${solrContextOptions.serverDirectory.absolutePathString()}",
             *composeLog4JArguments(),
             *composePluginArguments(),
             *composeFeatureArguments(),
             *composeNetworkArguments(),
             "-Xss${javaStackSize}",
             "-DwaitForZk=$zkWait",
-            "-Dsolr.data.home=${dataHome.absolutePathString()}", // TODO Is there a change data-home to be not set?
+            "-Dsolr.data.home=${solrContextOptions.dataHome.absolutePathString()}", // TODO Is there a change data-home to be not set?
             "-Dsolr.deleteUnknownCores=$deleteUnknownCores",
             *securityOptions.composeSecurityArguments(),
             "--add-modules",
@@ -572,14 +479,14 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
         if (foreground) CommandExecutor.executeInForeground(
             command = command,
-            workingDir = serverDirectory,
+            workingDir = solrContextOptions.serverDirectory,
         ) else {
             CommandExecutor.executeInBackground(
                 command = command,
-                workingDir = serverDirectory,
-                logsDir = logsDirectory,
-                pidDir = pidDirectory,
-                identifier = port.toString(),
+                workingDir = solrContextOptions.serverDirectory,
+                logsDir = solrContextOptions.logsDirectory,
+                pidDir = solrContextOptions.pidDirectory,
+                identifier = connectionOptions.port.toString(),
             )
 
             // TODO Linux: Check for low entropy
@@ -614,7 +521,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         arguments.add("-Dcom.sun.management.jmxremote.rmi.port=$rmiPort")
 
         // TODO Check if this changes behavior if host is always set
-        if (host.isNotEmpty()) arguments.add("-Djava.rmi.server.hostname=$host")
+        if (connectionOptions.host.isNotEmpty()) arguments.add("-Djava.rmi.server.hostname=${connectionOptions.host}")
 
         return arguments.toTypedArray()
     }
@@ -624,11 +531,13 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
         val arguments = mutableListOf<String>()
         arguments.add("-DzkClientTimeout=$zkClientTimeout")
-        zkHost?.let { arguments.add("-DzkHost=$it") } ?: run {
-            if (port > UShort.MAX_VALUE.toInt() - 1000) {
+        connectionOptions.zkHost?.let { arguments.add("-DzkHost=$it") } ?: run {
+            if (connectionOptions.port > UShort.MAX_VALUE.toInt() - 1000) {
                 echo(
-                    message = """Zookeeper host is not set and Solr port is $port, which would 
-                        |result in an invalid embedded Zookeeper port!""".trimMargin(),
+                    message = """Zookeeper host is not set and Solr port is
+                        | ${connectionOptions.port}, which would 
+                        | result in an invalid embedded Zookeeper port!
+                        """.trimMargin(),
                     err = true,
                 )
                 exitProcess(ExitCode.GENERAL_ERROR)
@@ -642,7 +551,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         if (zkCreateChRoot) arguments.add("-DcreateZkChroot=true")
 
         val bootstrapCollection =
-            Path(solrHome.absolutePathString(), "collection1", "core.properties")
+            Path(solrContextOptions.solrHome.absolutePathString(), "collection1", "core.properties")
                 .toFile()
                 .exists()
         if (bootstrapCollection) {
@@ -660,7 +569,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         val arguments = mutableListOf<String>()
         if (securityOptions.isSslEnabled) {
             arguments.add("--module=https")
-            arguments.add("--lib=$serverDirectory/solr-webapp/webapp/WEB-INF/lib/*")
+            arguments.add("--lib=${solrContextOptions.serverDirectory}/solr-webapp/webapp/WEB-INF/lib/*")
             if (securityOptions.isSslReload) {
                 arguments.add("--module=ssl-reload")
             }
@@ -670,11 +579,6 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         if (isGzipEnabled) arguments.add("--module=gzip")
 
         return arguments.toTypedArray()
-    }
-
-    private fun composeHostArguments(): Array<String> {
-        return if (jettyHost != "127.0.0.1") emptyArray()
-        else arrayOf("-Dhost=$host")
     }
 
     private fun composeLog4JArguments(): Array<String> {
@@ -702,7 +606,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     private fun composeNetworkArguments(): Array<String> {
         val arguments = mutableListOf<String>()
         advertisePort?.let { arguments.add("-Dsolr.port.advertise=$it") }
-        jettyHost?.let { arguments.add("-Dsolr.jetty.host=$it") }
+        connectionOptions.jettyHost?.let { arguments.add("-Dsolr.jetty.host=$it") }
         embeddedZkHost?.let { arguments.add("-Dsolr.zk.embedded.host=$it") }
 
         return arguments.toTypedArray()
