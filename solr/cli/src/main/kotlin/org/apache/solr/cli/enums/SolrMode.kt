@@ -19,5 +19,8 @@ package org.apache.solr.cli.enums
 
 enum class SolrMode {
     Cloud,
-    UserManaged,
+    UserManaged;
+
+    val isUserManaged: Boolean
+        get() = this == UserManaged
 }
