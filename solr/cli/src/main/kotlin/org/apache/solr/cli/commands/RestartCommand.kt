@@ -53,25 +53,24 @@ class RestartCommand : SuspendingCliktCommand(name = "restart") {
         .help {
             // TODO Review line breaks in console output
             """Sets the solr.solr.home system property; Solr will create core directories under
-            this directory. This allows you to run multiple Solr instances on the same host
-            while reusing the same server directory set using the --server-dir parameter.
-            If set,the specified directory should contain a solr.xml file, unless solr.xml exists
-            in Zookeeper. This parameter is ignored when running examples (-e), as the
-            solr.solr.home depends on which example is run. The default value is server/solr.
-            If passed relative dir, validation with current dir will be done, before trying default
-            server/<dir>.
-            """.trimIndent()
-        }
-        .file(canBeFile = false, canBeDir = true)
+            | this directory. This allows you to run multiple Solr instances on the same host
+            | while reusing the same server directory set using the --server-dir parameter.
+            | If set,the specified directory should contain a solr.xml file, unless solr.xml exists
+            | in Zookeeper. This parameter is ignored when running examples (-e), as the
+            | solr.solr.home depends on which example is run. The default value is server/solr.
+            | If passed relative dir, validation with current dir will be done, before trying
+            | default server/<dir>.
+            """.trimMargin()
+        }.file(canBeFile = false, canBeDir = true)
     // TODO Lookup default values for solrHome
 
     private val dataHome by option()
-        .help(
-            "Sets the solr.data.home system property, where Solr will store index data in " +
-                    "<instance_dir>/data subdirectories. If not set, Solr uses solr.solr.home for " +
-                    "config and data.",
-        )
-        .file(canBeFile = false, canBeDir = true)
+        .help {
+            """Sets the solr.data.home system property, where Solr will store index data in
+            | <instance_dir>/data subdirectories. If not set, Solr uses solr.solr.home for config
+            | and data.
+            """.trimMargin()
+        }.file(canBeFile = false, canBeDir = true)
 
     private val serverDir by option("--server-dir")
         .help("Path to the Solr server directory.")
@@ -80,11 +79,18 @@ class RestartCommand : SuspendingCliktCommand(name = "restart") {
         .required()
 
     private val userManagedMode by option("--user-managed")
-        .help("Start Solr in User Managed mode. See the Ref Guide for more details: https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html")
-        .flag()
+        .help {
+            """Start Solr in User Managed mode. See the Ref Guide for more details:
+            | https://solr.apache.org/guide/solr/latest/deployment-guide/cluster-types.html
+            """.trimMargin()
+        }.flag()
 
     private val memory by option("-m", "--memory")
-        .help("Sets the min (-Xms) and max (-Xmx) heap size for the JVM, such as: -m 4g results in: -Xms4g -Xmx4g; by default, this script sets the heap size to 512m.")
+        .help {
+            """Sets the min (-Xms) and max (-Xmx) heap size for the JVM, such as: -m 4g results in:
+            | -Xms4g -Xmx4g; by default, this script sets the heap size to 512m.
+            """.trimMargin()
+        }
         // TODO See if there is a default memory size
 
     private val jvmOptions by option("--jvm-opts")
@@ -96,8 +102,11 @@ class RestartCommand : SuspendingCliktCommand(name = "restart") {
         .help("Additional parameters to pass to Jetty when starting Solr.")
 
     private val foreground by option("--foreground")
-        .help("Start Solr in foreground; default starts Solr in the background and sends stdout / stderr to solr-PORT-console.log")
-        .flag()
+        .help {
+            """Start Solr in foreground; default starts Solr in the background and sends
+            | stdout / stderr to solr-PORT-console.log
+            """.trimMargin()
+        }.flag()
 
     // TODO Move option to ExampleCommand
     // TODO Consider replacing with --prompt and use --no-prompt behavior by default
@@ -116,7 +125,6 @@ class RestartCommand : SuspendingCliktCommand(name = "restart") {
     // TODO If this affects solr and not the CLI, consider removing it
     private val quiet by option("-q", "--quiet")
         .help("Sets default log level of Solr to WARN instead of INFO.")
-
 
     override suspend fun run() {
         // TODO See if restart can be a combination of stop and start instead

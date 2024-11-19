@@ -27,7 +27,7 @@ import kotlin.io.path.absolutePathString
 
 internal class SolrContextOptions : OptionGroup() {
 
-    val installDir by option(
+    val installDirectory by option(
         "--install-dir",
         envvar = "SOLR_INSTALL_DIR",
         valueSourceKey = "solr.install.dir",
@@ -35,13 +35,13 @@ internal class SolrContextOptions : OptionGroup() {
     ).path(mustExist = true, canBeDir = true, canBeFile = false)
         .defaultLazy { Path("..") }
 
-    val serverDir by option(
+    val serverDirectory by option(
         "--server-dir",
         envvar = "SOLR_SERVER_DIR",
         valueSourceKey = "solr.server.dir",
     ).help("Path to the Solr server directory.")
         .path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { installDir.resolve("server") }
+        .defaultLazy { installDirectory.resolve("server") }
 
     val solrHome by option(
         "--solr-home",
@@ -50,32 +50,32 @@ internal class SolrContextOptions : OptionGroup() {
     ).help {
         // TODO Review line breaks in console output
         """Solr will create core directories under this directory. This allows you to run multiple
-           Solr instances on the same host while reusing the same server directory set using the
-           --server-dir parameter. If set,the specified directory should contain a solr.xml file,
-           unless solr.xml exists in Zookeeper. This parameter is ignored when running examples
-           (-e), as the solr.home depends on which example is run. The default value is server/solr.
-           If passed relative dir, validation with current dir will be done, before trying default
-           server/<dir>.
-        """.trimIndent()
+        | Solr instances on the same host while reusing the same server directory set using the
+        | --server-dir parameter. If set,the specified directory should contain a solr.xml file,
+        | unless solr.xml exists in Zookeeper. This parameter is ignored when running examples
+        | (-e), as the solr.home depends on which example is run. The default value is server/solr.
+        | If passed relative dir, validation with current dir will be done, before trying default
+        | server/<dir>.
+        """.trimMargin()
     }.path(canBeFile = false, canBeDir = true, mustExist = true)
-        .defaultLazy { serverDir.resolve("solr") }
+        .defaultLazy { serverDirectory.resolve("solr") }
 
     val dataHome by option()
-        .help(
+        .help {
             """Sets the directory where Solr will store index data in <instance_dir>/data
-               subdirectories. If not set, Solr uses solr.solr.home for config and data.
-             """.trimIndent(),
-        ).path(canBeFile = false, canBeDir = true, mustExist = true)
+            | subdirectories. If not set, Solr uses solr.solr.home for config and data.
+            """.trimMargin()
+        }.path(canBeFile = false, canBeDir = true, mustExist = true)
         .defaultLazy { solrHome.resolve("data") }
 
-    val confDir by option(
+    val configDirectory by option(
         "--conf-dir",
         envvar = "SOLR_DEFAULT_CONFDIR",
         valueSourceKey = "solr.default.confdir",
     ).path(canBeFile = false, canBeDir = true)
         .defaultLazy {
             Path(
-                serverDir.absolutePathString(),
+                serverDirectory.absolutePathString(),
                 "solr",
                 "configsets",
                 "_default",
@@ -83,11 +83,17 @@ internal class SolrContextOptions : OptionGroup() {
             )
         }
 
-    val logsDir by option(
+    val logsDirectory by option(
         "--logs-dir",
         envvar = "SOLR_LOGS_DIR",
         valueSourceKey = "solr.logs.dir",
     ).path(canBeFile = false, canBeDir = true)
-        .defaultLazy { serverDir.resolve("logs") }
+        .defaultLazy { serverDirectory.resolve("logs") }
 
+    val pidDirectory by option(
+        envvar = "SOLR_PID_DIR",
+        valueSourceKey = "solr.pid.dir",
+        hidden = true,
+    ).path(canBeFile = false, canBeDir = true)
+        .defaultLazy { installDirectory.resolve("bin") }
 }
