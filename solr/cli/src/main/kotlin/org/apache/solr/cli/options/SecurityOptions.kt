@@ -52,6 +52,7 @@ internal class SecurityOptions(
     val sslCheckPeerName by option(
         envvar = "SOLR_SSL_CHECK_PEER_NAME",
         valueSourceKey = "solr.ssl.checkPeerName",
+        hidden = true,
     ).boolean()
 
     val sslTrustStore by option(
