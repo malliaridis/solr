@@ -18,9 +18,77 @@
 package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.help
+import com.github.ajalt.clikt.parameters.groups.required
+import com.github.ajalt.clikt.parameters.options.required
+import io.ktor.client.call.body
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
+import io.ktor.http.path
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import org.apache.solr.cli.options.CommonOptions.collectionNameOption
+import org.apache.solr.cli.options.CommonOptions.connectionOptions
+import org.apache.solr.cli.options.CommonOptions.credentialsOption
+import org.apache.solr.cli.options.CommonOptions.verboseOption
+import org.apache.solr.cli.parameters.types.actionValue
+import org.apache.solr.cli.utils.Utils
 
 class ConfigCommand : SuspendingCliktCommand(name = "config") {
+
+    private val solrUrl by connectionOptions.required()
+
+    private val credentials by credentialsOption
+
+    private val collection by collectionNameOption.required()
+
+    private val action by argument(name = "action")
+        .help("Config API action.")
+
+    private val value by argument("value")
+        .help("Config API action value. May be any JSON object, key=value or string.")
+        .actionValue()
+
+    private val verbose by verboseOption
+
     override suspend fun run() {
-        TODO("Not yet implemented")
+
+        val actualValue = value
+
+        if (action.startsWith("unset-") || action.startsWith("delete-")) {
+            require(actualValue is JsonPrimitive && actualValue.isString) {
+                "Value cannot be a json object or contain '=' if action is of type unset/delete."
+            }
+        } else require(value !is JsonPrimitive) { "Value must be key=value or json object." }
+
+        val updateUrl = URLBuilder(solrUrl).apply {
+            path("api", "collections", collection, "config")
+        }.build()
+
+        if (verbose) echo("POSTing request to Config API: $updateUrl")
+
+        Utils.getHttpClient(credentials).use { client ->
+            val result = withContext(Dispatchers.IO) {
+                client.post(updateUrl) {
+                    setBody(JsonObject(mapOf(action to value)))
+                }
+            }
+
+            val body = result.body<JsonObject>()
+
+            if (verbose) echo("Response body: $body")
+
+            when (result.status) {
+                HttpStatusCode.OK -> echo("Config successfully updated.")
+                HttpStatusCode.Created -> echo("Config update successfully created.")
+                HttpStatusCode.Accepted -> echo("Config update successfully sent.")
+                else -> echo("Failed with status ${result.status} : $body", err = true)
+            }
+        }
     }
 }

@@ -17,6 +17,7 @@
 
 plugins {
     kotlin("jvm") version libs.versions.kotlin.get()
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
     application
 }
 
@@ -32,6 +33,13 @@ dependencies {
     runtimeOnly(libs.apache.log4j.slf4j2impl)
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(platform(libs.eclipse.jetty.bom))
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.jetty)
+    implementation(libs.ktor.client.contentnegotiation)
+    implementation(libs.ktor.serialization.json)
 
     // Permit multiplatform dependency and it's transitive core dependency
     permitUsedUndeclared(libs.jetbrains.annotations)
@@ -39,7 +47,6 @@ dependencies {
     permitUsedUndeclared(libs.ajalt.clikt.core.jvm)
 
     testImplementation(platform(libs.junit.bom))
-    testImplementation(project(":solr:test-framework"))
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit.jupiter)

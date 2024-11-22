@@ -409,7 +409,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         val reservedPaths = ReservedPaths.asStringArray()
         require(
             ReservedPaths.asStringArray()
-                .none { solrContextOptions.logsDirectory.contains(Path(it)) }) {
+                .none { solrContextOptions.logsDirectory.endsWith(Path(it)) }) {
             "Logs directory is set to a reserved path. It cannot contain any of ${reservedPaths.joinToString()}."
         }
         solrContextOptions.logsDirectory.createDirectories()
@@ -524,7 +524,8 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         arguments.add("-Dcom.sun.management.jmxremote.rmi.port=$rmiPort")
 
         // TODO Check if this changes behavior if host is always set
-        if (connectionOptions.host.isNotEmpty()) arguments.add("-Djava.rmi.server.hostname=${connectionOptions.host}")
+        if (connectionOptions.host.isNotEmpty())
+            arguments.add("-Djava.rmi.server.hostname=${connectionOptions.host}")
 
         return arguments.toTypedArray()
     }

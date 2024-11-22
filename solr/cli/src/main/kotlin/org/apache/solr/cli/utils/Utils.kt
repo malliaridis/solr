@@ -17,10 +17,25 @@
 
 package org.apache.solr.cli.utils
 
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
 import org.apache.solr.cli.exceptions.ProcessNotFoundException
 import org.apache.solr.cli.processes.ProcessAnalyzer
 
 object Utils {
+
+    private val httpClient = HttpClient {
+        install(ContentNegotiation) {
+            json()
+        }
+        defaultRequest {
+            contentType(ContentType.Application.Json)
+        }
+    }
 
     /**
      * Searches for a locally running Solr instance and returns the PID if found.
@@ -56,4 +71,6 @@ object Utils {
         if(keyValue.size != 2 || keyValue[1].isBlank()) return null
         return keyValue[1].toIntOrNull()
     }
+
+    fun getHttpClient(credentials: String?) = httpClient
 }
