@@ -18,7 +18,6 @@
 package org.apache.solr.cli.processes
 
 import java.io.File
-import java.nio.file.FileSystems
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -26,9 +25,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import kotlinx.io.files.FileSystem
-import kotlinx.io.files.Path
-import org.junit.jupiter.api.assertThrows
 
 class CommandCheckerTest {
 

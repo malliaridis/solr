@@ -86,6 +86,9 @@ allprojects {
                 handler.add(conf.name, libs.netty.bom, {
                     because 'version alignment with known BOM for consistency across project'
                 })
+                handler.add(conf.name, libs.junit.bom, {
+                    because 'version alignment with known BOM for consistency across project'
+                })
 
                 // Add known dependencies that have multiple versions as constraints
                 // to align versions
@@ -189,6 +192,15 @@ allprojects {
                     because 'version alignment for consistency across project'
                 })
                 handler.add(conf.name, libs.hamcrest.hamcrest, {
+                    because 'version alignment for consistency across project'
+                })
+                handler.add(conf.name, libs.jetbrains.annotations, {
+                    because 'version alignment for consistency across project'
+                })
+                handler.add(conf.name, libs.kotlin.stdlib, {
+                    because 'version alignment for consistency across project'
+                })
+                handler.add(conf.name, libs.java.jna, {
                     because 'version alignment for consistency across project'
                 })
 

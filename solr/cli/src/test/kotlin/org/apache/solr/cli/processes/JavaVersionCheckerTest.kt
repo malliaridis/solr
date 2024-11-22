@@ -1,6 +1,5 @@
 package org.apache.solr.cli.processes
 
-import com.github.ajalt.clikt.core.parse
 import kotlin.io.path.Path
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -10,7 +9,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.files.FileNotFoundException
-import org.apache.solr.cli.TestCliCommand
 import org.apache.solr.cli.processes.JavaVersionChecker.getJavaMajorVersion
 
 class JavaVersionCheckerTest {

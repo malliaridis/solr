@@ -16,7 +16,7 @@
  */
 
 plugins {
-    kotlin("jvm") version "1.9.10"
+    kotlin("jvm") version libs.versions.kotlin.get()
     application
 }
 
@@ -25,23 +25,24 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
-    implementation("org.jetbrains.kotlinx:kotlinx-io-core:0.5.4")
-    implementation("com.github.ajalt.clikt:clikt:5.0.1")
-    implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
-    runtimeOnly("org.apache.logging.log4j:log4j-slf4j2-impl")
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlinx.io.core)
+    implementation(libs.ajalt.clikt)
+    implementation(libs.oshai.logging.jvm)
+    runtimeOnly(libs.apache.log4j.slf4j2impl)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation(libs.kotlinx.coroutines.core)
 
     // Permit multiplatform dependency and it's transitive core dependency
-    permitUsedUndeclared("org.jetbrains:annotations")
-    permitUsedUndeclared("com.github.ajalt.clikt:clikt-jvm")
-    permitUsedUndeclared("com.github.ajalt.clikt:clikt-core-jvm")
+    permitUsedUndeclared(libs.jetbrains.annotations)
+    permitUsedUndeclared(libs.ajalt.clikt.jvm)
+    permitUsedUndeclared(libs.ajalt.clikt.core.jvm)
 
+    testImplementation(platform(libs.junit.bom))
     testImplementation(project(":solr:test-framework"))
     testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit.jupiter)
 }
 
 kotlin {
