@@ -43,7 +43,6 @@ dependencies {
     implementation(libs.ktor.serialization.json)
 
     testImplementation(platform(libs.junit.bom))
-    testImplementation(project(":solr:test-framework"))
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit.jupiter)

@@ -37,31 +37,36 @@ object Constants {
     /**
      * Default number of nodes to create when starting Solr in cloud mode.
      */
-    const val DEFAULT_NODE_COUNT = 2;
+    const val DEFAULT_NODE_COUNT = 2
 
     /**
      * Default number of seconds that the solr script will wait for Solr to stop gracefully.
      *
      * @see Environment.SOLR_STOP_WAIT
      */
-    const val DEFAULT_SOLR_STOP_WAITMS = 180000L;
+    const val DEFAULT_SOLR_STOP_WAITMS = 180000L
 
     /**
      * Default number of seconds that the solr script will wait for Solr to start.
      *
      * @see Environment.SOLR_START_WAIT
      */
-    const val DEFAULT_SOLR_START_WAIT = 180;
+    const val DEFAULT_SOLR_START_WAIT = 180
 
     /**
      * Default Solr hostname that is used as fallback.
      */
-    const val DEFAULT_SOLR_HOST = "127.0.0.1";
+    const val DEFAULT_SOLR_HOST = "127.0.0.1"
 
     /**
      * Default Solr port.
      */
-    const val DEFAULT_SOLR_PORT = 8983;
+    const val DEFAULT_SOLR_PORT = 8983
+
+    /**
+     * Default Solr URL.
+     */
+    const val DEFAULT_SOLR_URL = "127.0.0.1"
 
     /**
      * Default cloud ports of a two-node-cluster.
