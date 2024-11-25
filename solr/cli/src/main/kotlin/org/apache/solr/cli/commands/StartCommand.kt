@@ -19,21 +19,8 @@ package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import com.github.ajalt.clikt.parameters.options.convert
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.defaultLazy
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.help
-import com.github.ajalt.clikt.parameters.options.multiple
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.switch
-import com.github.ajalt.clikt.parameters.types.boolean
-import com.github.ajalt.clikt.parameters.types.enum
-import com.github.ajalt.clikt.parameters.types.file
-import com.github.ajalt.clikt.parameters.types.int
-import com.github.ajalt.clikt.parameters.types.long
-import com.github.ajalt.clikt.parameters.types.path
-import com.github.ajalt.clikt.parameters.types.restrictTo
+import com.github.ajalt.clikt.parameters.options.*
+import com.github.ajalt.clikt.parameters.types.*
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
@@ -42,15 +29,10 @@ import kotlin.io.path.createDirectories
 import kotlin.system.exitProcess
 import org.apache.solr.cli.ExitCode
 import org.apache.solr.cli.domain.MemoryAllocation
-import org.apache.solr.cli.domain.UserLimits
 import org.apache.solr.cli.domain.PlacementPluginMode
 import org.apache.solr.cli.domain.SolrMode
-import org.apache.solr.cli.options.AuthOptions
-import org.apache.solr.cli.options.ConnectionOptions
-import org.apache.solr.cli.options.JavaOptions
-import org.apache.solr.cli.options.SecurityManagerOptions
-import org.apache.solr.cli.options.SecurityOptions
-import org.apache.solr.cli.options.SolrContextOptions
+import org.apache.solr.cli.domain.UserLimits
+import org.apache.solr.cli.options.*
 import org.apache.solr.cli.services.CommandChecker
 import org.apache.solr.cli.services.CommandExecutor
 import org.apache.solr.cli.services.PrivilegeChecker
@@ -63,7 +45,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
     private val javaOptions by JavaOptions()
 
-    private val connectionOptions by ConnectionOptions()
+    private val connectionOptions by StartConnectionOptions()
 
     private val solrContextOptions by SolrContextOptions()
 

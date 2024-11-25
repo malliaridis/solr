@@ -20,7 +20,5 @@ package org.apache.solr.cli.commands
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 
 class ZookeeperCommand : SuspendingCliktCommand(name = "zk") {
-    override suspend fun run() {
-        TODO("Not yet implemented")
-    }
+    override suspend fun run() = Unit
 }

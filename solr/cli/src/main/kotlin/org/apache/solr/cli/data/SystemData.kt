@@ -22,5 +22,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SystemData(
     val mode: SystemMode = SystemMode.Unknown,
+    val zkHost: String = "",
     // Only relevant information is included here
 )

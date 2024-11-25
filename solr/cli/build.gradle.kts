@@ -26,6 +26,11 @@ repositories {
 }
 
 dependencies {
+    // Dependencies to solrj required for executing ZK operations
+    implementation(project(":solr:core"))
+    implementation(project(":solr:solrj"))
+    implementation(project(":solr:solrj-zookeeper"))
+
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.io.core)
     implementation(libs.ajalt.clikt)

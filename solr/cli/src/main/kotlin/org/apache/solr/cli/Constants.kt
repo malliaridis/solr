@@ -288,4 +288,13 @@ object Constants {
      * Default value for whether to enable SSL reload.
      */
     const val DEFAULT_SOLR_SSL_RELOAD_ENABLED = true
+
+    /**
+     * Compression over the wire and stored in Zookeeper of the state.json. The value provided is
+     * the minimum length of bytes to compress state.json, i.e. any state.json above that size in
+     * bytes will be compressed.
+     *
+     * The default is -1, meaning state.json is always uncompressed.
+     */
+    const val DEFAULT_ZK_MIN_STATE_COMPRESSION = -1
 }

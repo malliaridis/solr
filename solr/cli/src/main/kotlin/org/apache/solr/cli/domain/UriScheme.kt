@@ -15,12 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.commands.zookeeper
+package org.apache.solr.cli.domain
 
-import com.github.ajalt.clikt.command.SuspendingCliktCommand
+enum class UriScheme {
+    File,
+    Zk;
 
-class DownConfigCommand : SuspendingCliktCommand(name = "downconfig") {
-    override suspend fun run() {
-        TODO("Not yet implemented")
+    val asScheme: String
+        get() = "${this.toString().lowercase()}://"
+
+    val isRemote: Boolean
+        get() = this == Zk
+
+    val isLocal: Boolean
+        get() = this == File
+
+    companion object {
+        fun String.toUriScheme(): UriScheme {
+            return UriScheme.valueOf(replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
+            })
+        }
     }
 }

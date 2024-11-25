@@ -37,6 +37,7 @@ object CommonOptions {
     val ParameterHolder.zkHostOption
         get() = option(
             "-z", "--zk-host",
+            metavar = "url",
             envvar = "ZK_HOST",
             valueSourceKey = "solr.zk.host",
         ).help("Zookeeper connection string.")
@@ -44,6 +45,7 @@ object CommonOptions {
     val ParameterHolder.solrUrlOption
         get() = option(
             "-s", "--solr-url",
+            metavar = "url",
             // envvar = "SOLR_URL", // TODO See if these values are relevant
             // valueSourceKey = "solr.url",
         ).help("Base Solr URL, which can be used to determine the zk-host if that's not known.")
@@ -51,6 +53,7 @@ object CommonOptions {
     val ParameterHolder.recursiveOption
         get() = option("-r", "--recursive")
             .help("Apply the command recursively.")
+            .flag()
 
     val ParameterHolder.credentialsOption
         get() = option("-u", "--credentials")
