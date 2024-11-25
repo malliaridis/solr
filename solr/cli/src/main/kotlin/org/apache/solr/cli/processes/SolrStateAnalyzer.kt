@@ -17,8 +17,11 @@
 
 package org.apache.solr.cli.processes
 
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
+import io.ktor.http.appendPathSegments
 import io.ktor.http.isSuccess
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -26,6 +29,9 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
+import org.apache.solr.cli.data.SystemData
+import org.apache.solr.cli.data.SystemMode
+import org.apache.solr.cli.domain.SolrMode
 import org.apache.solr.cli.domain.SolrState
 import org.apache.solr.cli.utils.Utils
 
@@ -50,13 +56,19 @@ internal object SolrStateAnalyzer {
         timeout: Duration = (-1).milliseconds,
         interval: Duration = 1.seconds,
     ): SolrState = Utils.getHttpClient(credentials).use { client ->
+        val infoUrl = URLBuilder(url).apply {
+            appendPathSegments("admin", "info", "system")
+        }.build()
+
         try {
             withTimeoutOrNull(timeout) {
                 while (true) {
-                    val response = client.get(url)
+                    val response = client.get(infoUrl)
                     when {
-                        response.status.isSuccess() ->
-                            return@withTimeoutOrNull SolrState.Online()
+                        response.status.isSuccess() -> {
+                            val data = response.body<SystemData>()
+                            return@withTimeoutOrNull SolrState.Online(data.mode.toSolrMode())
+                        }
                         response.status.isAuthError() ->
                             return@withTimeoutOrNull SolrState.AuthRequired
                     }
@@ -67,9 +79,12 @@ internal object SolrStateAnalyzer {
                 throw Error("Should not happen")
             } ?: run {
                 // Run at least once, or one more time when timeout occurs
-                val response = client.get(url)
+                val response = client.get(infoUrl)
                 when {
-                    response.status.isSuccess() -> SolrState.Online()
+                    response.status.isSuccess() -> {
+                        val data = response.body<SystemData>()
+                        SolrState.Online(data.mode.toSolrMode())
+                    }
                     response.status.isAuthError() -> SolrState.AuthRequired
                     else -> SolrState.Offline
                 }
@@ -82,4 +97,9 @@ internal object SolrStateAnalyzer {
     private fun HttpStatusCode.isAuthError(): Boolean =
         this == HttpStatusCode.Unauthorized || this == HttpStatusCode.Forbidden
 
+    private fun SystemMode.toSolrMode(): SolrMode = when(this) {
+        SystemMode.Unknown -> SolrMode.Unknown
+        SystemMode.SolrCloud -> SolrMode.Cloud
+        SystemMode.Standalone -> SolrMode.UserManaged
+    }
 }
