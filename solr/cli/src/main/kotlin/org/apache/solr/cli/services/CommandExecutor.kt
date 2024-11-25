@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import java.nio.file.Path
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -95,7 +95,8 @@ object CommandExecutor {
             }
 
             pidFile?.writeText(process.pid().toString())
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
+            // ignore any errors
         }
     }
 }

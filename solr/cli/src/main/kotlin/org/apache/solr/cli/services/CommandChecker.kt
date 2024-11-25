@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import java.io.BufferedReader
 import java.io.InputStreamReader

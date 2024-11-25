@@ -27,7 +27,7 @@ import org.apache.solr.cli.Constants
 import org.apache.solr.cli.domain.SolrProcess
 import org.apache.solr.cli.domain.UrlScheme
 import org.apache.solr.cli.exceptions.ProcessNotFoundException
-import org.apache.solr.cli.processes.ProcessAnalyzer
+import org.apache.solr.cli.services.ProcessAnalyzer
 
 object Utils {
 
