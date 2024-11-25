@@ -15,13 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.data
+package org.apache.solr.cli.domain
 
-import kotlinx.serialization.Serializable
+enum class UriScheme {
+    File,
+    Zk;
 
-@Serializable
-data class SystemData(
-    val mode: SystemMode = SystemMode.Unknown,
-    val zkHost: String = "",
-    // Only relevant information is included here
-)
+    val asScheme: String
+        get() = "${this.toString().lowercase()}://"
+
+    val isRemote: Boolean
+        get() = this == Zk
+
+    val isLocal: Boolean
+        get() = this == File
+
+    companion object {
+        fun String.toUriScheme(): UriScheme {
+            return UriScheme.valueOf(replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
+            })
+        }
+    }
+}

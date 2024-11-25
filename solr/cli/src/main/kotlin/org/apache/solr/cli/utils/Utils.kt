@@ -46,7 +46,7 @@ object Utils {
      * @param port The port the Solr instance is running on.
      * @return Process ID (PID) of the running Solr instance.
      */
-    suspend fun findSolrPIDByPort(port: Int) : Long? {
+    suspend fun findSolrPIDByPort(port: Int): Long? {
         val solrProcesses = ProcessAnalyzer.findProcesses(
             "java", "start.jar", "jetty.port=$port"
         ).getOrNull()
@@ -84,7 +84,7 @@ object Utils {
 
         val keyValue = portParam.split("=")
 
-        if(keyValue.size != 2 || keyValue[1].isBlank()) return null
+        if (keyValue.size != 2 || keyValue[1].isBlank()) return null
         return keyValue[1].toIntOrNull()
     }
 
@@ -95,7 +95,7 @@ object Utils {
 
         val keyValue = portParam.split("=")
 
-        if(keyValue.size != 2 || keyValue[1].isBlank()) return UrlScheme.http
+        if (keyValue.size != 2 || keyValue[1].isBlank()) return UrlScheme.http
         return UrlScheme.valueOf(keyValue[1])
     }
 

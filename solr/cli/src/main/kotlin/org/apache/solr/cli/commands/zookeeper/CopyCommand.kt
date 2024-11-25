@@ -18,9 +18,118 @@
 package org.apache.solr.cli.commands.zookeeper
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.core.Context
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.help
+import com.github.ajalt.clikt.parameters.groups.required
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.help
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
+import com.github.ajalt.clikt.parameters.types.int
+import com.github.ajalt.clikt.parameters.types.path
+import java.net.URI
+import org.apache.solr.cli.Constants
+import org.apache.solr.cli.domain.UriScheme
+import org.apache.solr.cli.domain.UriScheme.Companion.toUriScheme
+import org.apache.solr.cli.options.CommonOptions.connectionOptions
+import org.apache.solr.cli.options.CommonOptions.credentialsOption
+import org.apache.solr.cli.options.CommonOptions.recursiveOption
+import org.apache.solr.cli.options.CommonOptions.solrUrlOption
+import org.apache.solr.cli.options.CommonOptions.zkHostOption
+import org.apache.solr.cli.services.ZkFileTransferService
+import org.apache.solr.cli.utils.Utils
+import org.apache.solr.cli.utils.ZkUtils
 
 class CopyCommand : SuspendingCliktCommand(name = "cp") {
+
+    override fun help(context: Context): String =
+        "Copies files or folders from and/or to Zookeeper."
+
+    override fun helpEpilog(context: Context): String =
+        """When <source> is a zk resource, <destination> may be '.'.
+        |If <destination> ends with '/', then <dest> will be a local folder or parent znode and the
+        |last element of the <destination> path will be appended unless <source> also ends in a slash. 
+        |<destination> may be zk:, which may be useful when using the cp -r form to backup/restore 
+        |the entire zk state.
+        |You must enclose local paths that end in a wildcard in quotes or just
+        |end the local path in a slash. That is,
+        |'bin/solr zk cp -r /some/dir/ zk:/ -z localhost:2181' is equivalent to
+        |'bin/solr zk cp -r "/some/dir/*" zk:/ -z localhost:2181'
+        |but 'bin/solr zk cp -r /some/dir/* zk:/ -z localhost:2181' will throw an error
+        |
+        |to copy to local: 'bin/solr zk cp -r zk:/ /some/dir -z localhost:2181'
+        |to restore to ZK: 'bin/solr zk cp -r /some/dir/ zk:/ -z localhost:2181'
+        |
+        |The 'file:' prefix is stripped, thus 'file:/wherever' specifies an absolute local path and
+        |'file:somewhere' specifies a relative local path. All paths on Zookeeper are absolute.
+        |
+        |Zookeeper nodes CAN have data, so moving a single file to a parent znode will overlay the
+        |data on the parent Znode so specifying the trailing slash can be important.
+        |
+        |Wildcards are supported when copying from local, trailing only and must be quoted.
+        """.trimMargin()
+
+    private val source by argument()
+        .help("The source file or directory.")
+
+    private val destination by argument()
+        .help("The destination file or directory.")
+
+    private val solrHome by option(
+        "--solr-home",
+        envvar = "SOLR_HOME",
+        valueSourceKey = "solr.home",
+    ).help("Required to look up configuration for compressing state.json.")
+        .path()
+        .required()
+
+    private val timeout by option(
+        envvar = "SOLR_ZK_CLIENT_TIMEOUT",
+        valueSourceKey = "solr.zk.client.timeout", // TODO See if timeout or timeoutMs
+        hidden = true,
+    ).help("Timeout in milliseconds to use for Zookeeper client connections.")
+        .int()
+        .default(Constants.DEFAULT_ZK_CLIENT_TIMEOUT)
+
+    private val solrUrl by solrUrlOption
+
+    private val zkHost by zkHostOption
+
+    private val credentials by credentialsOption
+
+    private val connection = connectionOptions.required()
+
+    private val recursive by recursiveOption
+
+    private val compression by option("--compression", metavar = "bytes")
+        .help {
+            """Enable compression of the state.json over the wire and stored in Zookeeper. 
+            |The value provided is the minimum length of bytes to compress state.json, i.e. any 
+            |state.json above that size in bytes will be compressed. The default is -1, 
+            |meaning state.json is always uncompressed.
+            """.trimMargin()
+        }.int()
+        .default(Constants.DEFAULT_ZK_MIN_STATE_COMPRESSION)
+
     override suspend fun run() {
-        TODO("Not yet implemented")
+        val srcUri = URI(source)
+        val srcScheme = srcUri.scheme?.toUriScheme() ?: UriScheme.File
+
+        val destUri = URI(destination)
+        val destScheme = destUri.scheme?.toUriScheme() ?: UriScheme.File
+
+        require(srcScheme == UriScheme.Zk || destScheme == UriScheme.File) {
+            """Either source or destination has to be a valid Zookeeper URI (starting with "zk://")."""
+        }
+
+        val zkHost = zkHost ?: solrUrl?.let { url ->
+            Utils.getHttpClient(credentials).use { client ->
+                ZkUtils.getZkHostFromSolrUrl(client, url)
+            }
+        } ?: throw Error("Either --zk-host or --solr-url has to be provided.")
+
+        ZkFileTransferService(ZkUtils.getZkClient(zkHost, solrHome, timeout, compression))
+            .transfer(srcUri, destUri, recursive)
     }
 }
