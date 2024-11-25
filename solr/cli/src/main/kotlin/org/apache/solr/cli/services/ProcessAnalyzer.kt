@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.listDirectoryEntries
 import kotlinx.coroutines.Dispatchers

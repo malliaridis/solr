@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import com.github.ajalt.clikt.core.BaseCliktCommand
 import java.io.BufferedReader
@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import org.apache.solr.cli.domain.UserLimits
 import org.apache.solr.cli.domain.UserLimits.UserLimitType
 import org.apache.solr.cli.exceptions.CommandNotFoundException
-import org.apache.solr.cli.processes.CommandChecker.commandExists
+import org.apache.solr.cli.services.CommandChecker.commandExists
 
 internal object UserLimitsChecker {
 

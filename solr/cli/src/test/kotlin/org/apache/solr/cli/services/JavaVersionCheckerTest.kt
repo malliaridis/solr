@@ -1,4 +1,4 @@
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import kotlin.io.path.Path
 import kotlin.test.Test
@@ -9,7 +9,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.files.FileNotFoundException
-import org.apache.solr.cli.processes.JavaVersionChecker.getJavaMajorVersion
+import org.apache.solr.cli.services.JavaVersionChecker.getJavaMajorVersion
 
 class JavaVersionCheckerTest {
 

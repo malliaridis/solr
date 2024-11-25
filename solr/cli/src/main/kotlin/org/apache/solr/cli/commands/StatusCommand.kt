@@ -31,8 +31,8 @@ import org.apache.solr.cli.domain.SolrState
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
 import org.apache.solr.cli.options.CommonOptions.solrUrlOption
 import org.apache.solr.cli.options.SolrContextOptions
-import org.apache.solr.cli.processes.ProcessAnalyzer
-import org.apache.solr.cli.processes.SolrStateAnalyzer
+import org.apache.solr.cli.services.ProcessAnalyzer
+import org.apache.solr.cli.services.SolrStateAnalyzer
 
 class StatusCommand : SuspendingCliktCommand(name = "status") {
 

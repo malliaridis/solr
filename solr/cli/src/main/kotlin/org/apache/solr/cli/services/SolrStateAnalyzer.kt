@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import io.ktor.client.call.body
 import io.ktor.client.request.get

@@ -51,10 +51,10 @@ import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityManagerOptions
 import org.apache.solr.cli.options.SecurityOptions
 import org.apache.solr.cli.options.SolrContextOptions
-import org.apache.solr.cli.processes.CommandChecker
-import org.apache.solr.cli.processes.CommandExecutor
-import org.apache.solr.cli.processes.PrivilegeChecker
-import org.apache.solr.cli.processes.UserLimitsChecker.checkUserLimits
+import org.apache.solr.cli.services.CommandChecker
+import org.apache.solr.cli.services.CommandExecutor
+import org.apache.solr.cli.services.PrivilegeChecker
+import org.apache.solr.cli.services.UserLimitsChecker.checkUserLimits
 import org.apache.solr.cli.utils.ReservedPaths
 
 internal class StartCommand : SuspendingCliktCommand(name = "start") {

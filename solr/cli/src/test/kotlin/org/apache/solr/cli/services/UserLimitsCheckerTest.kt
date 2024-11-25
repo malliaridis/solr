@@ -1,11 +1,11 @@
-package org.apache.solr.cli.processes
+package org.apache.solr.cli.services
 
 import com.github.ajalt.clikt.core.parse
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.apache.solr.cli.TestCliCommand
-import org.apache.solr.cli.processes.UserLimitsChecker.getUserLimits
+import org.apache.solr.cli.services.UserLimitsChecker.getUserLimits
 import org.junit.jupiter.api.condition.DisabledOnOs
 import org.junit.jupiter.api.condition.OS
 

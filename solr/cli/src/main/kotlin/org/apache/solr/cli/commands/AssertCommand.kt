@@ -37,8 +37,8 @@ import kotlin.time.Duration.Companion.milliseconds
 import org.apache.solr.cli.domain.SolrState
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
 import org.apache.solr.cli.options.CommonOptions.verboseOption
-import org.apache.solr.cli.processes.PrivilegeChecker
-import org.apache.solr.cli.processes.SolrStateAnalyzer
+import org.apache.solr.cli.services.PrivilegeChecker
+import org.apache.solr.cli.services.SolrStateAnalyzer
 
 class AssertCommand : SuspendingCliktCommand(name = "assert") {
 

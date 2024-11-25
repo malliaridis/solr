@@ -36,10 +36,10 @@ import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityOptions
 import org.apache.solr.cli.options.SolrContextOptions
 import org.apache.solr.cli.options.StopOptions
-import org.apache.solr.cli.processes.CommandChecker
-import org.apache.solr.cli.processes.CommandExecutor
-import org.apache.solr.cli.processes.ProcessAnalyzer
-import org.apache.solr.cli.processes.ProcessKiller
+import org.apache.solr.cli.services.CommandChecker
+import org.apache.solr.cli.services.CommandExecutor
+import org.apache.solr.cli.services.ProcessAnalyzer
+import org.apache.solr.cli.services.ProcessKiller
 import org.apache.solr.cli.utils.Utils
 
 // TODO Consider stop command for remote server as well?
