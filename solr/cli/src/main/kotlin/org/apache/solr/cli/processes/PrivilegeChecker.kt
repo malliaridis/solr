@@ -21,7 +21,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.solr.cli.data.OperatingSystem
+import org.apache.solr.cli.domain.OperatingSystem
 
 internal object PrivilegeChecker {
 

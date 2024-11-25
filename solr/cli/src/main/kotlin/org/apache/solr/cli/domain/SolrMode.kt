@@ -15,11 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.enums
+package org.apache.solr.cli.domain
 
-enum class PlacementPluginMode {
-    Simple,
-    Random,
-    Affinity,
-    MinimizeCores,
+internal enum class SolrMode {
+    Unknown,
+    Cloud,
+    UserManaged;
+
+    val isUserManaged: Boolean
+        get() = this == UserManaged
+
+    val isCloud: Boolean
+        get() = this == Cloud
 }

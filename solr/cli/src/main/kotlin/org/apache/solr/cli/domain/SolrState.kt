@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.enums
+package org.apache.solr.cli.domain
 
-internal enum class StartExample {
-    techproducts,
-    schemaless,
-    films,
+internal sealed interface SolrState {
+
+    data object Unknown: SolrState
+
+    data object Offline: SolrState
+
+    data class Online(val mode: SolrMode = SolrMode.Unknown): SolrState
+
+    data object AuthRequired: SolrState
+
+    val isOnline: Boolean
+        get() = this is Online || this is AuthRequired
 }

@@ -23,6 +23,9 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import org.apache.solr.cli.Constants
+import org.apache.solr.cli.domain.SolrProcess
+import org.apache.solr.cli.domain.UrlScheme
 import org.apache.solr.cli.exceptions.ProcessNotFoundException
 import org.apache.solr.cli.processes.ProcessAnalyzer
 
@@ -62,7 +65,20 @@ object Utils {
     suspend fun getJettyPort(pid: Long): Int? {
         val result = ProcessAnalyzer.getProcessArguments(pid)
         val arguments = result.getOrNull() ?: return null
+        return getPortFromArguments(arguments)
+    }
 
+    internal suspend fun getSolrProcessByPid(pid: Long): SolrProcess? {
+        val result = ProcessAnalyzer.getProcessArguments(pid)
+        val arguments = result.getOrNull() ?: return null
+
+        val port = getPortFromArguments(arguments) ?: Constants.DEFAULT_SOLR_PORT
+        val scheme = getSchemeFromArguments(arguments)
+
+        return SolrProcess(pid, port, scheme)
+    }
+
+    private fun getPortFromArguments(arguments: List<String>): Int? {
         // Get the jetty.port value from the arguments returned
         val portParam = arguments.firstOrNull { it.contains("jetty.port") } ?: return null
 
@@ -70,6 +86,17 @@ object Utils {
 
         if(keyValue.size != 2 || keyValue[1].isBlank()) return null
         return keyValue[1].toIntOrNull()
+    }
+
+    private fun getSchemeFromArguments(arguments: List<String>): UrlScheme {
+        // Get the jetty.port value from the arguments returned
+        val portParam = arguments.firstOrNull { it.contains("module=http") }
+            ?: return UrlScheme.http
+
+        val keyValue = portParam.split("=")
+
+        if(keyValue.size != 2 || keyValue[1].isBlank()) return UrlScheme.http
+        return UrlScheme.valueOf(keyValue[1])
     }
 
     fun getHttpClient(credentials: String?) = httpClient

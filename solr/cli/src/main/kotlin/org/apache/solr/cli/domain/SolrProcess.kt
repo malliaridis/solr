@@ -15,9 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.enums
+package org.apache.solr.cli.domain
 
-internal enum class UrlScheme {
-    http,
-    https,
+/**
+ * A data object that holds all relevant information about a local Solr process.
+ */
+internal data class SolrProcess(
+    val pid: Long,
+    val port: Int,
+    val scheme: UrlScheme,
+) {
+    val localUrl: String
+        get() = "${scheme}127.0.0.1:$port"
 }

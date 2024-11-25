@@ -15,43 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.data
+package org.apache.solr.cli.domain
 
-enum class OperatingSystem {
+/**
+ * This enum holds various process states we are interested in.
+ *
+ * This is neither a complete list nor accurately represent the process states of on OS, but it is
+ * sufficient for our use cases.
+ */
+internal enum class ProcessState {
 
     /**
-     * Fallback value of unknown operating systems.
+     * When the state of a process could not be determined, either because it was not found or as a
+     * fallback.
      */
     Unknown,
 
     /**
-     * Enum value for Windows systems.
+     * The running process state indicates a process that is doing some work.
      */
-    Windows,
+    Running,
 
     /**
-     * Enum value for MacOs systems.
+     * The stopped state indicates that a process has been found and was stopped.
      */
-    MacOs,
+    Stopped,
 
     /**
-     * Enum value for any other Unix/Linux systems.
+     * The zombie state (not relevant on Windows) indicates that the process has completed execution
+     * but still has an entry in the process table.
      */
-    Unix;
+    Zombie;
 
-    companion object {
-
-        val current: OperatingSystem
-            get() {
-                val os = System.getProperty("os.name").lowercase()
-                return when {
-                    os.contains("win") -> Windows
-                    os.contains("mac") -> MacOs
-                    os.contains("nux")
-                            || os.contains("nix") -> Unix
-
-                    else -> Unknown
-                }
-            }
-    }
+    val isRunning: Boolean
+        get() = this == Running || this == Zombie
 }

@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.enums
+package org.apache.solr.cli.domain
 
-enum class SolrMode {
-    Cloud,
-    UserManaged;
-
-    val isUserManaged: Boolean
-        get() = this == UserManaged
+internal enum class StartExample {
+    TechProducts,
+    Schemaless,
+    Films,
 }

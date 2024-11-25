@@ -15,9 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.enums
+package org.apache.solr.cli.utils
 
-enum class AuthType {
-    Basic,
-    Kerberos,
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
+val displayJson = Json {
+    prettyPrint = true
+    isLenient = true
+    encodeDefaults = true
 }
+
+/**
+ * Encodes a serializable object to a pretty-printed JSON string.
+ *
+ * @param T The serializable object to encode.
+ * @return This instance as a pretty-printed JSON string.
+ */
+inline fun <reified T> T.toPrettyString(): String = displayJson.encodeToString(this)

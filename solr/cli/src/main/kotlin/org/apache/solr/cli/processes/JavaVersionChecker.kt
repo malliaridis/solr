@@ -17,19 +17,14 @@
 
 package org.apache.solr.cli.processes
 
-import com.github.ajalt.clikt.core.BaseCliktCommand
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.nio.file.FileSystems
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.io.files.FileNotFoundException
-import kotlinx.io.files.FileSystem
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
-import kotlinx.io.files.source
-import org.apache.solr.cli.data.OperatingSystem
+import org.apache.solr.cli.domain.OperatingSystem
 
 object JavaVersionChecker {
 

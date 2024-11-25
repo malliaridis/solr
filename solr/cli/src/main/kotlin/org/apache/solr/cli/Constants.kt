@@ -53,6 +53,8 @@ object Constants {
      */
     const val DEFAULT_SOLR_START_WAIT = 180
 
+    const val DEFAULT_SOLR_SCHEME = "http://"
+
     /**
      * Default Solr hostname that is used as fallback.
      */
@@ -66,7 +68,7 @@ object Constants {
     /**
      * Default Solr URL.
      */
-    const val DEFAULT_SOLR_URL = "127.0.0.1"
+    const val DEFAULT_SOLR_URL = "$DEFAULT_SOLR_SCHEME$DEFAULT_SOLR_HOST:$DEFAULT_SOLR_PORT"
 
     /**
      * Default cloud ports of a two-node-cluster.

@@ -18,8 +18,8 @@
 package org.apache.solr.cli.options
 
 import com.github.ajalt.clikt.core.ParameterHolder
-import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.groups.mutuallyExclusiveOptions
+import com.github.ajalt.clikt.parameters.groups.single
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
@@ -47,7 +47,6 @@ object CommonOptions {
             // envvar = "SOLR_URL", // TODO See if these values are relevant
             // valueSourceKey = "solr.url",
         ).help("Base Solr URL, which can be used to determine the zk-host if that's not known.")
-            .default(Constants.DEFAULT_SOLR_URL)
 
     val ParameterHolder.recursiveOption
         get() = option("-r", "--recursive")
@@ -63,6 +62,7 @@ object CommonOptions {
 
     val ParameterHolder.connectionOptions
         get() = mutuallyExclusiveOptions(zkHostOption, solrUrlOption)
+            .single()
 
     val ParameterHolder.collectionNameOption
         get() = option("-c", "--name")
