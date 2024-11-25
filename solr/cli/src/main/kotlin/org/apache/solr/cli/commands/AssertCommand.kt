@@ -186,7 +186,7 @@ class AssertCommand : SuspendingCliktCommand(name = "assert") {
 
     private fun incOrFail(message: String): Int {
         return if (useExitCode) 1
-        else throw AssertionError(message)
+        else throw AssertionError(this.message ?: message)
     }
 
     /**
