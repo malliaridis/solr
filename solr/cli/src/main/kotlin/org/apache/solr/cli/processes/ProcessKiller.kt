@@ -17,12 +17,9 @@
 
 package org.apache.solr.cli.processes
 
-import java.io.File
-import java.nio.file.Path
-import kotlin.io.path.absolutePathString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.solr.cli.data.OperatingSystem
+import org.apache.solr.cli.domain.OperatingSystem
 
 object ProcessKiller {
 

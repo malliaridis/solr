@@ -26,7 +26,7 @@ import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import org.apache.solr.cli.Constants
-import org.apache.solr.cli.enums.UrlScheme
+import org.apache.solr.cli.domain.UrlScheme
 
 internal class ConnectionOptions : OptionGroup(
     name = "Connection options",

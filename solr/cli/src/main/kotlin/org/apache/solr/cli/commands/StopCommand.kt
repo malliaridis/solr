@@ -121,7 +121,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         )
 
         // Try to stop solr gracefully
-        val stopArguments = arrayOf<String>(
+        val stopArguments = arrayOf(
             javaOptions.javaExec,
             *securityOptions.composeSecurityArguments(),
             *authOptions.composeAuthArguments(),
@@ -162,8 +162,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
      * @param pid Process ID of a java process.
      */
     private suspend fun threadDump(pid: Long) {
-        val jstackExists = CommandChecker.commandExists(javaOptions.jstackExec)
-            .let { it.getOrNull() == true }
+        val jstackExists = CommandChecker.commandExists(javaOptions.jstackExec).getOrNull() == true
 
         if (jstackExists) {
             echo(
@@ -177,8 +176,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         }
 
         // If jstack does not exist continue with jattach
-        val jattachExists = CommandChecker.commandExists("jattach")
-            .let { it.getOrNull() == true }
+        val jattachExists = CommandChecker.commandExists("jattach").getOrNull() == true
 
         if (jattachExists) {
             echo(
@@ -218,13 +216,13 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         val hasStopped = withTimeoutOrNull(waitMs) {
             do {
                 delay(500)
-            } while (!(ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning == true))
+            } while (ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning != true)
             return@withTimeoutOrNull true
         } ?: false
 
-        // Check one last time, in case waitMs is negative it will be checked exactly once
+        // Check one last time, in case waitMs is negative, it will be checked exactly once
         if (!hasStopped) return ProcessAnalyzer.getProcessState(pid).getOrNull()?.isRunning == true
-        return hasStopped
+        return true
     }
 
     /*

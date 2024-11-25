@@ -19,11 +19,18 @@ package org.apache.solr.cli.processes
 
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.io.path.listDirectoryEntries
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.solr.cli.data.OperatingSystem
-import org.apache.solr.cli.enums.ProcessState
+import org.apache.solr.cli.domain.FileExtensions
+import org.apache.solr.cli.domain.FileExtensions.glob
+import org.apache.solr.cli.domain.OperatingSystem
+import org.apache.solr.cli.domain.ProcessState
+import org.apache.solr.cli.domain.SolrProcess
 import org.apache.solr.cli.exceptions.ProcessNotFoundException
+import org.apache.solr.cli.utils.Utils
 
 /**
  * Object that holds functions for fetching process information.
@@ -42,11 +49,11 @@ internal object ProcessAnalyzer {
             try {
                 val process = ProcessBuilder(*command).start()
 
-                BufferedReader(InputStreamReader(process.inputStream)).use {
-                    val lines = it.lines().toList()
+                BufferedReader(InputStreamReader(process.inputStream)).use { reader ->
+                    val lines = reader.lines().toList()
                         .filter(String::isNotBlank)
                         .mapNotNull { it.split("=").getOrNull(1) }
-                        val ports = lines.mapNotNull(String::toLong)
+                    val ports = lines.map(String::toLong)
                     return@withContext Result.success(ports)
                 }
             } catch (exception: Exception) {
@@ -85,7 +92,7 @@ internal object ProcessAnalyzer {
                 val process = ProcessBuilder(*command).start()
 
                 BufferedReader(InputStreamReader(process.inputStream)).use {
-                    val line = it.lines().toList().filter(String::isNotBlank).firstOrNull()
+                    val line = it.lines().toList().firstOrNull(String::isNotBlank)
                         ?: throw ProcessNotFoundException(pid)
 
                     // If there’s output, the process exists; otherwise, it doesn’t
@@ -115,14 +122,15 @@ internal object ProcessAnalyzer {
                 // filter by keywords and exclude wmic (this) process
                 (keywords.map { "CommandLine like '%$it%'" } + "not CommandLine like '%wmic%'")
                     .joinToString(
-                        separator  = " and ",
+                        separator = " and ",
                         prefix = "\"",
                         postfix = "\"",
-                ),
+                    ),
                 "get",
                 "processid", // get only process ids
                 "/format:list", // output will be ProcessId=[PID] and blank lines
             )
+
             else -> arrayOf(
                 "ps", "auxww", // get the list of processes
                 *keywords.map { listOf("|", "grep", "-F", "'$it'") }
@@ -149,6 +157,19 @@ internal object ProcessAnalyzer {
                 "commandline",
                 "/format:list",
             )
+
             else -> arrayOf("ps", "-fww", "-p $pid")
+        }
+
+    /**
+     * Scans the given [directory] for PID files and returns a collection of [SolrProcess]es.
+     *
+     * @return A collection of [SolrProcess]es for each PID file found.
+     */
+    suspend fun getProcessesByPidFiles(directory: Path): Collection<SolrProcess> =
+        directory.listDirectoryEntries(FileExtensions.PID.glob).mapNotNull { pidFile ->
+            // TODO See if windows PID files need different treatment
+            val pid = pidFile.toFile().readLines().first().toLong()
+            return@mapNotNull Utils.getSolrProcessByPid(pid)
         }
 }

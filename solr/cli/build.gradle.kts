@@ -33,6 +33,7 @@ dependencies {
     runtimeOnly(libs.apache.log4j.slf4j2impl)
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.datetime.jvm)
     implementation(libs.kotlinx.serialization.json)
 
     implementation(platform(libs.eclipse.jetty.bom))

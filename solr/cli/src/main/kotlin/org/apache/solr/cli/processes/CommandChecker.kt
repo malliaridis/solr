@@ -17,12 +17,11 @@
 
 package org.apache.solr.cli.processes
 
-import com.github.ajalt.clikt.core.BaseCliktCommand
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.solr.cli.data.OperatingSystem
+import org.apache.solr.cli.domain.OperatingSystem
 
 /**
  * Checker that holds functions for checking The existence of commands in various ways.

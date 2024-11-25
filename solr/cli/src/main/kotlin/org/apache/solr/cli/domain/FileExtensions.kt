@@ -15,9 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.data
+package org.apache.solr.cli.domain
 
-data class MemoryAllocation(
-    val initial: String = "512m",
-    val max: String = initial,
-)
+/**
+ * Object that holds known file-extensions.
+ */
+internal object FileExtensions {
+
+    const val PID: FileExtension = ".pid"
+
+    /**
+     * A "glob" file matcher that can be used for filtering directories for specific files.
+     */
+    val FileExtension.glob: String
+        get() = "*$FileExtension"
+}
+internal typealias FileExtension = String

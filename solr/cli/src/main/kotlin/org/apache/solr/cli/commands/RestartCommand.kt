@@ -28,7 +28,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import org.apache.solr.cli.Environment
-import org.apache.solr.cli.data.UserLimits
+import org.apache.solr.cli.domain.UserLimits
 import org.apache.solr.cli.processes.UserLimitsChecker.checkUserLimits
 
 class RestartCommand : SuspendingCliktCommand(name = "restart") {

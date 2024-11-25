@@ -18,14 +18,13 @@
 package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
-import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import java.io.File
-import org.apache.solr.cli.enums.StartExample
+import org.apache.solr.cli.domain.StartExample
 
 class ExampleCommand : SuspendingCliktCommand(name = "example") {
 
@@ -41,7 +40,7 @@ class ExampleCommand : SuspendingCliktCommand(name = "example") {
     // TODO Move example to ExampleCommand
     private val example by option("-e", "--example")
         .help("Name of the example to launch, one of: cloud, techproducts, schemaless, films.")
-        .enum<StartExample>()
+        .enum<StartExample>(ignoreCase = true)
 
     // TODO Move exampleDir to be part of ExampleCommand
     private val exampleDir by option("--example-dir")

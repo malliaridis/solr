@@ -22,8 +22,8 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.solr.cli.data.UserLimits
-import org.apache.solr.cli.data.UserLimits.UserLimitType
+import org.apache.solr.cli.domain.UserLimits
+import org.apache.solr.cli.domain.UserLimits.UserLimitType
 import org.apache.solr.cli.exceptions.CommandNotFoundException
 import org.apache.solr.cli.processes.CommandChecker.commandExists
 

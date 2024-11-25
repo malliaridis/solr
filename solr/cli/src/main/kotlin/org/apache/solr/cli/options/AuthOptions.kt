@@ -17,13 +17,11 @@
 
 package org.apache.solr.cli.options
 
-import com.github.ajalt.clikt.command.CoreSuspendingCliktCommand
-import com.github.ajalt.clikt.core.BaseCliktCommand
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
-import org.apache.solr.cli.enums.AuthType
+import org.apache.solr.cli.domain.AuthType
 
 internal class AuthOptions(
     private val echo: (message: String, ) -> Unit,

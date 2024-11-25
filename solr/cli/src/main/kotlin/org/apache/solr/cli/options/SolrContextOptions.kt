@@ -25,10 +25,10 @@ import com.github.ajalt.clikt.parameters.types.path
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 
-internal class SolrContextOptions : OptionGroup(
-    name = "Solr Context Options",
-    help = "Context options that configure basic directories for a specific Solr context.",
-) {
+internal class SolrContextOptions(
+    name: String = "Solr Context Options",
+    help: String = "Context options that configure basic directories for a specific Solr context.",
+) : OptionGroup(name, help) {
 
     val installDirectory by option(
         "--install-dir",

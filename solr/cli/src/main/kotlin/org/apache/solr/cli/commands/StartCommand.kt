@@ -41,10 +41,10 @@ import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
 import kotlin.system.exitProcess
 import org.apache.solr.cli.ExitCode
-import org.apache.solr.cli.data.MemoryAllocation
-import org.apache.solr.cli.data.UserLimits
-import org.apache.solr.cli.enums.PlacementPluginMode
-import org.apache.solr.cli.enums.SolrMode
+import org.apache.solr.cli.domain.MemoryAllocation
+import org.apache.solr.cli.domain.UserLimits
+import org.apache.solr.cli.domain.PlacementPluginMode
+import org.apache.solr.cli.domain.SolrMode
 import org.apache.solr.cli.options.AuthOptions
 import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.options.JavaOptions

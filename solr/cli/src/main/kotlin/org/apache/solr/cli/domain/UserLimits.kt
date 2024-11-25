@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.data
+package org.apache.solr.cli.domain
 
 /**
  * User limits returned by the `ulimit` command. Negative values indicate unlimited / undefined
@@ -26,7 +26,7 @@ package org.apache.solr.cli.data
  * @property virtualMemory The maximum amount of virtual memory available to the process. Equivalent to `ulimit -v`.
  * @property maxMemory The maximum resident set size. Equivalent to `ulimit -m`.
  */
-data class UserLimits(
+internal data class UserLimits(
     val openFiles: Long = -1,
     val maxProcesses: Long = -1,
     val virtualMemory: Long = -1,

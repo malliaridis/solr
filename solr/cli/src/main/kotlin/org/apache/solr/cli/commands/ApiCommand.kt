@@ -18,9 +18,32 @@
 package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.help
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.http.Url
+import kotlinx.serialization.json.JsonObject
+import org.apache.solr.cli.Constants
+import org.apache.solr.cli.options.CommonOptions.credentialsOption
+import org.apache.solr.cli.options.CommonOptions.solrUrlOption
+import org.apache.solr.cli.utils.Utils
+import org.apache.solr.cli.utils.toPrettyString
 
 class ApiCommand : SuspendingCliktCommand(name = "api") {
+
+    private val solrUrl by solrUrlOption.help("Send a GET request to a Solr API endpoint.")
+        .default(Constants.DEFAULT_SOLR_URL)
+
+    private val credentials by credentialsOption
+
     override suspend fun run() {
-        TODO("Not yet implemented")
+        val url = Url(solrUrl)
+
+        Utils.getHttpClient(credentials).use { client ->
+            val response = client.get(url)
+            val responseData = response.body<JsonObject>()
+            echo(responseData.toPrettyString())
+        }
     }
 }
