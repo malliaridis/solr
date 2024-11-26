@@ -21,19 +21,18 @@ import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import org.apache.solr.cli.options.CommonOptions.recursiveOption
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.utils.ZkUtils
+import org.apache.solr.cloud.ZkController
 
-class ListCommand : SuspendingCliktCommand(name = "ls") {
+class LinkCommand : SuspendingCliktCommand(name = "link") {
 
-    // TODO allow user to provide ZK URIs with all information,
-    //  like zk://username:password@127.0.0.1:9983/path
-    private val path by argument()
-        .help("The ZNode / path to list.")
+    private val collection by argument()
+        .help("Collection to link with the ConfigSet.")
 
-    private val recursive by recursiveOption
+    private val config by argument()
+        .help("The name of the ConfigSet to link the collection to.")
 
     private val connection by ConnectionOptions()
 
@@ -41,14 +40,13 @@ class ListCommand : SuspendingCliktCommand(name = "ls") {
 
     override suspend fun run() {
         val zkHost = connection.getZkHost()
-        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+        if (verbose) echo("\nConnecting to ZooKeeper at $zkHost ...")
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo("Getting listing for ZooKeeper node $path from ZooKeeper at $zkHost.")
             try {
-                zkClient.listZnode(path, recursive)
+                ZkController.linkConfSet(zkClient, collection, config)
             } catch (exception: Exception) {
-                echo(message = "Could not complete ls operation.", err = true)
+                echo(message = "Could not complete link operation.", err = true)
                 echo(exception.message, err = true)
             }
         }

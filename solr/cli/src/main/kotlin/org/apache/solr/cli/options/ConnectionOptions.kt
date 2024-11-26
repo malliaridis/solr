@@ -18,55 +18,65 @@
 package org.apache.solr.cli.options
 
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
+import com.github.ajalt.clikt.parameters.groups.mutuallyExclusiveOptions
+import com.github.ajalt.clikt.parameters.groups.single
 import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.int
-import com.github.ajalt.clikt.parameters.types.restrictTo
 import org.apache.solr.cli.Constants
-import org.apache.solr.cli.domain.UrlScheme
+import org.apache.solr.cli.utils.Utils
+import org.apache.solr.cli.utils.ZkUtils.getZkHostFromSolrUrl
 
-internal class ConnectionOptions : OptionGroup(
-    name = "Connection options",
-    help = "Options that are used for establishing a Solr connection or configuring a Solr instance.",
-) {
+class ConnectionOptions : OptionGroup(name = "Connection Options") {
 
-    val urlScheme by option("--url-scheme")
-        .help("Solr URL scheme: http or https, defaults to http if not specified.")
-        .enum<UrlScheme>()
-
-    val jettyHost by option(
-        envvar = "SOLR_JETTY_HOST",
-        valueSourceKey = "solr.jetty.host",
-        hidden = true,
-    )
-
-    val host by option(
-        "--host",
-        envvar = "SOLR_HOST",
-        valueSourceKey = "solr.host",
-    ).help("Specify the hostname for this Solr instance.")
-        .defaultLazy { jettyHost ?: "127.0.0.1" }
-
-    val port by option(
-        "-p", "--port",
-        envvar = "SOLR_PORT",
-        valueSourceKey = "solr.port.bind",
-    ).help("Specify the port to start the Solr HTTP listener on.")
-        .int()
-        .restrictTo(0, UShort.MAX_VALUE.toInt())
-        .default(Constants.DEFAULT_SOLR_PORT)
-
-    val zkHost by option(
+    private val zkHostOption = option(
         "-z", "--zk-host",
+        metavar = "url",
         envvar = "ZK_HOST",
         valueSourceKey = "solr.zk.host",
     ).help("Zookeeper connection string.")
 
-    fun composeHostArguments(): Array<String> {
-        return if (jettyHost != "127.0.0.1") emptyArray()
-        else arrayOf("-Dhost=${host}")
+    val zkHost by zkHostOption
+
+    private val solrUrlOption = option(
+        "-s", "--solr-url",
+        metavar = "url",
+        // envvar = "SOLR_URL", // TODO See if these values are relevant
+        // valueSourceKey = "solr.url",
+    ).help("Base Solr URL, which can be used to determine the zk-host if that's not known.")
+
+    val solrUrl by solrUrlOption
+
+    val credentials by option("-u", "--credentials")
+        .help {
+            """Credentials in the format username:password.
+            |Example: --credentials solr:SolrRocks
+            """.trimMargin()
+        }
+
+    val timeout by option(
+        "--timeout",
+        envvar = "SOLR_ZK_CLIENT_TIMEOUT",
+        valueSourceKey = "solr.zk.client.timeout",
+    ).help("Timeout in milliseconds to use for Zookeeper client connections.")
+        .int()
+        .default(Constants.DEFAULT_ZK_CLIENT_TIMEOUT)
+
+    val connectionUrlOption = mutuallyExclusiveOptions(zkHostOption, solrUrlOption)
+            .single()
+
+    /**
+     * Function that returns a Zookeeper host by taking into account both [zkHost] and [solrUrl].
+     *
+     * @return [zkHost] if defined, otherwise it fetches the [zkHost] configured for the Solr
+     * instance at [solrUrl].
+     */
+    suspend fun getZkHost(): String {
+        return zkHost ?: solrUrl?.let { url ->
+            Utils.getHttpClient(credentials).use { client ->
+                getZkHostFromSolrUrl(client, url)
+            }
+        } ?: throw Error("Either --zk-host or --solr-url has to be provided.")
     }
 }

@@ -36,13 +36,24 @@ internal object ZkUtils {
 
     @Deprecated(
         "This function depends on multiple Solr modules and introduces dependencies " +
-                "that may be avoided."
+                "that may be avoided. Auth is also not supported."
     )
     fun getZkClient(zkHost: String, solrHome: Path, timeout: Int, compression: Int): SolrZkClient {
         return SolrZkClient.Builder()
             .withUrl(zkHost)
             .withTimeout(timeout, TimeUnit.MILLISECONDS)
             .withStateFileCompression(compression, getCompressor(zkHost, solrHome))
+            .build()
+    }
+
+    @Deprecated(
+        "This function depends on multiple Solr modules and introduces dependencies " +
+                "that may be avoided. Auth is also not supported."
+    )
+    fun getZkClient(zkHost: String, timeout: Int): SolrZkClient {
+        return SolrZkClient.Builder()
+            .withUrl(zkHost)
+            .withTimeout(timeout, TimeUnit.MILLISECONDS)
             .build()
     }
 
@@ -77,5 +88,13 @@ internal object ZkUtils {
 
         val systemInfo = client.get(infoUrl).body<SystemData>()
         return systemInfo.zkHost
+    }
+
+    suspend fun getZkHost(zkHost: String?, solrUrl: String?, credentials: String? = null): String {
+        return zkHost ?: solrUrl?.let { url ->
+            Utils.getHttpClient(credentials).use { client ->
+                getZkHostFromSolrUrl(client, url)
+            }
+        } ?: throw Error("Either --zk-host or --solr-url has to be provided.")
     }
 }

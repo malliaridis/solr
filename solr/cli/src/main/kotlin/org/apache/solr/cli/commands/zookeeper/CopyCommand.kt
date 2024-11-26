@@ -21,7 +21,7 @@ import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
-import com.github.ajalt.clikt.parameters.groups.required
+import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
@@ -32,15 +32,11 @@ import java.net.URI
 import org.apache.solr.cli.Constants
 import org.apache.solr.cli.domain.UriScheme
 import org.apache.solr.cli.domain.UriScheme.Companion.toUriScheme
-import org.apache.solr.cli.options.CommonOptions.connectionOptions
-import org.apache.solr.cli.options.CommonOptions.credentialsOption
 import org.apache.solr.cli.options.CommonOptions.recursiveOption
-import org.apache.solr.cli.options.CommonOptions.solrUrlOption
-import org.apache.solr.cli.options.CommonOptions.zkHostOption
-import org.apache.solr.cli.services.ZkFileTransferService
-import org.apache.solr.cli.utils.Utils
+import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.utils.ZkUtils
 
+// TODO Consider unifying zk-command connection options
 class CopyCommand : SuspendingCliktCommand(name = "cp") {
 
     override fun help(context: Context): String =
@@ -84,21 +80,7 @@ class CopyCommand : SuspendingCliktCommand(name = "cp") {
         .path()
         .required()
 
-    private val timeout by option(
-        envvar = "SOLR_ZK_CLIENT_TIMEOUT",
-        valueSourceKey = "solr.zk.client.timeout", // TODO See if timeout or timeoutMs
-        hidden = true,
-    ).help("Timeout in milliseconds to use for Zookeeper client connections.")
-        .int()
-        .default(Constants.DEFAULT_ZK_CLIENT_TIMEOUT)
-
-    private val solrUrl by solrUrlOption
-
-    private val zkHost by zkHostOption
-
-    private val credentials by credentialsOption
-
-    private val connection = connectionOptions.required()
+    private val connection by ConnectionOptions()
 
     private val recursive by recursiveOption
 
@@ -115,21 +97,32 @@ class CopyCommand : SuspendingCliktCommand(name = "cp") {
     override suspend fun run() {
         val srcUri = URI(source)
         val srcScheme = srcUri.scheme?.toUriScheme() ?: UriScheme.File
+        val srcPathString = srcUri.path ?: "/"
 
         val destUri = URI(destination)
         val destScheme = destUri.scheme?.toUriScheme() ?: UriScheme.File
+        val destPathString = destUri.path ?: "/"
 
-        require(srcScheme == UriScheme.Zk || destScheme == UriScheme.File) {
+        // TODO Reconsider this limitation
+        require(srcScheme == UriScheme.Zk || destScheme == UriScheme.Zk) {
             """Either source or destination has to be a valid Zookeeper URI (starting with "zk://")."""
         }
 
-        val zkHost = zkHost ?: solrUrl?.let { url ->
-            Utils.getHttpClient(credentials).use { client ->
-                ZkUtils.getZkHostFromSolrUrl(client, url)
-            }
-        } ?: throw Error("Either --zk-host or --solr-url has to be provided.")
+        val zkHost = connection.getZkHost()
 
-        ZkFileTransferService(ZkUtils.getZkClient(zkHost, solrHome, timeout, compression))
-            .transfer(srcUri, destUri, recursive)
+        ZkUtils.getZkClient(zkHost, solrHome, connection.timeout, compression).use { client ->
+            try {
+                client.zkTransfer(
+                    srcPathString,
+                    srcScheme.isRemote,
+                    destPathString,
+                    destScheme.isRemote,
+                    recursive,
+                )
+            } catch (exception: Exception) {
+                echo(message = "Could not complete cp operation.", err = true)
+                echo(exception.message, err = true)
+            }
+        }
     }
 }

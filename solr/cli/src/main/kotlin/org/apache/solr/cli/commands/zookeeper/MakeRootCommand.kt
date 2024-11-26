@@ -18,9 +18,50 @@
 package org.apache.solr.cli.commands.zookeeper
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.core.Context
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.help
+import com.github.ajalt.clikt.parameters.groups.provideDelegate
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.help
+import com.github.ajalt.clikt.parameters.options.option
+import org.apache.solr.cli.options.CommonOptions.verboseOption
+import org.apache.solr.cli.options.ConnectionOptions
+import org.apache.solr.cli.utils.ZkUtils
 
-class MakeRootCommand : SuspendingCliktCommand(name = "mv") {
+// TODO Consider unifying zk-command connection options
+class MakeRootCommand : SuspendingCliktCommand(name = "mkroot") {
+
+    override fun help(context: Context): String =
+        """Creates a ZNode in Zookeeper with no data.
+        |Can be used to make a path of arbitrary depth but primarily intended to create a "chroot".
+        """.trimMargin()
+
+    // TODO allow user to provide ZK URIs with all information,
+    //  like zk://username:password@127.0.0.1:9983/path
+    private val path by argument()
+        .help("ZNode / path to create.")
+
+    private val ignore by option("--ignore")
+        .help("Ignores errors if ZNode / path already exists.")
+        .flag()
+
+    private val connection by ConnectionOptions()
+
+    private val verbose by verboseOption
+
     override suspend fun run() {
-        TODO("Not yet implemented")
+        val zkHost = connection.getZkHost()
+        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+
+        ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
+            echo("Creating ZooKeeper path $path on ZooKeeper at $zkHost")
+            try {
+                zkClient.makePath(path, !ignore, true)
+            } catch (exception: Exception) {
+                echo(message = "Could not complete mkroot operation.", err = true)
+                echo(exception.message, err = true)
+            }
+        }
     }
 }

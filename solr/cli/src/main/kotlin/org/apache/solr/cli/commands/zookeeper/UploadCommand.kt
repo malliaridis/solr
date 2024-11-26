@@ -18,37 +18,46 @@
 package org.apache.solr.cli.commands.zookeeper
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import org.apache.solr.cli.options.CommonOptions.recursiveOption
+import com.github.ajalt.clikt.parameters.types.path
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.utils.ZkUtils
 
-class ListCommand : SuspendingCliktCommand(name = "ls") {
+class UploadCommand : SuspendingCliktCommand(name = "upload") {
 
-    // TODO allow user to provide ZK URIs with all information,
-    //  like zk://username:password@127.0.0.1:9983/path
-    private val path by argument()
-        .help("The ZNode / path to list.")
+    private val name by argument()
+        .help("Name of the ConfigSet to use in ZooKeeper.")
 
-    private val recursive by recursiveOption
+    private val directory by argument()
+        .help {
+            """Local directory to the ConfigSet to upload.
+            |Note that this directory should include the solrconfig.xml
+            """.trimMargin()
+        }.path()
 
     private val connection by ConnectionOptions()
 
     private val verbose by verboseOption
 
+    override fun help(context: Context): String = "Uploads a configuration to Zookeeper."
+
     override suspend fun run() {
         val zkHost = connection.getZkHost()
-        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+        if (verbose) echo("\nConnecting to ZooKeeper at $zkHost ...")
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo("Getting listing for ZooKeeper node $path from ZooKeeper at $zkHost.")
+            echo(
+                message = "Uploading ConfigSet from ${directory.toAbsolutePath()} " +
+                        "to ZooKeeper at $zkHost with the name $name.",
+            )
             try {
-                zkClient.listZnode(path, recursive)
+                zkClient.upConfig(directory, name)
             } catch (exception: Exception) {
-                echo(message = "Could not complete ls operation.", err = true)
+                echo(message = "Could not complete upload operation.", err = true)
                 echo(exception.message, err = true)
             }
         }

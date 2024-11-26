@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.solr.cli.commands.zookeeper
+package org.apache.solr.cli.commands
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 
-class UpConfigCommand : SuspendingCliktCommand(name = "upconfig") {
+class ClusterCommand : SuspendingCliktCommand(name = "cluster") {
     override suspend fun run() {
         TODO("Not yet implemented")
     }

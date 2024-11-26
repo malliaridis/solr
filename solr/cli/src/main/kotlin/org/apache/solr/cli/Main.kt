@@ -23,36 +23,10 @@ import org.apache.solr.cli.commands.snapshot.DescribeCommand as SnapshotDescribe
 import org.apache.solr.cli.commands.snapshot.ExportCommand as SnapshotExportCommand
 import org.apache.solr.cli.commands.snapshot.ListCommand as SnapshotListCommand
 import com.github.ajalt.clikt.command.main
-import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.core.subcommands
-import org.apache.solr.cli.commands.ApiCommand
-import org.apache.solr.cli.commands.AssertCommand
-import org.apache.solr.cli.commands.ConfigCommand
-import org.apache.solr.cli.commands.CreateCommand
-import org.apache.solr.cli.commands.DeleteCommand
-import org.apache.solr.cli.commands.ExampleCommand
-import org.apache.solr.cli.commands.ExportCommand
-import org.apache.solr.cli.commands.HealthCheckCommand
-import org.apache.solr.cli.commands.PackageCommand
-import org.apache.solr.cli.commands.PostCommand
-import org.apache.solr.cli.commands.PostLogsCommand
-import org.apache.solr.cli.commands.RestartCommand
-import org.apache.solr.cli.commands.SnapshotCommand
-import org.apache.solr.cli.commands.SolrCommand
-import org.apache.solr.cli.commands.StartCommand
-import org.apache.solr.cli.commands.StatusCommand
-import org.apache.solr.cli.commands.StopCommand
-import org.apache.solr.cli.commands.VersionCommand
-import org.apache.solr.cli.commands.ZookeeperCommand
-import org.apache.solr.cli.commands.zookeeper.CopyCommand
-import org.apache.solr.cli.commands.zookeeper.DownConfigCommand
-import org.apache.solr.cli.commands.zookeeper.LinkConfigCommand
+import org.apache.solr.cli.commands.*
+import org.apache.solr.cli.commands.zookeeper.*
 import org.apache.solr.cli.commands.zookeeper.ListCommand
-import org.apache.solr.cli.commands.zookeeper.MakeRootCommand
-import org.apache.solr.cli.commands.zookeeper.MoveCommand
-import org.apache.solr.cli.commands.zookeeper.RemoveCommand
-import org.apache.solr.cli.commands.zookeeper.UpConfigCommand
-import org.apache.solr.cli.commands.zookeeper.UpdateAclsCommand
 
 suspend fun main(args: Array<String>) = SolrCommand()
     .subcommands(
@@ -69,17 +43,18 @@ suspend fun main(args: Array<String>) = SolrCommand()
         CreateCommand(),
         DeleteCommand(),
         ConfigCommand(),
+        ClusterCommand(),
         ZookeeperCommand()
             .subcommands(
-                UpConfigCommand(),
-                DownConfigCommand(),
+                UploadCommand(),
+                DownloadCommand(),
                 RemoveCommand(),
                 MoveCommand(),
                 CopyCommand(),
                 ListCommand(),
                 MakeRootCommand(),
                 UpdateAclsCommand(),
-                LinkConfigCommand(),
+                LinkCommand(),
             ),
         SnapshotCommand()
             .subcommands(

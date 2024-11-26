@@ -18,37 +18,51 @@
 package org.apache.solr.cli.commands.zookeeper
 
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
+import com.github.ajalt.clikt.core.Context
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
-import org.apache.solr.cli.options.CommonOptions.recursiveOption
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.help
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.path
+import kotlin.io.path.Path
+import kotlin.io.path.createDirectories
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.utils.ZkUtils
 
-class ListCommand : SuspendingCliktCommand(name = "ls") {
+class DownloadCommand : SuspendingCliktCommand(name = "download") {
 
-    // TODO allow user to provide ZK URIs with all information,
-    //  like zk://username:password@127.0.0.1:9983/path
-    private val path by argument()
-        .help("The ZNode / path to list.")
+    private val name by argument()
+        .help("Name of the ConfigSet stored in ZooKeeper.")
 
-    private val recursive by recursiveOption
+    private val directory by option("-d", "--directory")
+        .help("Local directory where to download the configuration. Defaults to current directory.")
+        .path()
+        .default(Path("."))
 
     private val connection by ConnectionOptions()
 
     private val verbose by verboseOption
 
+    override fun help(context: Context): String = "Downloads a configuration stored in Zookeeper."
+
     override suspend fun run() {
+        directory.createDirectories()
+
         val zkHost = connection.getZkHost()
-        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+        if (verbose) echo("\nConnecting to ZooKeeper at $zkHost ...")
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo("Getting listing for ZooKeeper node $path from ZooKeeper at $zkHost.")
+            echo(
+                message = "Downloading ConfigSet $name from ZooKeeper at $zkHost " +
+                        "to directory ${directory.toAbsolutePath()}",
+            )
             try {
-                zkClient.listZnode(path, recursive)
+                zkClient.downConfig(name, directory)
             } catch (exception: Exception) {
-                echo(message = "Could not complete ls operation.", err = true)
+                echo(message = "Could not complete download operation.", err = true)
                 echo(exception.message, err = true)
             }
         }
