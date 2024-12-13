@@ -25,7 +25,6 @@ import static org.apache.solr.common.params.CommonParams.SORT;
 import static org.apache.solr.common.util.JavaBinCodec.SOLRINPUTDOC;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -599,7 +598,7 @@ public class ExportTool extends ToolBase {
         consumerThreadpool.shutdownNow();
         if (failed) {
           try {
-            Files.delete(new File(out).toPath());
+            Files.delete(Path.of(out));
           } catch (IOException e) {
             // ignore
           }
@@ -661,8 +660,8 @@ public class ExportTool extends ToolBase {
       }
 
       boolean exportDocsFromCore() throws IOException, SolrServerException {
-
-        try (SolrClient client = CLIUtils.getSolrClient(baseurl, credentials)) {
+        // reference the replica's node URL, not the baseUrl in scope, which could be anywhere
+        try (SolrClient client = CLIUtils.getSolrClient(replica.getBaseUrl(), credentials)) {
           expectedDocs = getDocCount(replica.getCoreName(), client, query);
           QueryRequest request;
           ModifiableSolrParams params = new ModifiableSolrParams();
