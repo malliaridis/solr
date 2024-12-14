@@ -23,6 +23,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.appendPathSegments
 import io.ktor.http.isSuccess
+import java.net.ConnectException
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -55,7 +56,7 @@ internal object SolrStateAnalyzer {
         credentials: String? = null,
         timeout: Duration = (-1).milliseconds,
         interval: Duration = 1.seconds,
-    ): SolrState = Utils.getHttpClient(credentials).use { client ->
+    ): SolrState = Utils.createHttpClient(credentials).use { client ->
         val infoUrl = URLBuilder(url).apply {
             appendPathSegments("admin", "info", "system")
         }.build()
@@ -63,14 +64,20 @@ internal object SolrStateAnalyzer {
         try {
             withTimeoutOrNull(timeout) {
                 while (true) {
-                    val response = client.get(infoUrl)
-                    when {
-                        response.status.isSuccess() -> {
-                            val data = response.body<SystemData>()
-                            return@withTimeoutOrNull SolrState.Online(data.mode.toSolrMode())
+                    try {
+                        val response = client.get(infoUrl)
+                        when {
+                            response.status.isSuccess() -> {
+                                val data = response.body<SystemData>()
+                                return@withTimeoutOrNull SolrState.Online(data.mode.toSolrMode())
+                            }
+                            response.status.isAuthError() ->
+                                return@withTimeoutOrNull SolrState.AuthRequired
                         }
-                        response.status.isAuthError() ->
-                            return@withTimeoutOrNull SolrState.AuthRequired
+                    } catch (exception: TimeoutCancellationException) {
+                        // Ignore timeout
+                    } catch (exception: ConnectException) {
+                        // Ignore connection refused
                     }
 
                     delay(interval)
@@ -86,11 +93,13 @@ internal object SolrStateAnalyzer {
                         SolrState.Online(data.mode.toSolrMode())
                     }
                     response.status.isAuthError() -> SolrState.AuthRequired
-                    else -> SolrState.Offline
+                    else -> SolrState.Offline // TODO If a response is received, is the server online?
                 }
             }
         } catch (exception: TimeoutCancellationException) {
             SolrState.Offline // Timeout occurred, server didn't come online
+        } catch (exception: ConnectException) {
+            SolrState.Offline // Connection refused, server was not running or reachable
         }
     }
 

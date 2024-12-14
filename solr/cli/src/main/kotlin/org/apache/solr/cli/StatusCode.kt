@@ -17,9 +17,28 @@
 
 package org.apache.solr.cli
 
-import com.github.ajalt.clikt.core.CliktCommand
+internal object StatusCode {
 
-object TestCliCommand : CliktCommand() {
+    /**
+     * Indicates that the command or program executed successfully without any errors.
+     */
+    const val SUCCESS = 0
 
-    override fun run() {}
+    /**
+     * A catch-all exit code for a variety of general errors. Often used when the command or program
+     * encounters an error, but no specific exit code is available for the situation.
+     */
+    const val GENERAL_ERROR = 1
+
+    /**
+     * The command was found, but it could not be executed, possibly due to insufficient permissions
+     * or other issues.
+     */
+    const val COMMAND_CANNOT_EXECUTE  = 126
+
+    /**
+     * The command was not found in the system's PATH, indicating that either the command does not
+     * exist or the PATH variable is incorrectly set.
+     */
+    const val COMMAND_NOT_FOUND = 127
 }

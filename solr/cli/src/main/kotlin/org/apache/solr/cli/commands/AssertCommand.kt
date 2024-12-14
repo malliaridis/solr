@@ -32,7 +32,6 @@ import java.nio.file.Path
 import kotlin.io.path.exists
 import kotlin.io.path.getOwner
 import kotlin.io.path.notExists
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import org.apache.solr.cli.domain.SolrState
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
@@ -101,13 +100,13 @@ class AssertCommand : SuspendingCliktCommand(name = "assert") {
     private val isVerbose by verboseOption
 
     override suspend fun run() {
-        runAssertions().onSuccess { failedTests -> exitProcess(failedTests) }
+        runAssertions().onSuccess { failedTests -> currentContext.exitProcess(failedTests) }
             .onFailure { exception ->
                 echo(
                     message = if (isVerbose) exception else exception.message ?: throw exception,
                     err = true
                 )
-                exitProcess(100)
+                currentContext.exitProcess(100)
             }
     }
 
@@ -147,7 +146,7 @@ class AssertCommand : SuspendingCliktCommand(name = "assert") {
                         credentials = credentials,
                         timeout = timeout.milliseconds,
                     )
-                    if (!state.isOnline) 0 else 1
+                    if (state.isOnline) 1 else 0
                 }
 
                 is RunningAssertion.Started -> {

@@ -72,7 +72,7 @@ class ConfigCommand : SuspendingCliktCommand(name = "config") {
 
         if (verbose) echo("POSTing request to Config API: $updateUrl")
 
-        Utils.getHttpClient(credentials).use { client ->
+        Utils.createHttpClient(credentials).use { client ->
             val result = withContext(Dispatchers.IO) {
                 client.post(updateUrl) {
                     setBody(JsonObject(mapOf(action to value)))

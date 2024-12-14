@@ -26,7 +26,6 @@ import io.ktor.serialization.kotlinx.json.json
 import org.apache.solr.cli.Constants
 import org.apache.solr.cli.domain.SolrProcess
 import org.apache.solr.cli.domain.UrlScheme
-import org.apache.solr.cli.exceptions.ProcessNotFoundException
 import org.apache.solr.cli.services.ProcessAnalyzer
 
 object Utils {
@@ -44,15 +43,16 @@ object Utils {
      * Searches for a locally running Solr instance and returns the PID if found.
      *
      * @param port The port the Solr instance is running on.
-     * @return Process ID (PID) of the running Solr instance.
+     * @return Process ID (PID) of the running Solr instance, or null if no process is running on
+     * the specified [port].
      */
     suspend fun findSolrPIDByPort(port: Int): Long? {
         val solrProcesses = ProcessAnalyzer.findProcesses(
             "java", "start.jar", "jetty.port=$port"
         ).getOrNull()
 
-        if (solrProcesses.isNullOrEmpty()) throw ProcessNotFoundException()
-        return solrProcesses.first() // there can be only one process running on a specified port
+        // there can be mostly one process running on a specified port
+        return solrProcesses?.firstOrNull()
     }
 
     /**
@@ -99,5 +99,24 @@ object Utils {
         return UrlScheme.valueOf(keyValue[1])
     }
 
+    /**
+     * Returns an application-wide client.
+     *
+     * The caller should not close this client manually, as it is closed at process exit.
+     */
     fun getHttpClient(credentials: String?) = httpClient
+
+    /**
+     * Creates a new HTTP client that is used and managed by the caller.
+     *
+     * The caller is responsible for closing the client.
+     */
+    fun createHttpClient(credentials: String?) = HttpClient {
+        install(ContentNegotiation) {
+            json()
+        }
+        defaultRequest {
+            contentType(ContentType.Application.Json)
+        }
+    }
 }

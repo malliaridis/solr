@@ -40,7 +40,7 @@ class ApiCommand : SuspendingCliktCommand(name = "api") {
     override suspend fun run() {
         val url = Url(solrUrl)
 
-        Utils.getHttpClient(credentials).use { client ->
+        Utils.createHttpClient(credentials).use { client ->
             val response = client.get(url)
             val responseData = response.body<JsonObject>()
             echo(responseData.toPrettyString())

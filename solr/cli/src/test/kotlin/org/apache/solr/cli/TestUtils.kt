@@ -17,9 +17,15 @@
 
 package org.apache.solr.cli
 
-import com.github.ajalt.clikt.core.CliktCommand
+import kotlin.time.Duration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
-object TestCliCommand : CliktCommand() {
-
-    override fun run() {}
+object TestUtils {
+    suspend fun <T> runWithTimeout(timeout: Duration, block: suspend CoroutineScope.() -> T) =
+        withContext(Dispatchers.Default.limitedParallelism(1)) {
+            withTimeout(timeout, block)
+        }
 }
