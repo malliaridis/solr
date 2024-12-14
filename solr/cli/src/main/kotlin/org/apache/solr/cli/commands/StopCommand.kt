@@ -30,6 +30,10 @@ import com.github.ajalt.clikt.parameters.types.restrictTo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import org.apache.solr.cli.Constants
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
+import org.apache.solr.cli.EchoUtils.warn
 import org.apache.solr.cli.options.AuthOptions
 import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityOptions
@@ -71,7 +75,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
     private val securityOptions by SecurityOptions(port = { port })
 
     // TODO See if these auth options are required for the stop commmand
-    private val authOptions by AuthOptions(echo = { echo(message = it) })
+    private val authOptions by AuthOptions(this)
 
     private val stopOptions by StopOptions(port = { port })
 
@@ -98,24 +102,24 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
             val solrProcesses = ProcessAnalyzer.findProcesses("java", "start.jar")
                 .getOrNull()
             if (solrProcesses.isNullOrEmpty()) {
-                echo("No Solr processes found.")
+                info("No Solr processes found.")
                 currentContext.exitProcess(0)
                 return
             }
             solrProcesses.forEach { pid ->
                 val jettyPort = Utils.getJettyPort(pid)
-                echo(message = "Solr process found with port $jettyPort")
+                debug(verbose) { "Solr process found with port $jettyPort" }
 
                 stopSolrInstance(pid)
             }
         } else {
             val pid = Utils.findSolrPIDByPort(port) ?: run {
-                echo("No Solr process for port $port found.")
+                info("No Solr process for port $port found.")
                 currentContext.exitProcess(0)
                 return
             }
 
-            echo(message = "Solr process for port $port found, PID: $pid")
+            debug(verbose) { "Solr process for port $port found, PID: $pid" }
             stopSolrInstance(pid)
         }
     }
@@ -124,13 +128,12 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         "NOTE: To see if any Solr servers are running, do: solr status"
 
     private suspend fun stopSolrInstance(pid: Long) {
-        echo(
-            message = """Sending stop command to Solr running with stop port ${stopOptions.stopPort}
+        debug(verbose) {
+            """Sending stop command to Solr running with stop port ${stopOptions.stopPort}
             | ... waiting up to ${stopOptions.waitTimeMs} seconds to allow Jetty process $pid to
             | stop gracefully.
-            |""".trimMargin(),
-            err = true,
-        )
+            |""".trimMargin()
+        }
 
         // Try to stop solr gracefully
         val stopArguments = arrayOf(
@@ -155,6 +158,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
 //                // TODO Cleanup pid file that may not have been deleted yet
 //            }
             // TODO Exit process successfully.
+            info("Solr process with PID $pid has been stopped.")
         }
 
         // Process has not stopped, likely due to timeout
@@ -177,10 +181,7 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         val jstackExists = CommandChecker.commandExists(javaOptions.jstackExec).getOrNull() == true
 
         if (jstackExists) {
-            echo(
-                message = "Solr process $pid is still running; jstacking it now.",
-                err = true,
-            )
+            debug(verbose) { "Solr process $pid is still running; jstacking it now." }
             CommandExecutor.executeInForeground(
                 command = arrayOf(javaOptions.jstackExec, "$pid"),
             )
@@ -191,13 +192,8 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         val jattachExists = CommandChecker.commandExists("jattach").getOrNull() == true
 
         if (jattachExists) {
-            echo(
-                message = "Solr process $pid is still running; jattach threaddumping it now.",
-                err = true,
-            )
-            CommandExecutor.executeInForeground(
-                command = arrayOf("jattach", "$pid", "threaddump"),
-            )
+            debug(verbose) { "Solr process $pid is still running; jattach threaddumping it now." }
+            CommandExecutor.executeInForeground(command = arrayOf("jattach", "$pid", "threaddump"))
         }
     }
 
@@ -207,15 +203,12 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
      * @param pid Process ID of the process to kill.
      */
     private suspend fun killSolrProcess(pid: Long) {
-        echo(
-            message = "Solr process $pid is still running; forcefully killing it now.",
-            err = true,
-        )
+        warn(message = "Solr process $pid is still running; forcefully killing it now.")
 
         val result = ProcessKiller.killProcess(pid)
 
-        if (result.isSuccess) echo("Killed process with PID $pid.")
-        else echo(message = "Failed to kill process with PID $pid.", err = true)
+        if (result.isSuccess) warn(message = "Killed process with PID $pid.")
+        else err(message = "Failed to kill process with PID $pid.")
     }
 
     private suspend fun removePidFile() {

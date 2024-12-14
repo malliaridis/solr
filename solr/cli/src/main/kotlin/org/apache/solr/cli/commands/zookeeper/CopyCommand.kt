@@ -30,6 +30,7 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.path
 import java.net.URI
 import org.apache.solr.cli.Constants
+import org.apache.solr.cli.EchoUtils.err
 import org.apache.solr.cli.domain.UriScheme
 import org.apache.solr.cli.domain.UriScheme.Companion.toUriScheme
 import org.apache.solr.cli.options.CommonOptions.recursiveOption
@@ -120,8 +121,7 @@ class CopyCommand : SuspendingCliktCommand(name = "cp") {
                     recursive,
                 )
             } catch (exception: Exception) {
-                echo(message = "Could not complete cp operation.", err = true)
-                echo(exception.message, err = true)
+                err(message = "Could not complete cp operation.", error = exception)
             }
         }
     }

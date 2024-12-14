@@ -22,6 +22,9 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import java.net.URI
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.options.CommonOptions.recursiveOption
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
@@ -42,7 +45,7 @@ class RemoveCommand : SuspendingCliktCommand(name = "rm") {
 
     override suspend fun run() {
         val zkHost = connection.getZkHost()
-        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+        debug(verbose) { "Connecting to ZooKeeper at $zkHost ..." }
 
         val targetUri = URI(target)
         val path = targetUri.path
@@ -55,11 +58,10 @@ class RemoveCommand : SuspendingCliktCommand(name = "rm") {
                             || recursive
                 ) { "ZooKeeper node $path has children and recursive has NOT been specified." }
 
-                echo("Removing ZooKeeper node $path from ZooKeeper at $zkHost.")
+                info("Removing ZooKeeper node $path from ZooKeeper at $zkHost.")
                 zkClient.clean(path)
             } catch (exception: Exception) {
-                echo(message = "Could not complete clean operation.", err = true)
-                echo(exception.message, err = true)
+                err(message = "Could not complete clean operation.", error = exception)
             }
         }
     }

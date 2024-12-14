@@ -39,6 +39,8 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.createDirectories
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
 import org.apache.solr.cli.StatusCode
 import org.apache.solr.cli.domain.MemoryAllocation
 import org.apache.solr.cli.domain.PlacementPluginMode
@@ -215,10 +217,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         .defaultLazy {
             val rmiPort = connectionOptions.port + 10_000
             if (rmiPort > UShort.MAX_VALUE.toInt()) {
-                echo(
-                    message = "RMI port is $rmiPort, which is invalid.",
-                    err = true,
-                )
+                err(message = "RMI port is $rmiPort, which is invalid.")
                 currentContext.exitProcess(StatusCode.GENERAL_ERROR)
             }
             rmiPort
@@ -325,7 +324,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         hidden = true,
     ).multiple()
 
-    private val authOptions by AuthOptions(::echo)
+    private val authOptions by AuthOptions(this)
 
     private val deleteUnknownCores by option(
         envvar = "SOLR_DELETE_UNKNOWN_CORES",
@@ -342,7 +341,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     private lateinit var errorFile: Path
 
     override suspend fun run() {
-        echo("Start World!")
+        debug(verbose) { "Start World!" }
         if (isUserLimitChecksEnabled) checkUserLimits(UserLimits()) // TODO pass user limit defaults in UserLimits
 
         // Check current user if not force
@@ -350,8 +349,8 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
             .onSuccess { isRoot ->
                 if (isRoot) {
                     // Exit if root and not --force used
-                    echo("""[WARN] Starting Solr as the root user is a security risk and not considered best practice.""")
-                    echo("Exiting.")
+                    err(message = "Starting Solr as the root user is a security risk and not considered best practice.")
+                    err(message = "Exiting.")
                     currentContext.exitProcess(1)
                 }
             }
@@ -376,13 +375,12 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     private suspend fun checkCommands(warnOptionals: Boolean = true) {
         CommandChecker.commandExists(javaOptions.javaExec)
             .onFailure {
-                echo(
+                err(
                     message = """Could not find java executable "${javaOptions.javaExec}".
                     | Please make sure if JAVA_HOME or SOLR_JAVA_HOME is set, that they point
                     | to the right directory. Alternatively, if these environment variables are
                     | not set, make sure that the "java" command can be executed. 
                     """.trimMargin(),
-                    err = true,
                 )
                 currentContext.exitProcess(StatusCode.COMMAND_NOT_FOUND)
             }
@@ -393,12 +391,11 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
     private suspend fun checkFiles() {
         val solrXmlExists = solrContextOptions.solrHome.resolve("solr.xml").toFile().exists()
         if (solrMode.isUserManaged && isSolrXmlRequired && !solrXmlExists) {
-            echo(
+            err(
                 message =
                     """Solr home directory ${solrContextOptions.solrHome.absolutePathString()} must
                 | contain a solr.xml file!
                 """.trimMargin(),
-                err = true,
             )
             currentContext.exitProcess(StatusCode.GENERAL_ERROR)
         }
@@ -493,7 +490,7 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
 
             // TODO Linux: Check for low entropy
             // TODO Wait for Solr to come online
-            echo("Solr server started.")
+            debug(verbose) { "Solr server started." }
         }
     }
 
@@ -536,18 +533,16 @@ internal class StartCommand : SuspendingCliktCommand(name = "start") {
         arguments.add("-DzkClientTimeout=$zkClientTimeout")
         connectionOptions.zkHost?.let { arguments.add("-DzkHost=$it") } ?: run {
             if (connectionOptions.port > UShort.MAX_VALUE.toInt() - 1000) {
-                echo(
+                err(
                     message = """Zookeeper host is not set and Solr port is
                         | ${connectionOptions.port}, which would 
                         | result in an invalid embedded Zookeeper port!
                         """.trimMargin(),
-                    err = true,
                 )
                 currentContext.exitProcess(StatusCode.GENERAL_ERROR)
             }
 
-            if (verbose)
-                echo("Configuring SolrCloud to launch an embedded Zookeeper using -DzkRun")
+            debug(verbose) { "Configuring SolrCloud to launch an embedded Zookeeper using -DzkRun" }
             arguments.add("-DzkRun")
         }
 

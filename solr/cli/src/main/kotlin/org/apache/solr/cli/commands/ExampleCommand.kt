@@ -24,6 +24,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import java.io.File
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.domain.StartExample
 
 class ExampleCommand : SuspendingCliktCommand(name = "example") {
@@ -57,7 +58,7 @@ class ExampleCommand : SuspendingCliktCommand(name = "example") {
         .flag()
 
     override suspend fun run() {
-        echo("Example World!")
+        info("Example World!")
         // TODO Not yet implemented
     }
 
