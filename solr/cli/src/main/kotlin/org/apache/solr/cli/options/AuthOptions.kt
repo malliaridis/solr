@@ -17,14 +17,16 @@
 
 package org.apache.solr.cli.options
 
+import com.github.ajalt.clikt.core.BaseCliktCommand
 import com.github.ajalt.clikt.parameters.groups.OptionGroup
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.enum
+import org.apache.solr.cli.EchoUtils.warn
 import org.apache.solr.cli.domain.AuthType
 
 internal class AuthOptions(
-    private val echo: (message: String, ) -> Unit,
+    private val cliCommand: BaseCliktCommand<*>,
 ) : OptionGroup(
     name = "Authentcication options",
     help = "Options controlling the authentication configuration when starting a Solr instance"
@@ -53,8 +55,8 @@ internal class AuthOptions(
             !suppressWarnings
             && this@AuthOptions.authType == null
             && this@AuthOptions.authOptions.isNotEmpty()
-        ) echo(
-            """[WARNING] SOLR_AUTHENTICATION_OPTS environment variable configured without
+        ) cliCommand.warn(
+            """SOLR_AUTHENTICATION_OPTS environment variable configured without
             | associated SOLR_AUTH_TYPE variable. Please configure SOLR_AUTH_TYPE environment
             | variable with the authentication type to be used. Currently supported authentication
             | types are [kerberos, basic]
@@ -65,8 +67,8 @@ internal class AuthOptions(
             !suppressWarnings
             && this@AuthOptions.authType != null
             && this@AuthOptions.authClientBuilder != null
-        ) echo(
-            """[WARNING] SOLR_AUTHENTICATION_CLIENT_BUILDER and SOLR_AUTH_TYPE environment
+        ) cliCommand.warn(
+            """SOLR_AUTHENTICATION_CLIENT_BUILDER and SOLR_AUTH_TYPE environment
             | variables are configured together. Use SOLR_AUTH_TYPE environment variable to
             | configure authentication type to be used. Currently supported authentication types
             | are [kerberos, basic]. The value of SOLR_AUTHENTICATION_CLIENT_BUILDER environment

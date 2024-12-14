@@ -25,6 +25,9 @@ import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.help
 import com.github.ajalt.clikt.parameters.options.option
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.utils.ZkUtils
@@ -52,15 +55,14 @@ class MakeRootCommand : SuspendingCliktCommand(name = "mkroot") {
 
     override suspend fun run() {
         val zkHost = connection.getZkHost()
-        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+        debug(verbose) { "Connecting to ZooKeeper at $zkHost ..." }
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo("Creating ZooKeeper path $path on ZooKeeper at $zkHost")
+            info("Creating ZooKeeper path $path on ZooKeeper at $zkHost")
             try {
                 zkClient.makePath(path, !ignore, true)
             } catch (exception: Exception) {
-                echo(message = "Could not complete mkroot operation.", err = true)
-                echo(exception.message, err = true)
+                err(message = "Could not complete mkroot operation.", error = exception)
             }
         }
     }

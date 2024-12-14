@@ -25,6 +25,7 @@ import io.ktor.client.request.get
 import io.ktor.http.Url
 import kotlinx.serialization.json.JsonObject
 import org.apache.solr.cli.Constants
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
 import org.apache.solr.cli.options.CommonOptions.solrUrlOption
 import org.apache.solr.cli.utils.Utils
@@ -43,7 +44,7 @@ class ApiCommand : SuspendingCliktCommand(name = "api") {
         Utils.createHttpClient(credentials).use { client ->
             val response = client.get(url)
             val responseData = response.body<JsonObject>()
-            echo(responseData.toPrettyString())
+            info(responseData.toPrettyString())
         }
     }
 }

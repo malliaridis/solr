@@ -32,6 +32,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.success
 import org.apache.solr.cli.options.CommonOptions.collectionNameOption
 import org.apache.solr.cli.options.CommonOptions.connectionOptions
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
@@ -70,7 +73,7 @@ class ConfigCommand : SuspendingCliktCommand(name = "config") {
             path("api", "collections", collection, "config")
         }.build()
 
-        if (verbose) echo("POSTing request to Config API: $updateUrl")
+        debug(verbose) { "POSTing request to Config API: $updateUrl" }
 
         Utils.createHttpClient(credentials).use { client ->
             val result = withContext(Dispatchers.IO) {
@@ -81,13 +84,13 @@ class ConfigCommand : SuspendingCliktCommand(name = "config") {
 
             val body = result.body<JsonObject>()
 
-            if (verbose) echo("Response body: $body")
+            debug(verbose) { "Response body: $body" }
 
             when (result.status) {
-                HttpStatusCode.OK -> echo("Config successfully updated.")
-                HttpStatusCode.Created -> echo("Config update successfully created.")
-                HttpStatusCode.Accepted -> echo("Config update successfully sent.")
-                else -> echo("Failed with status ${result.status} : $body", err = true)
+                HttpStatusCode.OK -> success("Config successfully updated.")
+                HttpStatusCode.Created -> success("Config update successfully created.")
+                HttpStatusCode.Accepted -> success("Config update successfully sent.")
+                else -> err(message = "Failed with status ${result.status} : $body")
             }
         }
     }

@@ -33,6 +33,7 @@ import kotlin.io.path.exists
 import kotlin.io.path.getOwner
 import kotlin.io.path.notExists
 import kotlin.time.Duration.Companion.milliseconds
+import org.apache.solr.cli.EchoUtils.err
 import org.apache.solr.cli.domain.SolrState
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
 import org.apache.solr.cli.options.CommonOptions.verboseOption
@@ -102,10 +103,7 @@ class AssertCommand : SuspendingCliktCommand(name = "assert") {
     override suspend fun run() {
         runAssertions().onSuccess { failedTests -> currentContext.exitProcess(failedTests) }
             .onFailure { exception ->
-                echo(
-                    message = if (isVerbose) exception else exception.message ?: throw exception,
-                    err = true
-                )
+                err(message = if (isVerbose) exception else exception.message ?: throw exception)
                 currentContext.exitProcess(100)
             }
     }

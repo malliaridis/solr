@@ -22,6 +22,9 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
+import org.apache.solr.cli.EchoUtils.warn
 import org.apache.solr.cli.domain.UserLimits
 import org.apache.solr.cli.domain.UserLimits.UserLimitType
 import org.apache.solr.cli.exceptions.CommandNotFoundException
@@ -40,43 +43,43 @@ internal object UserLimitsChecker {
         getUserLimits().onSuccess { limits ->
             val warnOpenFiles =
                 !limits.isOpenFilesUnlimited && limits.openFiles < minLimits.openFiles
-            if (warnOpenFiles) echo(
-                message = """[WARN] Your open file limit is currently ${limits.openFiles}.
+            if (warnOpenFiles) warn(
+                message = """Your open file limit is currently ${limits.openFiles}.
                     |  It should be set to ${minLimits.openFiles} to avoid operational disruption.
                 """.trimMargin(),
             )
 
             val warnMaxProcesses =
                 !limits.isMaxProcessesUnlimited && limits.maxProcesses < minLimits.maxProcesses
-            if (warnMaxProcesses) echo(
-                message = """[WARN] Your max processes limit is currently ${limits.maxProcesses}.
+            if (warnMaxProcesses) warn(
+                message = """Your max processes limit is currently ${limits.maxProcesses}.
                     |  It should be set to ${minLimits.maxProcesses} to avoid operational disruption.
                 """.trimMargin(),
             )
 
             val warnVirtualMemory =
                 !limits.isVirtualMemoryUnlimited && limits.virtualMemory < minLimits.virtualMemory
-            if (warnVirtualMemory) echo(
-                message = """[WARN] Your virtual memory limit is currently ${limits.virtualMemory}.
+            if (warnVirtualMemory) warn(
+                message = """Your virtual memory limit is currently ${limits.virtualMemory}.
                     |  It should be set to ${minLimits.virtualMemory} to avoid operational disruption.
                 """.trimMargin(),
             )
 
             val warnMaxMemory =
                 !limits.isMaxMemoryUnlimited && limits.maxMemory < minLimits.maxMemory
-            if (warnMaxMemory) echo(
-                message = """[WARN] Your max max memory limit is currently ${limits.maxMemory}.
+            if (warnMaxMemory) warn(
+                message = """Your max max memory limit is currently ${limits.maxMemory}.
                     |  It should be set to ${minLimits.maxMemory} to avoid operational disruption.
                 """.trimMargin(),
             )
 
             if (warnOpenFiles || warnMaxProcesses || warnVirtualMemory || warnMaxMemory)
-                echo("[INFO] To suppress ulimit warnings, set solr.ulimit.checks to false")
+                info("To suppress ulimit warnings, set solr.ulimit.checks to false")
         }.onFailure {
-            echo("[WARN] Could not check ulimits for processes and open files.")
+            warn("Could not check ulimits for processes and open files.")
             with(minLimits) {
-                echo(
-                    message = """[INFO] The recommended values are:
+                info(
+                    message = """The recommended values are:
                     |  Open files:      ${if (isOpenFilesUnlimited) "unlimited" else openFiles}
                     |  Max processes:   ${if (isMaxProcessesUnlimited) "unlimited" else maxProcesses}
                     |  Virtual memory:  ${if (isVirtualMemoryUnlimited) "unlimited" else virtualMemory}
@@ -84,7 +87,7 @@ internal object UserLimitsChecker {
                 """.trimMargin()
                 )
             }
-            echo("[INFO] To suppress ulimit warnings, set solr.ulimit.checks to false")
+            info("To suppress ulimit warnings, set solr.ulimit.checks to false")
         }
     }
 
@@ -114,11 +117,7 @@ internal object UserLimitsChecker {
                     )
                 )
             } catch (exception: Exception) {
-                echo(
-                    message = "[ERROR] An error occurred while getting the user limits.",
-                    err = true
-                )
-                echo(message = exception.message, err = true)
+                err(message = "An error occurred while getting the user limits.", error = exception)
                 return@withContext Result.failure(exception)
             }
         }

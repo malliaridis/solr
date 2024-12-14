@@ -23,6 +23,9 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
 import java.net.URI
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.domain.UriScheme
 import org.apache.solr.cli.domain.UriScheme.Companion.toUriScheme
 import org.apache.solr.cli.options.CommonOptions.verboseOption
@@ -57,15 +60,14 @@ class MoveCommand : SuspendingCliktCommand(name = "mv") {
         }
 
         val zkHost = connection.getZkHost()
-        if (verbose) echo("\nConnecting to ZooKeeper at $zkHost ...")
+        debug(verbose) { "\nConnecting to ZooKeeper at $zkHost ..." }
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo("Moving ZNode $source to $destination on ZooKeeper at $zkHost")
+            info("Moving ZNode $source to $destination on ZooKeeper at $zkHost")
             try {
                 zkClient.moveZnode(source, destination)
             } catch (exception: Exception) {
-                echo(message = "Could not complete mv operation.", err = true)
-                echo(exception.message, err = true)
+                err(message = "Could not complete mv operation.", error = exception)
             }
         }
     }

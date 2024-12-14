@@ -21,6 +21,9 @@ import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.help
 import com.github.ajalt.clikt.parameters.groups.provideDelegate
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.options.CommonOptions.recursiveOption
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
@@ -41,15 +44,14 @@ class ListCommand : SuspendingCliktCommand(name = "ls") {
 
     override suspend fun run() {
         val zkHost = connection.getZkHost()
-        if (verbose) echo("Connecting to ZooKeeper at $zkHost ...")
+        debug(verbose) { "Connecting to ZooKeeper at $zkHost ..." }
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo("Getting listing for ZooKeeper node $path from ZooKeeper at $zkHost.")
+            info("Getting listing for ZooKeeper node $path from ZooKeeper at $zkHost.")
             try {
                 zkClient.listZnode(path, recursive)
             } catch (exception: Exception) {
-                echo(message = "Could not complete ls operation.", err = true)
-                echo(exception.message, err = true)
+                err(message = "Could not complete ls operation.", error = exception)
             }
         }
     }

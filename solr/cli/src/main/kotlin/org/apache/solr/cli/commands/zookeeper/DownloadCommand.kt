@@ -28,6 +28,9 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.path
 import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
 import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.ConnectionOptions
 import org.apache.solr.cli.utils.ZkUtils
@@ -52,18 +55,17 @@ class DownloadCommand : SuspendingCliktCommand(name = "download") {
         directory.createDirectories()
 
         val zkHost = connection.getZkHost()
-        if (verbose) echo("\nConnecting to ZooKeeper at $zkHost ...")
+        debug(verbose) { "Connecting to ZooKeeper at $zkHost ..." }
 
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
-            echo(
+            info(
                 message = "Downloading ConfigSet $name from ZooKeeper at $zkHost " +
                         "to directory ${directory.toAbsolutePath()}",
             )
             try {
                 zkClient.downConfig(name, directory)
             } catch (exception: Exception) {
-                echo(message = "Could not complete download operation.", err = true)
-                echo(exception.message, err = true)
+                err(message = "Could not complete download operation.", error = exception)
             }
         }
     }

@@ -27,9 +27,14 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import org.apache.solr.cli.EchoUtils.debug
+import org.apache.solr.cli.EchoUtils.err
+import org.apache.solr.cli.EchoUtils.info
+import org.apache.solr.cli.EchoUtils.success
 import org.apache.solr.cli.domain.SolrState
 import org.apache.solr.cli.options.CommonOptions.credentialsOption
 import org.apache.solr.cli.options.CommonOptions.solrUrlOption
+import org.apache.solr.cli.options.CommonOptions.verboseOption
 import org.apache.solr.cli.options.SolrContextOptions
 import org.apache.solr.cli.services.ProcessAnalyzer
 import org.apache.solr.cli.services.SolrStateAnalyzer
@@ -52,6 +57,8 @@ class StatusCommand : SuspendingCliktCommand(name = "status") {
         help = "Context options relevant for getting Solr status from local processes."
     )
 
+    private val verbose by verboseOption
+
     override suspend fun run() {
         val url = solrUrl
         if (url != null) checkSingleUrl(url)
@@ -63,17 +70,15 @@ class StatusCommand : SuspendingCliktCommand(name = "status") {
      */
     private suspend fun checkSingleUrl(url: String): Int {
         timeoutMs?.let { timeout ->
-            echo("Checking the state of Solr within $timeout milliseconds.")
+            debug(verbose) { "Checking the state of Solr within $timeout milliseconds." }
             val state = SolrStateAnalyzer.getSolrState(url, credentials, timeout.milliseconds)
             when (state) {
-                is SolrState.Unknown, SolrState.Offline -> echo(
-                    message = "Solr at $url did not come online within given timeout.",
-                    err = true,
-                )
+                is SolrState.Unknown, SolrState.Offline ->
+                    err(message = "Solr at $url did not come online within given timeout.")
 
-                is SolrState.Online -> echo(message = "Solr running and accessible at $url.")
+                is SolrState.Online -> success(message = "Solr running and accessible at $url.")
                 is SolrState.AuthRequired ->
-                    echo(message = "Solr running but not accessible at $url.", err = true)
+                    err(message = "Solr running but not accessible at $url.")
             }
             return if (state.isOnline) 1 else 0
         } ?: return if (SolrStateAnalyzer.getSolrState(url, credentials).isOnline) 1 else 0
@@ -86,7 +91,7 @@ class StatusCommand : SuspendingCliktCommand(name = "status") {
                 async { checkSingleUrl(process.localUrl) }
             }
             val running = results.awaitAll().sum()
-            echo("$running/$processes Solr processes running.")
-        } else if (!isCompact) echo(message = "No Solr nodes are running.")
+            info("$running/$processes Solr processes running.")
+        } else if (!isCompact) info(message = "No Solr nodes are running.")
     }
 }
