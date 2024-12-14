@@ -30,7 +30,6 @@ import com.github.ajalt.clikt.parameters.types.restrictTo
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeoutOrNull
 import org.apache.solr.cli.Constants
-import org.apache.solr.cli.exceptions.ProcessNotFoundException
 import org.apache.solr.cli.options.AuthOptions
 import org.apache.solr.cli.options.JavaOptions
 import org.apache.solr.cli.options.SecurityOptions
@@ -44,6 +43,12 @@ import org.apache.solr.cli.utils.Utils
 
 // TODO Consider stop command for remote server as well?
 internal class StopCommand : SuspendingCliktCommand(name = "stop") {
+
+    init {
+        configureContext {
+            this.echoMessage
+        }
+    }
 
     private val javaOptions by JavaOptions()
 
@@ -92,7 +97,11 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
         if (all) {
             val solrProcesses = ProcessAnalyzer.findProcesses("java", "start.jar")
                 .getOrNull()
-            if (solrProcesses.isNullOrEmpty()) throw ProcessNotFoundException()
+            if (solrProcesses.isNullOrEmpty()) {
+                echo("No Solr processes found.")
+                currentContext.exitProcess(0)
+                return
+            }
             solrProcesses.forEach { pid ->
                 val jettyPort = Utils.getJettyPort(pid)
                 echo(message = "Solr process found with port $jettyPort")
@@ -100,8 +109,11 @@ internal class StopCommand : SuspendingCliktCommand(name = "stop") {
                 stopSolrInstance(pid)
             }
         } else {
-            val pid = Utils.findSolrPIDByPort(port)
-                ?: throw ProcessNotFoundException("No Solr process for port $port found.")
+            val pid = Utils.findSolrPIDByPort(port) ?: run {
+                echo("No Solr process for port $port found.")
+                currentContext.exitProcess(0)
+                return
+            }
 
             echo(message = "Solr process for port $port found, PID: $pid")
             stopSolrInstance(pid)

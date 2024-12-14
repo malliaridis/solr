@@ -74,7 +74,7 @@ class ConnectionOptions : OptionGroup(name = "Connection Options") {
      */
     suspend fun getZkHost(): String {
         return zkHost ?: solrUrl?.let { url ->
-            Utils.getHttpClient(credentials).use { client ->
+            Utils.createHttpClient(credentials).use { client ->
                 getZkHostFromSolrUrl(client, url)
             }
         } ?: throw Error("Either --zk-host or --solr-url has to be provided.")

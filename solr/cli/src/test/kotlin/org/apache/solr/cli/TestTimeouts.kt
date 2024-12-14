@@ -17,28 +17,31 @@
 
 package org.apache.solr.cli
 
-object ExitCode {
+import kotlin.time.Duration.Companion.seconds
+
+/**
+ * Object containing timeout configurations for testing Solr-related processes.
+ */
+internal object TestTimeouts {
 
     /**
-     * Indicates that the command or program executed successfully without any errors.
+     * Timeout that is used for interrupting long-lasting tests.
      */
-    const val SUCCESS = 0
+    val testTimeout = 20.seconds
 
     /**
-     * A catch-all exit code for a variety of general errors. Often used when the command or program
-     * encounters an error, but no specific exit code is available for the situation.
+     * The amount of time to wait for Solr startups.
      */
-    const val GENERAL_ERROR = 1
+    val startTimeout = 5.seconds
 
     /**
-     * The command was found, but it could not be executed, possibly due to insufficient permissions
-     * or other issues.
+     * Delta time to use for any process running outside the regular timeouts, like [startTimeout].
+     * This value can be added to existing timeouts.
      */
-    const val COMMAND_CANNOT_EXECUTE  = 126
+    val deltaTime = 1.seconds
 
     /**
-     * The command was not found in the system's PATH, indicating that either the command does not
-     * exist or the PATH variable is incorrectly set.
+     * Expected max time for general Solr responses.
      */
-    const val COMMAND_NOT_FOUND = 127
+    val responseTime = 3.seconds
 }
