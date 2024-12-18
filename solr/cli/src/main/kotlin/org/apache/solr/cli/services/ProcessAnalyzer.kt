@@ -21,6 +21,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Path
 import kotlin.io.path.listDirectoryEntries
+import kotlin.jvm.optionals.getOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.solr.cli.domain.FileExtensions
@@ -65,16 +66,23 @@ internal object ProcessAnalyzer {
      * Fetches the state of a process with a given ID.
      *
      * @param pid Process ID to look for.
-     * @return A result with the process state.
+     * @return A result with the process state. If the process could not be found,
+     * ProcessState.Unknown is returned. The result is a failure if an error was thrown, such
+     * as [UnsupportedOperationException] and [SecurityException].
      */
-    suspend fun getProcessState(pid: Long): Result<ProcessState> {
-        TODO("Not yet implemented")
-        /*
-        STAT=$( (ps -o stat='' -p "$SOLR_PID" || :) | tr -d ' ')
-        if STAT is not empty and contains Z -> Zombie thread
-        else if STAT not emtpy -> Not stopped
-        else if STAT empty --> Stopped
-         */
+    fun getProcessState(pid: Long): Result<ProcessState> {
+        try {
+            // Get the process handle for the specified PID
+            val processHandle = ProcessHandle.of(pid).getOrNull()
+                ?: return Result.success(ProcessState.Unknown)
+
+            return Result.success(
+                if (processHandle.isAlive) ProcessState.Running
+                else ProcessState.Stopped
+            )
+        } catch (exception: Exception) {
+            return Result.failure(exception)
+        }
     }
 
     /**
