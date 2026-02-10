@@ -16,7 +16,8 @@
  */
 
 plugins {
-  id "java-gradle-plugin"
+  `java-gradle-plugin`
+  `kotlin-dsl`
   alias(libs.plugins.diffplug.spotless) apply false
 }
 
@@ -27,32 +28,34 @@ repositories {
 group = "org.apache"
 
 // Make sure the build environment is consistent.
-apply from: file('../../gradle/conventions.gradle')
-apply from: file('../../gradle/validation/check-environment.gradle')
+apply(from = file("../../gradle/conventions.gradle"))
+apply(from = file("../../gradle/validation/check-environment.gradle"))
 
 // Add spotless/ tidy.
 tasks.register("checkJdkInternalsExportedToGradle") {}
-apply from: file('../../gradle/validation/spotless.gradle')
+apply(from = file("../../gradle/validation/spotless.gradle"))
 
 java {
-  sourceCompatibility = JavaVersion.toVersion(libs.versions.java.min.get())
-  targetCompatibility = JavaVersion.toVersion(libs.versions.java.min.get())
+  val javaVersion = JavaVersion.toVersion(libs.versions.java.min.get())
+  sourceCompatibility = javaVersion
+  targetCompatibility = javaVersion
 }
 
 gradlePlugin {
-  automatedPublishing = false
+  isAutomatedPublishing = false
 
   plugins {
-    buildInfra {
-      id = 'solr.build-infra'
-      implementationClass = 'org.apache.lucene.gradle.buildinfra.BuildInfraPlugin'
+    create("buildInfra") {
+      id = "solr.build-infra"
+      implementationClass = "org.apache.lucene.gradle.buildinfra.BuildInfraPlugin"
     }
   }
 }
 
 dependencies {
-  implementation gradleApi()
-  implementation localGroovy()
+  implementation(gradleApi())
+  implementation(localGroovy())
 
-  implementation libs.commonscodec.commonscodec
+  implementation(libs.commonscodec.commonscodec)
+  implementation(libs.snakeyaml.yaml)
 }

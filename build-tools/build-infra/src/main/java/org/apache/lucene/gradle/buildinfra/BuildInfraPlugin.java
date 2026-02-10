@@ -22,6 +22,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.lucene.gradle.Checksum;
 import org.apache.lucene.gradle.ErrorReportingTestListener;
 import org.apache.lucene.gradle.ProfileResults;
+import org.apache.solr.gradle.changelog.GenerateRenovateChangelogTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.testing.TestDescriptor;
@@ -31,6 +32,7 @@ public class BuildInfraPlugin implements Plugin<Project> {
   @Override
   public void apply(Project project) {
     project.getExtensions().create(BuildInfraExtension.NAME, BuildInfraExtension.class);
+    project.getTasks().register("generateRenovateChangelog", GenerateRenovateChangelogTask.class);
   }
 
   public static class BuildInfraExtension {
