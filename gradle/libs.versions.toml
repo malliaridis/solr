@@ -193,6 +193,7 @@ prometheus-simpleclient = "0.16.0"
 quicktheories = "0.26"
 semver4j = "6.0.0"
 slf4j = "2.0.17"
+snakeyaml = "2.5"
 spatial4j = "0.8"
 spotbugs = "4.9.6"
 squareup-okhttp3-mockwebserver = "4.12.0"
@@ -506,6 +507,7 @@ semver4j-semver4j = { module = "org.semver4j:semver4j", version.ref = "semver4j"
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-jcloverslf4j = { module = "org.slf4j:jcl-over-slf4j", version.ref = "slf4j" }
 slf4j-jultoslf4j = { module = "org.slf4j:jul-to-slf4j", version.ref = "slf4j" }
+snakeyaml-yaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
 squareup-okhttp3-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "squareup-okhttp3-mockwebserver" }
 squareup-okhttp3-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "squareup-okhttp3-okhttp" }

@@ -15,13 +15,20 @@
  * limitations under the License.
  */
 
-rootProject.name = 'build-infra'
+package org.apache.solr.gradle.changelog
 
-// Use project's version catalog for centralized dependency management
-dependencyResolutionManagement {
-  versionCatalogs {
-    libs {
-      from(files("../../gradle/libs.versions.toml"))
-    }
-  }
+data class Author(
+    val name: String,
+    val nick: String? = null,
+    val url: String? = null,
+) {
+
+    /**
+     * Map representation of this data class.
+     */
+    fun toMap(): Map<String, String?> = mapOf(
+        "name" to name,
+        "nick" to nick,
+        "url" to url,
+    )
 }
