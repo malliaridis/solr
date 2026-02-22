@@ -19,6 +19,7 @@ plugins {
   `java-gradle-plugin`
   `kotlin-dsl`
   alias(libs.plugins.diffplug.spotless) apply false
+  alias(libs.plugins.kotlin.serialization)
 }
 
 repositories {
@@ -58,4 +59,6 @@ dependencies {
 
   implementation(libs.commonscodec.commonscodec)
   implementation(libs.snakeyaml.yaml)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
 }
