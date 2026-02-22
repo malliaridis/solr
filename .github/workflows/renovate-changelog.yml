@@ -2,37 +2,30 @@ name: Auto-generate Changelog for Renovate PRs
 
 # Automatically generate changelog entries when Renovate opens or updates a PR
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  push:
     branches:
-      - main
-      - 'branch_*'
-
-permissions:
-  contents: write
-  pull-requests: write
+      # Run only on pushes to renovate-prefixed branches
+      - 'renovate*'
 
 jobs:
   add-changelog:
-    # Only run for Renovate bot PRs
-    if: github.event.pull_request.user.login == 'solrbot'
+    # Only run on Solrbot fork and solrbot pushes
+    # Note that the PR may not have been created yet, but timing-wise it is fine
+    if: repo.name == 'solrbot/apache-_-solr' && github.event.push.pusher.username == 'solrbot'
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.push.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           token: ${{ secrets.SOLRBOT_GITHUB_TOKEN }}
 
       - name: Generate changelog entry
         run: |
           ./gradlew generateRenovateChangelog \
-            --pr-number "${{ github.event.pull_request.number }}" \
-            --pr-title "${{ github.event.pull_request.title }}"
+            --branch "${{ github.event.push.ref }}"
 
       - name: Commit and push changelog
         run: |

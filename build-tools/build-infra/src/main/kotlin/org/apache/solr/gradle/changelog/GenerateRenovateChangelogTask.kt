@@ -25,22 +25,18 @@ import kotlin.io.path.notExists
 import kotlin.io.path.useDirectoryEntries
 import kotlin.io.path.useLines
 import kotlin.io.path.writeText
+import org.apache.solr.gradle.github.currentGitBranch
+import org.apache.solr.gradle.github.fetchOpenPullRequest
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 
 abstract class GenerateRenovateChangelogTask : DefaultTask() {
-
-    @get:Input
-    @set:Option(option = "pr-number", description = "GitHub PR number")
-    var prNumber: String = "0"
-
-    @get:Input
-    @set:Option(option = "pr-title", description = "GitHub PR title (from the Renovate bot)")
-    var prTitle: String = ""
 
     @get:Input
     @set:Option(option = "changelog-dir", description = "Directory for changelog files (default: changelog/unreleased)")
@@ -50,26 +46,52 @@ abstract class GenerateRenovateChangelogTask : DefaultTask() {
         .toAbsolutePath()
         .toString()
 
+    @get:Input
+    @get:Optional
+    @set:Option(
+        option = "github-token-env",
+        description = "Env var name that contains GitHub token (default: GITHUB_TOKEN)"
+    )
+    var githubTokenEnv: String = "GITHUB_TOKEN"
+
+    @get:Input
+    @get:Optional
+    @set:Option(
+        option = "branch",
+        description = "Branch name (optional). If omitted, uses current git branch."
+    )
+    var branch: String? = null
+
     @TaskAction
     fun run() {
-        val prNumber = prNumber.toIntOrNull()
-        requireNotNull(prNumber) { "pr-number must be a valid integer" }
-        require(prNumber > 0) { "pr-number must be a positive integer" }
-        require(prTitle.isNotBlank()) { "pr-title must not be blank" }
-        require(prTitle.isNotBlank()) { "pr-title must not be blank" }
+        val branchValue =
+            (branch?.trim()?.trimMargin("refs/heads/").takeUnless { it.isNullOrBlank() }
+                ?: currentGitBranch())
+                .also { require(it.isNotBlank()) { "Branch resolved to blank. Pass --branch explicitly or ensure you're on a branch." } }
+
+        logger.debug("Fetching pull request info for $branchValue")
+        val pullRequest = fetchOpenPullRequest(
+            repository = "apache/solr",
+            branch = branchValue,
+            forkOwner = "solrbot",
+            githubTokenEnv = githubTokenEnv,
+        )
+
+        if (pullRequest == null)
+            throw GradleException("Pull request could not be found for branch $branchValue")
 
         // Delete any existing changelog files for this PR to ensure a clean slate
         // This prevents orphaned files when the PR title/slug changes
-        deleteOldChangelogFiles(prNumber, changelogDirectory)
+        deleteOldChangelogFiles(pullRequest.number, changelogDirectory)
 
         // Parse the PR title
-        val (changelogTitle, slug) = parsePrTitle(prTitle)
+        val (changelogTitle, slug) = parsePrTitle(pullRequest.title)
 
         // Generate filename
-        val filename = "PR#$prNumber-$slug.yml"
+        val filename = "PR#$${pullRequest.number}-$slug.yml"
 
         // Generate the new entry
-        val entry = generateChangelogEntry(prNumber, changelogTitle)
+        val entry = generateChangelogEntry(pullRequest.number, changelogTitle)
 
         // Write the changelog file
         writeChangelogFile(filename, entry, changelogDirectory)
