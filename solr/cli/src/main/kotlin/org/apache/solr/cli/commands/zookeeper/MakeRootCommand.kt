@@ -60,7 +60,7 @@ class MakeRootCommand : SuspendingCliktCommand(name = "mkroot") {
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
             info("Creating ZooKeeper path $path on ZooKeeper at $zkHost")
             try {
-                zkClient.makePath(path, !ignore, true)
+                zkClient.makePath(path, !ignore)
             } catch (exception: Exception) {
                 err(message = "Could not complete mkroot operation.", error = exception)
             }

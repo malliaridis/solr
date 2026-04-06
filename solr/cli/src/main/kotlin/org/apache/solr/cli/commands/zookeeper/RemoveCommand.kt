@@ -54,7 +54,7 @@ class RemoveCommand : SuspendingCliktCommand(name = "rm") {
         ZkUtils.getZkClient(zkHost, connection.timeout).use { zkClient ->
             try {
                 assert(
-                    zkClient.getChildren(path, null, true).isEmpty()
+                    zkClient.getChildren(path, null).isEmpty()
                             || recursive
                 ) { "ZooKeeper node $path has children and recursive has NOT been specified." }
 

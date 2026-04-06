@@ -17,16 +17,39 @@
 
 package org.apache.solr.cli
 
+import com.github.ajalt.clikt.command.main
+import com.github.ajalt.clikt.core.subcommands
+import org.apache.solr.cli.commands.ApiCommand
+import org.apache.solr.cli.commands.AssertCommand
+import org.apache.solr.cli.commands.ClusterCommand
+import org.apache.solr.cli.commands.ConfigCommand
+import org.apache.solr.cli.commands.CreateCommand
+import org.apache.solr.cli.commands.DeleteCommand
+import org.apache.solr.cli.commands.ExampleCommand
+import org.apache.solr.cli.commands.ExportCommand
+import org.apache.solr.cli.commands.HealthCheckCommand
+import org.apache.solr.cli.commands.PackageCommand
+import org.apache.solr.cli.commands.RestartCommand
+import org.apache.solr.cli.commands.SnapshotCommand
+import org.apache.solr.cli.commands.SolrCommand
+import org.apache.solr.cli.commands.StartCommand
+import org.apache.solr.cli.commands.StatusCommand
+import org.apache.solr.cli.commands.StopCommand
+import org.apache.solr.cli.commands.VersionCommand
+import org.apache.solr.cli.commands.ZookeeperCommand
+import org.apache.solr.cli.commands.zookeeper.CopyCommand
+import org.apache.solr.cli.commands.zookeeper.DownloadCommand
+import org.apache.solr.cli.commands.zookeeper.ListCommand
+import org.apache.solr.cli.commands.zookeeper.MakeRootCommand
+import org.apache.solr.cli.commands.zookeeper.MoveCommand
+import org.apache.solr.cli.commands.zookeeper.RemoveCommand
+import org.apache.solr.cli.commands.zookeeper.UpdateAclsCommand
+import org.apache.solr.cli.commands.zookeeper.UploadCommand
 import org.apache.solr.cli.commands.snapshot.CreateCommand as SnapshotCreateCommand
 import org.apache.solr.cli.commands.snapshot.DeleteCommand as SnapshotDeleteCommand
 import org.apache.solr.cli.commands.snapshot.DescribeCommand as SnapshotDescribeCommand
 import org.apache.solr.cli.commands.snapshot.ExportCommand as SnapshotExportCommand
 import org.apache.solr.cli.commands.snapshot.ListCommand as SnapshotListCommand
-import com.github.ajalt.clikt.command.main
-import com.github.ajalt.clikt.core.subcommands
-import org.apache.solr.cli.commands.*
-import org.apache.solr.cli.commands.zookeeper.*
-import org.apache.solr.cli.commands.zookeeper.ListCommand
 
 suspend fun main(args: Array<String>) = SolrCommand()
     .subcommands(
@@ -54,7 +77,6 @@ suspend fun main(args: Array<String>) = SolrCommand()
                 ListCommand(),
                 MakeRootCommand(),
                 UpdateAclsCommand(),
-                LinkCommand(),
             ),
         SnapshotCommand()
             .subcommands(
@@ -67,7 +89,5 @@ suspend fun main(args: Array<String>) = SolrCommand()
         AssertCommand(),
         ExportCommand(),
         PackageCommand(),
-        PostCommand(),
-        PostLogsCommand(),
     )
     .main(args)
