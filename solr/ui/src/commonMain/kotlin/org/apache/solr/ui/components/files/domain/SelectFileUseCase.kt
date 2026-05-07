@@ -17,7 +17,7 @@
 
 package org.apache.solr.ui.components.files.domain
 
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.files.PickedFile
 
 interface SelectFileUseCase {
     /**

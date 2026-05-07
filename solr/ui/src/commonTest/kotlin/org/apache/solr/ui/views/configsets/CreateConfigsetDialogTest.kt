@@ -32,7 +32,7 @@ import org.apache.solr.ui.components.configsets.domain.CreateConfigsetResult
 import org.apache.solr.ui.components.configsets.domain.CreateConfigsetUseCase
 import org.apache.solr.ui.components.configsets.domain.LoadConfigsetsUseCase
 import org.apache.solr.ui.components.configsets.viewmodel.CreateConfigsetViewModel
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 
 @OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 class CreateConfigsetDialogTest {

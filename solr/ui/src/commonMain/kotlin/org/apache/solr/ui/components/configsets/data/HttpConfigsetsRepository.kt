@@ -27,8 +27,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import org.apache.solr.ui.components.configsets.repository.ConfigsetsRepository
-import org.apache.solr.ui.domain.Configset
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.configsets.Configset
+import org.apache.solr.ui.domain.configsets.ConfigsetDetails
+import org.apache.solr.ui.domain.files.PickedFile
 
 class HttpConfigsetsRepository(private val httpClient: HttpClient) : ConfigsetsRepository {
     override suspend fun createConfigset(name: String, baseConfigset: String?): Result<Configset> {
@@ -72,5 +73,18 @@ class HttpConfigsetsRepository(private val httpClient: HttpClient) : ConfigsetsR
             else -> Result.failure(Exception("Unknown Error"))
             // TODO Add proper error handling
         }
+    }
+
+    override suspend fun loadConfigsetDetails(name: String): Result<ConfigsetDetails> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun uploadConfigsetFile(
+        configsetName: String,
+        filePath: String,
+        fileContent: ByteArray,
+        overrideExisting: Boolean
+    ): Result<Unit> {
+        TODO("Not yet implemented")
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.domain
+package org.apache.solr.ui.domain.files
 
 data class PickedFile(
     val name: String,

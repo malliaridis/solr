@@ -15,13 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.domain.files
 
-import org.apache.solr.ui.domain.files.PickedFile
-
-sealed interface FileSelectorEvent {
+enum class WorkingCopyStatus {
     /**
-     * Event that is emitted whenever a file is selected.
+     * No changes since last fetch/apply.
      */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+    CLEAN,
+
+    /**
+     * Has unsaved local edits.
+     */
+    DIRTY,
+
+    /**
+     * Remote changed while user was editing.
+     */
+    CONFLICT,
+
+    /**
+     * Copy is being uploaded to Solr.
+     */
+    UPLOADING,
+
+    /**
+     * Changes have been uploaded and applied.
+     */
+    APPLIED
 }

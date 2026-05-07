@@ -17,9 +17,9 @@
 
 package org.apache.solr.ui.components.configsets.repository
 
-import org.apache.solr.ui.components.configsets.data.CreateConfigset
-import org.apache.solr.ui.domain.Configset
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.configsets.Configset
+import org.apache.solr.ui.domain.configsets.ConfigsetDetails
+import org.apache.solr.ui.domain.files.PickedFile
 
 interface ConfigsetsRepository {
     /**
@@ -44,4 +44,18 @@ interface ConfigsetsRepository {
      * Load the available configsets.
      */
     suspend fun loadConfigsets(): Result<List<Configset>>
+
+    /**
+     * Loads the details of a configset.
+     *
+     * @param name The name fo the configset.
+     */
+    suspend fun loadConfigsetDetails(name: String): Result<ConfigsetDetails>
+
+    suspend fun uploadConfigsetFile(
+        configsetName: String,
+        filePath: String,
+        fileContent: ByteArray,
+        overrideExisting: Boolean,
+    ): Result<Unit>
 }

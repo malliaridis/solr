@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.domain.files
 
-import org.apache.solr.ui.domain.files.PickedFile
-
-sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
-}
+data class FileTreeNode(
+    val name: String,
+    val path: String,
+    val isDirectory: Boolean,
+    val children: List<FileTreeNode> = emptyList(),
+    val changeState: ChangeState = ChangeState.Unchanged,
+    val isSelected: Boolean = false,
+    val hasConflict: Boolean = false
+)

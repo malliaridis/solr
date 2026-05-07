@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -73,8 +74,12 @@ fun ConfigsetsScene(
             entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
             entryProvider = entryProvider {
                 entry<ConfigsetsScene.Overview> {
+                    val overviewComponent = remember {
+                        component.createConfigsetsOverviewComponent()
+                    }
+
                     ConfigsetsOverviewContent(
-                        component = component.createConfigsetsOverviewComponent(),
+                        component = overviewComponent,
                         configsetsViewModel = sharedConfigsetsViewModel,
                         modifier = Modifier.fillMaxSize().padding(16.dp),
                     )

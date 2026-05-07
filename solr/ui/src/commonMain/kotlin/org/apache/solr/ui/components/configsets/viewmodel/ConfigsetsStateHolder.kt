@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.solr.ui.components.configsets.domain.LoadConfigsetsUseCase
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 import org.apache.solr.ui.utils.AppDispatchers
 
 class ConfigsetsStateHolder(

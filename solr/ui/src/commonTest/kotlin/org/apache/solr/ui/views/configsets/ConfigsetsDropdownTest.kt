@@ -24,7 +24,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
 import kotlin.test.Test
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 
 @OptIn(ExperimentalTestApi::class)
 class ConfigsetsDropdownTest {

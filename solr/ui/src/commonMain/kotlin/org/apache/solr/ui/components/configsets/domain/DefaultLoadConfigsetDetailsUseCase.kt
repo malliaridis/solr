@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.components.configsets.domain
 
-import org.apache.solr.ui.domain.files.PickedFile
+import org.apache.solr.ui.components.configsets.repository.ConfigsetsRepository
+import org.apache.solr.ui.domain.configsets.ConfigsetDetails
 
-sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+internal class DefaultLoadConfigsetDetailsUseCase(
+    private val repository: ConfigsetsRepository,
+) : LoadConfigsetDetailsUseCase {
+    override suspend fun invoke(configsetName: String): Result<ConfigsetDetails> = repository.loadConfigsetDetails(configsetName)
 }

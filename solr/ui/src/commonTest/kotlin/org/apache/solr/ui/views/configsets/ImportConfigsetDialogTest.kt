@@ -34,8 +34,8 @@ import org.apache.solr.ui.components.configsets.domain.ImportConfigsetUseCase
 import org.apache.solr.ui.components.configsets.viewmodel.ImportConfigsetViewModel
 import org.apache.solr.ui.components.files.domain.SelectFileResult
 import org.apache.solr.ui.components.files.domain.SelectFileUseCase
-import org.apache.solr.ui.domain.Configset
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.configsets.Configset
+import org.apache.solr.ui.domain.files.PickedFile
 
 @OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 class ImportConfigsetDialogTest {

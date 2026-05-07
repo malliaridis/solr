@@ -15,13 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.utils
 
-import org.apache.solr.ui.domain.files.PickedFile
-
-sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+internal actual fun unpackZip(bytes: ByteArray): Map<String, ByteArray> {
+    TODO("Not yet implemented")
 }

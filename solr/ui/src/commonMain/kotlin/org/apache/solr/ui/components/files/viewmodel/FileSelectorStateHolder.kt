@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import org.apache.solr.ui.components.files.domain.FileSelectorEvent
 import org.apache.solr.ui.components.files.domain.SelectFileResult
 import org.apache.solr.ui.components.files.domain.SelectFileUseCase
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.files.PickedFile
 
 class FileSelectorStateHolder(
     private val scope: CoroutineScope,

@@ -32,7 +32,7 @@ import org.apache.solr.ui.components.configsets.domain.ImportConfigsetUseCase
 import org.apache.solr.ui.components.files.domain.FileSelectorEvent
 import org.apache.solr.ui.components.files.domain.SelectFileUseCase
 import org.apache.solr.ui.components.files.viewmodel.FileSelectorStateHolder
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.files.PickedFile
 import org.apache.solr.ui.utils.AppDispatchers
 
 class ImportConfigsetViewModel(

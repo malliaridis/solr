@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.domain.configsets
 
-import org.apache.solr.ui.domain.files.PickedFile
+import org.apache.solr.ui.domain.files.FileEntry
 
-sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
-}
+data class ConfigsetDetails(
+    val configsetName: String,
+    val baseRevision: String = "",
+    val files: Map<String, FileEntry> = emptyMap(),
+)

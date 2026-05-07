@@ -15,13 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.domain.configsets
 
-import org.apache.solr.ui.domain.files.PickedFile
+import kotlinx.serialization.Serializable
 
-sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
-}
+/**
+ * Configset entity that represents a basic configset. This data class does only hold the basic
+ * information of a configset.
+ *
+ * Note that the configsets are uniquely identified by the name right now and therefore do not
+ * use a separate ID property.
+ *
+ * @property name The name and unique identifier of the configset.
+ */
+@Serializable
+data class Configset(
+    val name: String = "",
+)

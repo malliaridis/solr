@@ -25,6 +25,7 @@
   <string name="action_go_back">Go Back</string>
   <string name="action_import_configset">Import Configset</string>
   <string name="action_logout">Logout</string>
+  <string name="action_save_changes">Save Changes</string>
   <string name="action_sign_in_with_credentials">Sign In with Credentials</string>
   <string name="action_sign_in_with_realm">Sign In with %1$s</string>
   <string name="action_sign_in_with_identity_provider">Sign In with Identity Provider</string>

@@ -18,7 +18,7 @@
 package org.apache.solr.ui.components.configsets.domain
 
 import org.apache.solr.ui.components.configsets.repository.ConfigsetsRepository
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 
 internal class DefaultLoadConfigsetsUseCase(
     private val repository: ConfigsetsRepository,

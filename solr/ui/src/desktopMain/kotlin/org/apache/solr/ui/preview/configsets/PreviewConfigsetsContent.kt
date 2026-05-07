@@ -32,7 +32,7 @@ import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsViewModel
 import org.apache.solr.ui.components.configsets.viewmodel.CreateConfigsetViewModel
 import org.apache.solr.ui.components.configsets.viewmodel.ImportConfigsetViewModel
 import org.apache.solr.ui.components.files.domain.SelectFileUseCase
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 import org.apache.solr.ui.preview.PreviewContainer
 import org.apache.solr.ui.utils.platformDispatchers
 import org.apache.solr.ui.views.configsets.ConfigsetsScene

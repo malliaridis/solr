@@ -15,20 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.domain
+package org.apache.solr.ui.domain.files
 
-import kotlinx.serialization.Serializable
-
-/**
- * Configset entity that represents a basic configset. This data class does only hold the basic
- * information of a configset.
- *
- * Note that the configsets are uniquely identified by the name right now and therefore do not
- * use a separate ID property.
- *
- * @property name The name and unique identifier of the configset.
- */
-@Serializable
-data class Configset(
-    val name: String = "",
-)
+enum class ChangeState {
+    Unchanged,
+    Modified,
+    Added,
+    Deleted,
+    Renamed,
+    Conflict
+}

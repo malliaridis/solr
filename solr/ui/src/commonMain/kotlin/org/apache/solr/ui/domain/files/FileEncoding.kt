@@ -15,13 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.domain.files
 
-import org.apache.solr.ui.domain.files.PickedFile
-
-sealed interface FileSelectorEvent {
+enum class FileEncoding {
     /**
-     * Event that is emitted whenever a file is selected.
+     * UTF-8 file encoding that can be shown in editor.
      */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+    UTF8,
+
+    /**
+     * Binary file (or anything else) that cannot be shown in editor.
+     */
+    BINARY,
+    ;
+
+    companion object {
+        fun detect(bytes: ByteArray): FileEncoding {
+            TODO("Not yet implemented")
+        }
+    }
 }

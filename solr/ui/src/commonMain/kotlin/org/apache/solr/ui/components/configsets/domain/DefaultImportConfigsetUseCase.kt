@@ -18,8 +18,8 @@
 package org.apache.solr.ui.components.configsets.domain
 
 import org.apache.solr.ui.components.configsets.repository.ConfigsetsRepository
-import org.apache.solr.ui.domain.Configset
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.configsets.Configset
+import org.apache.solr.ui.domain.files.PickedFile
 
 internal class DefaultImportConfigsetUseCase(
     private val repository: ConfigsetsRepository,

@@ -20,7 +20,7 @@ package org.apache.solr.ui.utils
 import kotlin.coroutines.resume
 import kotlinx.browser.document
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.files.PickedFile
 import org.khronos.webgl.ArrayBuffer
 import org.khronos.webgl.Uint8Array
 import org.khronos.webgl.get

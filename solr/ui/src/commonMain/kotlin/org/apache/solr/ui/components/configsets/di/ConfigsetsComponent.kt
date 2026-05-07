@@ -54,5 +54,8 @@ interface ConfigsetsComponent {
      */
     fun createConfigsetsViewModel(): ConfigsetsViewModel
 
+    /**
+     * Configset overview component that manages all states and viewmodels in the overview.
+     */
     fun createConfigsetsOverviewComponent(): ConfigsetsOverviewComponent
 }

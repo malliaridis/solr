@@ -27,7 +27,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.apache.solr.ui.TestDispatchers
 import org.apache.solr.ui.components.configsets.domain.LoadConfigsetsUseCase
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConfigsetsStateHolderTest {

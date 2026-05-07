@@ -20,10 +20,11 @@ package org.apache.solr.ui.utils
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
+import java.util.zip.ZipInputStream
 import javax.swing.SwingUtilities
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.files.PickedFile
 
 actual suspend fun pickFile(extensions: List<String>): PickedFile? {
     val (dir, fileName) = suspendCancellableCoroutine { cont ->
@@ -52,4 +53,19 @@ actual suspend fun pickFile(extensions: List<String>): PickedFile? {
         bytes = f.readBytes(),
         extension = f.extension,
     )
+}
+
+internal actual fun unpackZip(bytes: ByteArray): Map<String, ByteArray> {
+    val result = mutableMapOf<String, ByteArray>()
+    ZipInputStream(bytes.inputStream()).use { zip ->
+        var entry = zip.nextEntry
+        while (entry != null) {
+            if (!entry.isDirectory) {
+                result[entry.name] = zip.readBytes()
+            }
+            zip.closeEntry()
+            entry = zip.nextEntry
+        }
+    }
+    return result
 }

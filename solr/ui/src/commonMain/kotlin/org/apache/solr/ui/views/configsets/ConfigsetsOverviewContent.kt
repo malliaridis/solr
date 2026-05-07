@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -45,9 +46,10 @@ import org.apache.solr.ui.components.configsets.di.ConfigsetsOverviewComponent
 import org.apache.solr.ui.components.configsets.domain.CreateConfigsetEvent
 import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry
 import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry.ConfigsetsOverviewDialog.CreateConfigsetDialog
+import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry.ConfigsetsOverviewDialog.EditSolrConfigDialog
 import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry.ConfigsetsOverviewDialog.ImportConfigsetDialog
 import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsViewModel
-import org.apache.solr.ui.domain.Configset
+import org.apache.solr.ui.domain.configsets.Configset
 import org.apache.solr.ui.generated.resources.Res
 import org.apache.solr.ui.generated.resources.action_create_configset
 import org.apache.solr.ui.generated.resources.action_edit_solrconfig
@@ -126,6 +128,17 @@ fun ConfigsetsOverviewContent(
                 }
 
                 ImportConfigsetDialog(viewModel = importViewModel)
+            }
+            entry<EditSolrConfigDialog>(metadata = dialog()) {
+                val importViewModel = viewModel { component.createImportConfigsetViewModel() }
+
+                // TODO Pass solrconfig.xml data
+                EditSolrConfigDialog(
+                    solrConfig = "",
+                    modifier = Modifier.fillMaxSize(fraction = .8f),
+                    onSave = {},
+                    onCancel = {},
+                )
             }
         },
     )

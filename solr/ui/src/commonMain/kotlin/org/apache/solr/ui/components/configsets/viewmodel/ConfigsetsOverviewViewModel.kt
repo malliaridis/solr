@@ -23,6 +23,7 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry.ConfigsetsOverviewDialog.CreateConfigsetDialog
+import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry.ConfigsetsOverviewDialog.EditSolrConfigDialog
 import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntry.ConfigsetsOverviewDialog.ImportConfigsetDialog
 
 class ConfigsetsOverviewViewModel : ViewModel() {
@@ -58,8 +59,9 @@ class ConfigsetsOverviewViewModel : ViewModel() {
      *
      * @param name the name of the configset to edit.
      */
-    fun editSolrConfig(name: String) {
-        TODO()
+    fun editSolrConfig(name: String) = backStack.apply {
+        clearDialogs()
+        add(EditSolrConfigDialog)
     }
 
     private fun SnapshotStateList<ConfigsetsOverviewEntry>.clearDialogs() = removeAll { entry -> entry is ConfigsetsOverviewEntry.ConfigsetsOverviewDialog }
@@ -74,10 +76,22 @@ sealed interface ConfigsetsOverviewEntry : NavKey {
     @Serializable
     sealed interface ConfigsetsOverviewDialog : ConfigsetsOverviewEntry {
 
+        /**
+         * Create dialog for creating a new configset by name.
+         */
         @Serializable
         data object CreateConfigsetDialog : ConfigsetsOverviewDialog
 
+        /**
+         * Import dialog for importing a configset from a file.
+         */
         @Serializable
         data object ImportConfigsetDialog : ConfigsetsOverviewDialog
+
+        /**
+         * Edit dialog for editing the solrconfig.xml of the current configset.
+         */
+        @Serializable
+        data object EditSolrConfigDialog : ConfigsetsOverviewDialog
     }
 }

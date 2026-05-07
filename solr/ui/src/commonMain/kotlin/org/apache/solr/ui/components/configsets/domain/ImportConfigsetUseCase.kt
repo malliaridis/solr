@@ -17,8 +17,8 @@
 
 package org.apache.solr.ui.components.configsets.domain
 
-import org.apache.solr.ui.domain.Configset
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.configsets.Configset
+import org.apache.solr.ui.domain.files.PickedFile
 
 /**
  * Use case for importing a configset from a file.

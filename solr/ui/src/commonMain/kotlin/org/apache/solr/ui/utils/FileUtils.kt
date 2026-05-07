@@ -17,9 +17,43 @@
 
 package org.apache.solr.ui.utils
 
-import org.apache.solr.ui.domain.PickedFile
+import kotlin.time.Clock
+import kotlin.time.Instant
+import org.apache.solr.ui.domain.configsets.ConfigsetWorkingCopy
+import org.apache.solr.ui.domain.files.FileEncoding
+import org.apache.solr.ui.domain.files.FileEntry
+import org.apache.solr.ui.domain.files.PickedFile
 
 /**
  * @param extensions e.g. listOf("zip", "json"). Empty = any.
  */
 expect suspend fun pickFile(extensions: List<String> = emptyList()): PickedFile?
+
+internal expect fun unpackZip(bytes: ByteArray): Map<String, ByteArray>
+
+/**
+ * Creates a File
+ */
+internal fun fromZip(
+    name: String,
+    zip: ByteArray,
+    zkVersion: Int,
+    fetchedAt: Instant = Clock.System.now(),
+): ConfigsetWorkingCopy {
+    val files = unpackZip(zip).mapValues { (path, bytes) ->
+        FileEntry(
+            path = path,
+            content = bytes,
+            originalContent = bytes,
+            fetchedAt = fetchedAt,
+            lastModified = fetchedAt,
+            zkVersion = zkVersion,
+            encoding = FileEncoding.detect(bytes),
+        )
+    }
+    return ConfigsetWorkingCopy(
+        configsetName = name,
+        baseRevision = zkVersion.toString(),
+        files = files,
+    )
+}

@@ -15,13 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.components.configsets.domain
 
-import org.apache.solr.ui.domain.files.PickedFile
+import org.apache.solr.ui.domain.configsets.Configset
 
-sealed interface FileSelectorEvent {
+/**
+ * Use case for loading the available configsets.
+ */
+interface UploadConfigsetFileUseCase {
     /**
-     * Event that is emitted whenever a file is selected.
+     * Default invocation for uploading a configset file.
+     *
+     * @param configsetName The name of the configset.
+     * @param filePath The path to use for the file.
+     * @param fileContent The new content of the file.
+     * @param overrideExisting Whether to override the file if it already exists.
      */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+    suspend operator fun invoke(
+        configsetName: String,
+        filePath: String,
+        fileContent: ByteArray,
+        overrideExisting: Boolean,
+    ): Result<Unit>
 }

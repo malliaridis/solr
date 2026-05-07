@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.solr.ui.components.files.domain
+package org.apache.solr.ui.domain
 
-import org.apache.solr.ui.domain.files.PickedFile
-
-sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+/**
+ * Known file syntaxes for which there is a syntax highlighting option.
+ */
+enum class FileSyntax {
+    Xml,
+    Json,
+    Text,
 }

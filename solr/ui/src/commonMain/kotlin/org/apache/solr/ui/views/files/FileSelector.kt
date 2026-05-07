@@ -27,7 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import org.apache.solr.ui.domain.PickedFile
+import org.apache.solr.ui.domain.files.PickedFile
 import org.apache.solr.ui.generated.resources.Res
 import org.apache.solr.ui.generated.resources.cd_clear_field
 import org.apache.solr.ui.generated.resources.close
