@@ -36,26 +36,26 @@ import org.apache.solr.ui.views.theme.SolrTheme
  * This function instantiates the [RootComponent] that is used by all screens.
  */
 fun main() {
-    // TODO Let the user provide the URL via input field on desktop
-    val httpClient = getDefaultClient()
+  // TODO Let the user provide the URL via input field on desktop
+  val httpClient = getDefaultClient()
 
-    val root: RootComponent = SimpleRootComponent(httpClient = httpClient)
+  val root: RootComponent = SimpleRootComponent(httpClient = httpClient)
 
-    application {
-        val windowState = rememberWindowState()
+  application {
+    val windowState = rememberWindowState()
 
-        Window(
-            onCloseRequest = ::exitApplication,
-            state = windowState,
-            title = "Solr Admin UI",
-        ) {
-            window.minimumSize = Dimension(720, 560)
+    Window(
+      onCloseRequest = ::exitApplication,
+      state = windowState,
+      title = "Solr Admin UI",
+    ) {
+      window.minimumSize = Dimension(720, 560)
 
-            SolrTheme(useDarkTheme = false) {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    RootContent(root)
-                }
-            }
+      SolrTheme(useDarkTheme = false) {
+        Surface(modifier = Modifier.fillMaxSize()) {
+          RootContent(root)
         }
+      }
     }
+  }
 }

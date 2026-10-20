@@ -20,10 +20,10 @@ package org.apache.solr.ui.utils
 import org.apache.solr.ui.errors.HostNotFoundException
 
 actual fun parseError(error: Throwable): Throwable {
-    // In JavaScript the errors do not have any type to distinguish them, so we strongly
-    // rely on the error message.
-    if (error.message?.contains(other = "Fail to fetch") == true) return HostNotFoundException(cause = error)
+  // In JavaScript the errors do not have any type to distinguish them, so we strongly
+  // rely on the error message.
+  if (error.message?.contains(other = "Fail to fetch") == true) return HostNotFoundException(cause = error)
 
-    // fallback
-    return error
+  // fallback
+  return error
 }

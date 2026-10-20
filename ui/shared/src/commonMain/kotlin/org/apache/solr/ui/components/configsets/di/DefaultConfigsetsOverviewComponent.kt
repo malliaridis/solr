@@ -37,30 +37,30 @@ import org.apache.solr.ui.utils.platformDispatchers
  * Default implementation of [ConfigsetsOverviewComponent].
  */
 class DefaultConfigsetsOverviewComponent(
-    override val configsetsRepository: ConfigsetsRepository,
-    private val dispatchers: AppDispatchers = platformDispatchers(),
+  override val configsetsRepository: ConfigsetsRepository,
+  private val dispatchers: AppDispatchers = platformDispatchers(),
 ) : ConfigsetsOverviewComponent {
 
-    override val createConfigsetUseCase: CreateConfigsetUseCase by lazy {
-        DefaultCreateConfigsetUseCase(configsetsRepository)
-    }
+  override val createConfigsetUseCase: CreateConfigsetUseCase by lazy {
+    DefaultCreateConfigsetUseCase(configsetsRepository)
+  }
 
-    override val importConfigsetUseCase: ImportConfigsetUseCase by lazy {
-        DefaultImportConfigsetUseCase(configsetsRepository)
-    }
+  override val importConfigsetUseCase: ImportConfigsetUseCase by lazy {
+    DefaultImportConfigsetUseCase(configsetsRepository)
+  }
 
-    // TODO Consider implementing special SelectFileUseCase for configsets import cases
-    override val selectFileUseCase: SelectFileUseCase by lazy { DefaultSelectFileUseCase() }
+  // TODO Consider implementing special SelectFileUseCase for configsets import cases
+  override val selectFileUseCase: SelectFileUseCase by lazy { DefaultSelectFileUseCase() }
 
-    override val loadConfigsetsUseCase: LoadConfigsetsUseCase by lazy {
-        DefaultLoadConfigsetsUseCase(configsetsRepository)
-    }
+  override val loadConfigsetsUseCase: LoadConfigsetsUseCase by lazy {
+    DefaultLoadConfigsetsUseCase(configsetsRepository)
+  }
 
-    override fun createConfigsetsViewModel(): ConfigsetsViewModel = ConfigsetsViewModel(loadConfigsetsUseCase, dispatchers)
+  override fun createConfigsetsViewModel(): ConfigsetsViewModel = ConfigsetsViewModel(loadConfigsetsUseCase, dispatchers)
 
-    override fun createCreateConfigsetViewModel(): CreateConfigsetViewModel = CreateConfigsetViewModel(createConfigsetUseCase, loadConfigsetsUseCase, dispatchers)
+  override fun createCreateConfigsetViewModel(): CreateConfigsetViewModel = CreateConfigsetViewModel(createConfigsetUseCase, loadConfigsetsUseCase, dispatchers)
 
-    override fun createImportConfigsetViewModel(): ImportConfigsetViewModel = ImportConfigsetViewModel(importConfigsetUseCase, selectFileUseCase, dispatchers)
+  override fun createImportConfigsetViewModel(): ImportConfigsetViewModel = ImportConfigsetViewModel(importConfigsetUseCase, selectFileUseCase, dispatchers)
 
-    override fun createConfigsetsOverviewViewModel(): ConfigsetsOverviewViewModel = ConfigsetsOverviewViewModel()
+  override fun createConfigsetsOverviewViewModel(): ConfigsetsOverviewViewModel = ConfigsetsOverviewViewModel()
 }

@@ -29,36 +29,36 @@ import org.apache.solr.ui.domain.AuthMethod
 
 internal class DefaultCreateOAuthAuthorizationUseCase : CreateOAuthAuthorizationUseCase {
 
-    override fun invoke(method: AuthMethod.OAuthMethod): OAuthAuthorization {
-        val verifier = generateCodeVerifier()
-        val challenge = generateCodeChallenge(verifier)
-        val state = generateOAuthState()
-        val url = URLBuilder(method.data.authorizationEndpoint)
-            .apply {
-                encodedParameters = ParametersBuilder().apply {
-                    set("client_id", method.data.clientId)
-                    set("scope", method.data.scope)
-                    set("redirect_uri", getRedirectUri())
-                    set("response_type", "code")
-                    set("code_challenge_method", "S256")
-                    set("code_challenge", challenge)
-                    set("state", state)
-                }
-            }
-            .build()
+  override fun invoke(method: AuthMethod.OAuthMethod): OAuthAuthorization {
+    val verifier = generateCodeVerifier()
+    val challenge = generateCodeChallenge(verifier)
+    val state = generateOAuthState()
+    val url = URLBuilder(method.data.authorizationEndpoint)
+      .apply {
+        encodedParameters = ParametersBuilder().apply {
+          set("client_id", method.data.clientId)
+          set("scope", method.data.scope)
+          set("redirect_uri", getRedirectUri())
+          set("response_type", "code")
+          set("code_challenge_method", "S256")
+          set("code_challenge", challenge)
+          set("state", state)
+        }
+      }
+      .build()
 
-        return OAuthAuthorization(url = url, state = state, verifier = verifier)
-    }
+    return OAuthAuthorization(url = url, state = state, verifier = verifier)
+  }
 }
 
 internal class DefaultOAuthAuthenticateUseCase(
-    private val repository: OAuthRepository,
+  private val repository: OAuthRepository,
 ) : OAuthAuthenticateUseCase {
 
-    override suspend fun invoke(
-        authorization: OAuthAuthorization,
-        method: AuthMethod.OAuthMethod,
-    ): Result<BearerTokens> = authenticationCatching {
-        repository.authenticate(authorization.state, authorization.verifier, method.data)
-    }
+  override suspend fun invoke(
+    authorization: OAuthAuthorization,
+    method: AuthMethod.OAuthMethod,
+  ): Result<BearerTokens> = authenticationCatching {
+    repository.authenticate(authorization.state, authorization.verifier, method.data)
+  }
 }

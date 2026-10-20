@@ -23,35 +23,35 @@ import org.apache.solr.ui.components.start.domain.ConnectUseCase
 import org.apache.solr.ui.utils.AppDispatchers
 
 class StartViewModel(
-    connectUseCase: ConnectUseCase,
-    dispatchers: AppDispatchers,
+  connectUseCase: ConnectUseCase,
+  dispatchers: AppDispatchers,
 ) : ViewModel() {
 
-    private val startState = StartStateHolder(
-        scope = viewModelScope,
-        connectUseCase = connectUseCase,
-        dispatchers = dispatchers,
-    )
+  private val startState = StartStateHolder(
+    scope = viewModelScope,
+    connectUseCase = connectUseCase,
+    dispatchers = dispatchers,
+  )
 
-    /**
-     * UI state of the start screen.
-     */
-    val uiState = startState.uiState
+  /**
+   * UI state of the start screen.
+   */
+  val uiState = startState.uiState
 
-    /**
-     * Events emitted by the start screen.
-     */
-    val events = startState.events
+  /**
+   * Events emitted by the start screen.
+   */
+  val events = startState.events
 
-    /**
-     * Updates the Solr URL.
-     *
-     * @param url The new Solr URL value.
-     */
-    fun changeSolrUrl(url: String) = startState.changeSolrUrl(url)
+  /**
+   * Updates the Solr URL.
+   *
+   * @param url The new Solr URL value.
+   */
+  fun changeSolrUrl(url: String) = startState.changeSolrUrl(url)
 
-    /**
-     * Connects to the Solr instance with the current URL.
-     */
-    fun connect() = startState.connect()
+  /**
+   * Connects to the Solr instance with the current URL.
+   */
+  fun connect() = startState.connect()
 }

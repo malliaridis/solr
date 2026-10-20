@@ -71,58 +71,58 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun UserAuthenticationContent(
-    component: AuthenticationComponent,
-    onEvent: (AuthenticationEvent) -> Unit,
-    modifier: Modifier = Modifier,
+  component: AuthenticationComponent,
+  onEvent: (AuthenticationEvent) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel { component.createAuthenticationViewModel() }
-    val uiState by viewModel.uiState.collectAsState()
-    val currentOnEvent by rememberUpdatedState(onEvent)
-    val uriHandler = LocalUriHandler.current
+  val viewModel = viewModel { component.createAuthenticationViewModel() }
+  val uiState by viewModel.uiState.collectAsState()
+  val currentOnEvent by rememberUpdatedState(onEvent)
+  val uriHandler = LocalUriHandler.current
 
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { currentOnEvent(it) }
-    }
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { currentOnEvent(it) }
+  }
 
-    LaunchedEffect(viewModel) {
-        viewModel.authorizationUrls.collect { uriHandler.openUri(uri = it.toString()) }
-    }
+  LaunchedEffect(viewModel) {
+    viewModel.authorizationUrls.collect { uriHandler.openUri(uri = it.toString()) }
+  }
 
-    val basicAuth = viewModel.basicAuth
-    val oAuth = viewModel.oAuth
+  val basicAuth = viewModel.basicAuth
+  val oAuth = viewModel.oAuth
 
-    UserAuthenticationContent(
-        uiState = uiState,
-        onAbort = viewModel::abort,
-        modifier = modifier,
-        basicAuthContent = basicAuth?.let { holder ->
-            @Composable { contentModifier ->
-                val basicAuthState by holder.uiState.collectAsState()
+  UserAuthenticationContent(
+    uiState = uiState,
+    onAbort = viewModel::abort,
+    modifier = modifier,
+    basicAuthContent = basicAuth?.let { holder ->
+      @Composable { contentModifier ->
+        val basicAuthState by holder.uiState.collectAsState()
 
-                BasicAuthContent(
-                    uiState = basicAuthState,
-                    onChangeUsername = holder::changeUsername,
-                    onChangePassword = holder::changePassword,
-                    onAuthenticate = holder::authenticate,
-                    modifier = contentModifier,
-                    isAuthenticating = uiState.isAuthenticating,
-                )
-            }
-        },
-        oAuthContent = oAuth?.let { holder ->
-            @Composable { contentModifier, showSupportingText ->
-                val oAuthState by holder.uiState.collectAsState()
+        BasicAuthContent(
+          uiState = basicAuthState,
+          onChangeUsername = holder::changeUsername,
+          onChangePassword = holder::changePassword,
+          onAuthenticate = holder::authenticate,
+          modifier = contentModifier,
+          isAuthenticating = uiState.isAuthenticating,
+        )
+      }
+    },
+    oAuthContent = oAuth?.let { holder ->
+      @Composable { contentModifier, showSupportingText ->
+        val oAuthState by holder.uiState.collectAsState()
 
-                OAuthContent(
-                    uiState = oAuthState,
-                    onAuthenticate = holder::authenticate,
-                    modifier = contentModifier,
-                    isAuthenticating = uiState.isAuthenticating,
-                    showSupportingText = showSupportingText,
-                )
-            }
-        },
-    )
+        OAuthContent(
+          uiState = oAuthState,
+          onAuthenticate = holder::authenticate,
+          modifier = contentModifier,
+          isAuthenticating = uiState.isAuthenticating,
+          showSupportingText = showSupportingText,
+        )
+      }
+    },
+  )
 }
 
 /**
@@ -140,78 +140,78 @@ fun UserAuthenticationContent(
  */
 @Composable
 fun UserAuthenticationContent(
-    uiState: AuthenticationUiState,
-    onAbort: () -> Unit,
-    modifier: Modifier = Modifier,
-    basicAuthContent: (@Composable (modifier: Modifier) -> Unit)? = null,
-    oAuthContent: (@Composable (modifier: Modifier, showSupportingText: Boolean) -> Unit)? = null,
+  uiState: AuthenticationUiState,
+  onAbort: () -> Unit,
+  modifier: Modifier = Modifier,
+  basicAuthContent: (@Composable (modifier: Modifier) -> Unit)? = null,
+  oAuthContent: (@Composable (modifier: Modifier, showSupportingText: Boolean) -> Unit)? = null,
 ) = Row(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalAlignment = Alignment.CenterVertically,
+  modifier = modifier,
+  horizontalArrangement = Arrangement.spacedBy(16.dp),
+  verticalAlignment = Alignment.CenterVertically,
 ) {
-    Image(
-        modifier = Modifier.weight(1f)
-            .align(Alignment.Bottom)
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .scale(1.5f),
-        alpha = .3f,
-        painter = painterResource(Res.drawable.solr_sun),
-        contentDescription = stringResource(Res.string.cd_solr_logo),
-    )
+  Image(
+    modifier = Modifier.weight(1f)
+      .align(Alignment.Bottom)
+      .fillMaxWidth()
+      .aspectRatio(1f)
+      .scale(1.5f),
+    alpha = .3f,
+    painter = painterResource(Res.drawable.solr_sun),
+    contentDescription = stringResource(Res.string.cd_solr_logo),
+  )
 
-    Column(
-        modifier = Modifier.weight(1f).padding(16.dp),
+  Column(
+    modifier = Modifier.weight(1f).padding(16.dp),
+  ) {
+    SolrTextButton(
+      onClick = onAbort,
+      contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
     ) {
-        SolrTextButton(
-            onClick = onAbort,
-            contentPadding = ButtonDefaults.TextButtonWithIconContentPadding,
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.chevron_left),
-                contentDescription = stringResource(Res.string.cd_back_navigation),
-            )
-            Text(text = stringResource(Res.string.action_go_back))
-        }
-
-        SolrCard(
-            modifier = Modifier
-                .widthIn(min = 512.dp, max = 640.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = stringResource(Res.string.title_sign_in_to_solr),
-                style = MaterialTheme.typography.headlineMedium,
-            )
-
-            Text(
-                text = stringResource(Res.string.desc_solr_instance_with_auth, uiState.url),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-
-            basicAuthContent?.invoke(Modifier.testTag("basic_auth_content"))
-
-            val hasMultiAuth = basicAuthContent != null && oAuthContent != null
-            if (hasMultiAuth) {
-                Text(
-                    modifier = Modifier.testTag("separator_text"),
-                    text = stringResource(Res.string.seperator_or),
-                )
-            }
-
-            oAuthContent?.invoke(Modifier.testTag("basic_auth_content"), !hasMultiAuth)
-
-            uiState.error?.let { error ->
-                Text(
-                    modifier = Modifier.testTag("error_text"),
-                    text = stringResource(resource = error),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
+      Icon(
+        painter = painterResource(Res.drawable.chevron_left),
+        contentDescription = stringResource(Res.string.cd_back_navigation),
+      )
+      Text(text = stringResource(Res.string.action_go_back))
     }
+
+    SolrCard(
+      modifier = Modifier
+        .widthIn(min = 512.dp, max = 640.dp)
+        .verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Text(
+        text = stringResource(Res.string.title_sign_in_to_solr),
+        style = MaterialTheme.typography.headlineMedium,
+      )
+
+      Text(
+        text = stringResource(Res.string.desc_solr_instance_with_auth, uiState.url),
+        style = MaterialTheme.typography.bodyMedium,
+      )
+
+      basicAuthContent?.invoke(Modifier.testTag("basic_auth_content"))
+
+      val hasMultiAuth = basicAuthContent != null && oAuthContent != null
+      if (hasMultiAuth) {
+        Text(
+          modifier = Modifier.testTag("separator_text"),
+          text = stringResource(Res.string.seperator_or),
+        )
+      }
+
+      oAuthContent?.invoke(Modifier.testTag("basic_auth_content"), !hasMultiAuth)
+
+      uiState.error?.let { error ->
+        Text(
+          modifier = Modifier.testTag("error_text"),
+          text = stringResource(resource = error),
+          color = MaterialTheme.colorScheme.error,
+          style = MaterialTheme.typography.bodyMedium,
+        )
+      }
+    }
+  }
 }

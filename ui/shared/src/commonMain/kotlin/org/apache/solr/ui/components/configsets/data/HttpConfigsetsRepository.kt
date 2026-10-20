@@ -31,46 +31,46 @@ import org.apache.solr.ui.domain.Configset
 import org.apache.solr.ui.domain.PickedFile
 
 class HttpConfigsetsRepository(private val httpClient: HttpClient) : ConfigsetsRepository {
-    override suspend fun createConfigset(name: String, baseConfigset: String?): Result<Configset> {
-        val response = httpClient.post("api/configsets") {
-            setBody(
-                CreateConfigset(
-                    name = name,
-                    baseConfigSet = baseConfigset,
-                ),
-            )
-        }
-        return when {
-            response.status.isSuccess() ->
-                // Success result will not contain any information,
-                // therefore, create the configset from input
-                Result.success(Configset(name))
-
-            else -> Result.failure(Exception("Unknown Error"))
-        }
+  override suspend fun createConfigset(name: String, baseConfigset: String?): Result<Configset> {
+    val response = httpClient.post("api/configsets") {
+      setBody(
+        CreateConfigset(
+          name = name,
+          baseConfigSet = baseConfigset,
+        ),
+      )
     }
+    return when {
+      response.status.isSuccess() ->
+        // Success result will not contain any information,
+        // therefore, create the configset from input
+        Result.success(Configset(name))
 
-    override suspend fun importConfigset(name: String, file: PickedFile): Result<Configset> {
-        val response = httpClient.put("api/configsets/$name") {
-            contentType(ContentType.parse("application/zip"))
-            setBody(file.bytes)
-        }
-        return when {
-            response.status.isSuccess() -> Result.success(Configset(name = name))
-            else -> Result.failure(Exception("Unknown Error"))
-        }
+      else -> Result.failure(Exception("Unknown Error"))
     }
+  }
 
-    override suspend fun loadConfigsets(): Result<List<Configset>> {
-        val response = httpClient.get("api/configsets")
-        return when {
-            response.status.isSuccess() -> {
-                val data = response.body<ListConfigsets>()
-                Result.success(data.configSets.map { Configset(name = it) })
-            }
-
-            else -> Result.failure(Exception("Unknown Error"))
-            // TODO Add proper error handling
-        }
+  override suspend fun importConfigset(name: String, file: PickedFile): Result<Configset> {
+    val response = httpClient.put("api/configsets/$name") {
+      contentType(ContentType.parse("application/zip"))
+      setBody(file.bytes)
     }
+    return when {
+      response.status.isSuccess() -> Result.success(Configset(name = name))
+      else -> Result.failure(Exception("Unknown Error"))
+    }
+  }
+
+  override suspend fun loadConfigsets(): Result<List<Configset>> {
+    val response = httpClient.get("api/configsets")
+    return when {
+      response.status.isSuccess() -> {
+        val data = response.body<ListConfigsets>()
+        Result.success(data.configSets.map { Configset(name = it) })
+      }
+
+      else -> Result.failure(Exception("Unknown Error"))
+      // TODO Add proper error handling
+    }
+  }
 }

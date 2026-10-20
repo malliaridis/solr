@@ -37,25 +37,25 @@ import org.apache.solr.ui.utils.platformDispatchers
  * @param httpClient The pre-configured HTTP client to use for environment operations.
  */
 class DefaultEnvironmentComponent(
-    httpClient: HttpClient,
-    private val dispatchers: AppDispatchers = platformDispatchers(),
+  httpClient: HttpClient,
+  private val dispatchers: AppDispatchers = platformDispatchers(),
 ) : EnvironmentComponent {
 
-    override val environmentRepository: EnvironmentRepository by lazy {
-        HttpEnvironmentRepository(httpClient)
-    }
+  override val environmentRepository: EnvironmentRepository by lazy {
+    HttpEnvironmentRepository(httpClient)
+  }
 
-    override val loadSystemDataUseCase: LoadSystemDataUseCase by lazy {
-        DefaultLoadSystemDataUseCase(environmentRepository)
-    }
+  override val loadSystemDataUseCase: LoadSystemDataUseCase by lazy {
+    DefaultLoadSystemDataUseCase(environmentRepository)
+  }
 
-    override val loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase by lazy {
-        DefaultLoadJavaPropertiesUseCase(environmentRepository)
-    }
+  override val loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase by lazy {
+    DefaultLoadJavaPropertiesUseCase(environmentRepository)
+  }
 
-    override fun createEnvironmentViewModel(): EnvironmentViewModel = EnvironmentViewModel(
-        loadSystemDataUseCase = loadSystemDataUseCase,
-        loadJavaPropertiesUseCase = loadJavaPropertiesUseCase,
-        dispatchers = dispatchers,
-    )
+  override fun createEnvironmentViewModel(): EnvironmentViewModel = EnvironmentViewModel(
+    loadSystemDataUseCase = loadSystemDataUseCase,
+    loadJavaPropertiesUseCase = loadJavaPropertiesUseCase,
+    dispatchers = dispatchers,
+  )
 }

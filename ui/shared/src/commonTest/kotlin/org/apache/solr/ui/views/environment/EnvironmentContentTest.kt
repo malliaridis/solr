@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 package org.apache.solr.ui.views.environment
 
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -27,34 +26,34 @@ import org.apache.solr.ui.components.environment.viewmodel.EnvironmentUiState
 
 class EnvironmentContentTest {
 
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun testEnvironmentContentRendering() = runComposeUiTest {
-        setContent {
-            EnvironmentContent(uiState = testUiState)
-        }
-
-        // Test if component data is displayed
-        onNodeWithText("solr-spec version").assertExists()
-
-        (1..7).forEach {
-            onNodeWithText("key $it").assertExists()
-            onNodeWithText("value $it").assertExists()
-        }
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testEnvironmentContentRendering() = runComposeUiTest {
+    setContent {
+      EnvironmentContent(uiState = testUiState)
     }
+
+    // Test if component data is displayed
+    onNodeWithText("solr-spec version").assertExists()
+
+    (1..7).forEach {
+      onNodeWithText("key $it").assertExists()
+      onNodeWithText("value $it").assertExists()
+    }
+  }
 }
 
 private val testUiState = EnvironmentUiState(
-    lucene = Versions(
-        solrSpecVersion = "solr-spec version",
-    ),
-    javaProperties = listOf(
-        "key 1" to "value 1",
-        "key 2" to "value 2",
-        "key 3" to "value 3",
-        "key 4" to "value 4",
-        "key 5" to "value 5",
-        "key 6" to "value 6",
-        "key 7" to "value 7",
-    ),
+  lucene = Versions(
+    solrSpecVersion = "solr-spec version",
+  ),
+  javaProperties = listOf(
+    "key 1" to "value 1",
+    "key 2" to "value 2",
+    "key 3" to "value 3",
+    "key 4" to "value 4",
+    "key 5" to "value 5",
+    "key 6" to "value 6",
+    "key 7" to "value 7",
+  ),
 )

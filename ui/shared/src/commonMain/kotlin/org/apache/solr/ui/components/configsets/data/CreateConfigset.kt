@@ -21,6 +21,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateConfigset(
-    val name: String,
-    val baseConfigSet: String? = null,
+  val name: String,
+  val baseConfigSet: String? = null,
 )

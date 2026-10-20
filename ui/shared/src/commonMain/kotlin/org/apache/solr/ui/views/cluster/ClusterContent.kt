@@ -36,23 +36,23 @@ import org.jetbrains.compose.resources.StringResource
 
 @Composable
 fun ClusterContent(
-    component: ClusterComponent,
-    modifier: Modifier = Modifier,
+  component: ClusterComponent,
+  modifier: Modifier = Modifier,
 ) = Column(modifier = modifier) {
-    val viewModel = viewModel { component.createClusterViewModel() }
-    val uiState by viewModel.uiState.collectAsState()
+  val viewModel = viewModel { component.createClusterViewModel() }
+  val uiState by viewModel.uiState.collectAsState()
 
-    NavigationTabs(
-        tabs = ClusterTab.entries,
-        selectedTab = uiState.selectedTab,
-        onSelectTab = viewModel::selectTab,
-        mapper = ::clusterTabsMapper,
-        modifier = Modifier.padding(1.dp),
-    )
+  NavigationTabs(
+    tabs = ClusterTab.entries,
+    selectedTab = uiState.selectedTab,
+    onSelectTab = viewModel::selectTab,
+    mapper = ::clusterTabsMapper,
+    modifier = Modifier.padding(1.dp),
+  )
 }
 
 private fun clusterTabsMapper(tab: ClusterTab): StringResource = when (tab) {
-    ClusterTab.Zookeeper -> Res.string.zookeeper
-    ClusterTab.Nodes -> Res.string.nodes
-    ClusterTab.Cores -> Res.string.cores
+  ClusterTab.Zookeeper -> Res.string.zookeeper
+  ClusterTab.Nodes -> Res.string.nodes
+  ClusterTab.Cores -> Res.string.cores
 }

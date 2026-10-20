@@ -27,57 +27,57 @@ import org.apache.solr.ui.components.configsets.viewmodel.ConfigsetsOverviewEntr
 
 class ConfigsetsOverviewViewModel : ViewModel() {
 
-    val backStack: SnapshotStateList<ConfigsetsOverviewEntry> =
-        mutableStateListOf(ConfigsetsOverviewEntry.Main)
+  val backStack: SnapshotStateList<ConfigsetsOverviewEntry> =
+    mutableStateListOf(ConfigsetsOverviewEntry.Main)
 
-    /**
-     * Initiates the creation of a new configset.
-     */
-    fun openCreateConfigsetDialog() = backStack.apply {
-        clearDialogs()
-        add(CreateConfigsetDialog)
-    }
+  /**
+   * Initiates the creation of a new configset.
+   */
+  fun openCreateConfigsetDialog() = backStack.apply {
+    clearDialogs()
+    add(CreateConfigsetDialog)
+  }
 
-    /**
-     * Initiates the import of a configset.
-     */
-    fun openImportConfigsetDialog() = backStack.apply {
-        clearDialogs()
-        add(ImportConfigsetDialog)
-    }
+  /**
+   * Initiates the import of a configset.
+   */
+  fun openImportConfigsetDialog() = backStack.apply {
+    clearDialogs()
+    add(ImportConfigsetDialog)
+  }
 
-    /**
-     * Closes any opened dialog.
-     */
-    fun closeDialog() {
-        backStack.clearDialogs()
-    }
+  /**
+   * Closes any opened dialog.
+   */
+  fun closeDialog() {
+    backStack.clearDialogs()
+  }
 
-    /**
-     * Edit solrconfig.xml for the configset with the given [name].
-     *
-     * @param name the name of the configset to edit.
-     */
-    fun editSolrConfig(name: String) {
-        TODO()
-    }
+  /**
+   * Edit solrconfig.xml for the configset with the given [name].
+   *
+   * @param name the name of the configset to edit.
+   */
+  fun editSolrConfig(name: String) {
+    TODO()
+  }
 
-    private fun SnapshotStateList<ConfigsetsOverviewEntry>.clearDialogs() = removeAll { entry -> entry is ConfigsetsOverviewEntry.ConfigsetsOverviewDialog }
+  private fun SnapshotStateList<ConfigsetsOverviewEntry>.clearDialogs() = removeAll { entry -> entry is ConfigsetsOverviewEntry.ConfigsetsOverviewDialog }
 }
 
 @Serializable
 sealed interface ConfigsetsOverviewEntry : NavKey {
 
-    @Serializable
-    data object Main : ConfigsetsOverviewEntry
+  @Serializable
+  data object Main : ConfigsetsOverviewEntry
+
+  @Serializable
+  sealed interface ConfigsetsOverviewDialog : ConfigsetsOverviewEntry {
 
     @Serializable
-    sealed interface ConfigsetsOverviewDialog : ConfigsetsOverviewEntry {
+    data object CreateConfigsetDialog : ConfigsetsOverviewDialog
 
-        @Serializable
-        data object CreateConfigsetDialog : ConfigsetsOverviewDialog
-
-        @Serializable
-        data object ImportConfigsetDialog : ConfigsetsOverviewDialog
-    }
+    @Serializable
+    data object ImportConfigsetDialog : ConfigsetsOverviewDialog
+  }
 }

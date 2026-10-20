@@ -33,66 +33,72 @@ import org.apache.solr.ui.components.environment.domain.LoadSystemDataUseCase
 @OptIn(ExperimentalCoroutinesApi::class)
 class EnvironmentStateHolderTest {
 
-    @Test
-    fun `GIVEN system data and java properties WHEN initialized THEN state contains them`() = runTest {
-        val expectedJavaProperties = listOf("key" to "value")
-        val expectedSystemData = SystemData(solrHome = "some/path")
+  @Test
+  fun `GIVEN system data and java properties WHEN initialized THEN state contains them`() = runTest {
+    val expectedJavaProperties = listOf("key" to "value")
+    val expectedSystemData = SystemData(solrHome = "some/path")
 
-        val stateHolder = createStateHolder(
-            onLoadSystemData = { Result.success(expectedSystemData) },
-            onLoadJavaProperties = { Result.success(expectedJavaProperties) },
-        )
-        advanceUntilIdle()
-
-        val state = stateHolder.uiState.value
-        assertEquals(expectedJavaProperties, state.javaProperties)
-        assertEquals(expectedSystemData.system, state.system)
-        assertEquals(expectedSystemData.jvm, state.jvm)
-        assertEquals(expectedSystemData.solrHome, state.solrHome)
-    }
-
-    @Test
-    fun `GIVEN loaded state WHEN fetchSystemData THEN state contains new data`() = runTest {
-        var isInitialRequest = true
-        val expectedJavaProperties = listOf("key2" to "value2")
-        val expectedSystemData = SystemData(solrHome = "some/path2")
-
-        val stateHolder = createStateHolder(
-            onLoadSystemData = {
-                // A second request should be sent in this scenario, so we
-                // respond with different data
-                if (isInitialRequest) Result.success(SystemData(solrHome = "some/path"))
-                else Result.success(expectedSystemData)
-            },
-            onLoadJavaProperties = {
-                if (isInitialRequest) Result.success(listOf("key" to "value"))
-                else Result.success(expectedJavaProperties)
-            },
-        )
-        advanceUntilIdle()
-
-        isInitialRequest = false
-        stateHolder.fetchSystemData()
-        advanceUntilIdle()
-
-        val state = stateHolder.uiState.value
-        assertEquals(expectedJavaProperties, state.javaProperties)
-        assertEquals(expectedSystemData.system, state.system)
-        assertEquals(expectedSystemData.jvm, state.jvm)
-        assertEquals(expectedSystemData.solrHome, state.solrHome)
-    }
-
-    private fun TestScope.createStateHolder(
-        onLoadSystemData: () -> Result<SystemData>,
-        onLoadJavaProperties: () -> Result<List<JavaProperty>>,
-    ) = EnvironmentStateHolder(
-        scope = this,
-        loadSystemDataUseCase = object : LoadSystemDataUseCase {
-            override suspend fun invoke() = onLoadSystemData()
-        },
-        loadJavaPropertiesUseCase = object : LoadJavaPropertiesUseCase {
-            override suspend fun invoke() = onLoadJavaProperties()
-        },
-        dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+    val stateHolder = createStateHolder(
+      onLoadSystemData = { Result.success(expectedSystemData) },
+      onLoadJavaProperties = { Result.success(expectedJavaProperties) },
     )
+    advanceUntilIdle()
+
+    val state = stateHolder.uiState.value
+    assertEquals(expectedJavaProperties, state.javaProperties)
+    assertEquals(expectedSystemData.system, state.system)
+    assertEquals(expectedSystemData.jvm, state.jvm)
+    assertEquals(expectedSystemData.solrHome, state.solrHome)
+  }
+
+  @Test
+  fun `GIVEN loaded state WHEN fetchSystemData THEN state contains new data`() = runTest {
+    var isInitialRequest = true
+    val expectedJavaProperties = listOf("key2" to "value2")
+    val expectedSystemData = SystemData(solrHome = "some/path2")
+
+    val stateHolder = createStateHolder(
+      onLoadSystemData = {
+        // A second request should be sent in this scenario, so we
+        // respond with different data
+        if (isInitialRequest) {
+          Result.success(SystemData(solrHome = "some/path"))
+        } else {
+          Result.success(expectedSystemData)
+        }
+      },
+      onLoadJavaProperties = {
+        if (isInitialRequest) {
+          Result.success(listOf("key" to "value"))
+        } else {
+          Result.success(expectedJavaProperties)
+        }
+      },
+    )
+    advanceUntilIdle()
+
+    isInitialRequest = false
+    stateHolder.fetchSystemData()
+    advanceUntilIdle()
+
+    val state = stateHolder.uiState.value
+    assertEquals(expectedJavaProperties, state.javaProperties)
+    assertEquals(expectedSystemData.system, state.system)
+    assertEquals(expectedSystemData.jvm, state.jvm)
+    assertEquals(expectedSystemData.solrHome, state.solrHome)
+  }
+
+  private fun TestScope.createStateHolder(
+    onLoadSystemData: () -> Result<SystemData>,
+    onLoadJavaProperties: () -> Result<List<JavaProperty>>,
+  ) = EnvironmentStateHolder(
+    scope = this,
+    loadSystemDataUseCase = object : LoadSystemDataUseCase {
+      override suspend fun invoke() = onLoadSystemData()
+    },
+    loadJavaPropertiesUseCase = object : LoadJavaPropertiesUseCase {
+      override suspend fun invoke() = onLoadJavaProperties()
+    },
+    dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+  )
 }

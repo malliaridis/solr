@@ -22,14 +22,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AuthorizationTokenRequest(
-    @SerialName("grant_type")
-    val grantType: String,
-    val code: String,
-    @SerialName("redirect_uri")
-    val redirectUri: String,
-    val scope: String,
-    @SerialName("code_verifier")
-    val codeVerifier: String,
-    @SerialName("client_id")
-    val clientId: String,
+  @SerialName("grant_type")
+  val grantType: String,
+  val code: String,
+  @SerialName("redirect_uri")
+  val redirectUri: String,
+  val scope: String,
+  @SerialName("code_verifier")
+  val codeVerifier: String,
+  @SerialName("client_id")
+  val clientId: String,
 )

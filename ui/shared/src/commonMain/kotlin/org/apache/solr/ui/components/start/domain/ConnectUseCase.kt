@@ -25,13 +25,13 @@ import org.apache.solr.ui.domain.AuthMethod
  */
 interface ConnectUseCase {
 
-    /**
-     * Tries to connect to the Solr instance at the given [url].
-     *
-     * @param url The URL of the Solr instance. If blank, the default Solr URL is used.
-     * @return The result of the connection attempt.
-     */
-    suspend operator fun invoke(url: String): ConnectResult
+  /**
+   * Tries to connect to the Solr instance at the given [url].
+   *
+   * @param url The URL of the Solr instance. If blank, the default Solr URL is used.
+   * @return The result of the connection attempt.
+   */
+  suspend operator fun invoke(url: String): ConnectResult
 }
 
 /**
@@ -39,25 +39,25 @@ interface ConnectUseCase {
  */
 sealed interface ConnectResult {
 
-    /**
-     * The connection was established and no authentication is required.
-     *
-     * @property url URL of the Solr instance.
-     */
-    data class Connected(val url: Url) : ConnectResult
+  /**
+   * The connection was established and no authentication is required.
+   *
+   * @property url URL of the Solr instance.
+   */
+  data class Connected(val url: Url) : ConnectResult
 
-    /**
-     * A Solr server was found, but authentication is required.
-     *
-     * @property url URL of the Solr instance that requires authentication.
-     * @property methods The supported authentication methods.
-     */
-    data class AuthRequired(val url: Url, val methods: List<AuthMethod>) : ConnectResult
+  /**
+   * A Solr server was found, but authentication is required.
+   *
+   * @property url URL of the Solr instance that requires authentication.
+   * @property methods The supported authentication methods.
+   */
+  data class AuthRequired(val url: Url, val methods: List<AuthMethod>) : ConnectResult
 
-    /**
-     * The connection could not be established.
-     *
-     * @property error The error that occurred.
-     */
-    data class Failure(val error: Throwable) : ConnectResult
+  /**
+   * The connection could not be established.
+   *
+   * @property error The error that occurred.
+   */
+  data class Failure(val error: Throwable) : ConnectResult
 }

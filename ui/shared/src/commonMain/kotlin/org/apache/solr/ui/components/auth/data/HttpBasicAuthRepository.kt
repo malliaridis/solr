@@ -33,24 +33,24 @@ import org.apache.solr.ui.errors.UnknownResponseException
  * already set.
  */
 class HttpBasicAuthRepository(private val httpClient: HttpClient) : BasicAuthRepository {
-    override suspend fun authenticate(
-        username: String,
-        password: String,
-    ): Result<Unit> {
-        // Use the same path that was used for the connection establishment that returned 401.
-        val response = httpClient.get("api/node/system") {
-            timeout { connectTimeoutMillis = 5000 }
-            basicAuth(username, password)
-        }
-
-        return when (response.status) {
-            HttpStatusCode.OK -> Result.success(Unit)
-
-            HttpStatusCode.Unauthorized -> {
-                Result.failure(UnauthorizedException(message = "Invalid Credentials"))
-            }
-
-            else -> Result.failure(UnknownResponseException(response))
-        }
+  override suspend fun authenticate(
+    username: String,
+    password: String,
+  ): Result<Unit> {
+    // Use the same path that was used for the connection establishment that returned 401.
+    val response = httpClient.get("api/node/system") {
+      timeout { connectTimeoutMillis = 5000 }
+      basicAuth(username, password)
     }
+
+    return when (response.status) {
+      HttpStatusCode.OK -> Result.success(Unit)
+
+      HttpStatusCode.Unauthorized -> {
+        Result.failure(UnauthorizedException(message = "Invalid Credentials"))
+      }
+
+      else -> Result.failure(UnknownResponseException(response))
+    }
+  }
 }

@@ -30,7 +30,7 @@ import org.apache.solr.ui.domain.AuthMethod
  * This can be used for further redirecting and authenticating the user.
  */
 class UnauthorizedException(
-    val url: Url? = null,
-    val methods: List<AuthMethod> = emptyList(),
-    message: String? = null,
+  val url: Url? = null,
+  val methods: List<AuthMethod> = emptyList(),
+  message: String? = null,
 ) : Exception(message)

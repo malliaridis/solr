@@ -23,16 +23,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OAuthData(
-    val clientId: String,
-    val authorizationFlow: AuthorizationFlow,
-    val scope: String,
-    val redirectUris: List<Url>,
-    val authorizationEndpoint: Url,
-    val tokenEndpoint: Url,
+  val clientId: String,
+  val authorizationFlow: AuthorizationFlow,
+  val scope: String,
+  val redirectUris: List<Url>,
+  val authorizationEndpoint: Url,
+  val tokenEndpoint: Url,
 )
 
 @Serializable
 enum class AuthorizationFlow {
-    Unknown,
-    CodePKCE,
+  Unknown,
+  CodePKCE,
 }

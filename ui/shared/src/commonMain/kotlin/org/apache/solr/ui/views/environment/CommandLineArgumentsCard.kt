@@ -41,33 +41,33 @@ import org.apache.solr.ui.views.theme.SolrTheme
  */
 @Composable
 internal fun CommandLineArgumentsCard(
-    arguments: List<String>,
-    modifier: Modifier = Modifier,
+  arguments: List<String>,
+  modifier: Modifier = Modifier,
 ) = SolrCard(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    Text(
-        text = "Command Line Arguments",
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Column(
+  Text(
+    text = "Command Line Arguments",
+    style = MaterialTheme.typography.headlineSmall,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+  Column(
+    modifier = Modifier.fillMaxWidth()
+      .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)),
+  ) {
+    arguments.forEachIndexed { index, argument ->
+      Text(
         modifier = Modifier.fillMaxWidth()
-            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)),
-    ) {
-        arguments.forEachIndexed { index, argument ->
-            Text(
-                modifier = Modifier.fillMaxWidth()
-                    .background(
-                        MaterialTheme.colorScheme.surfaceColorAtElevation(
-                            if (index % 2 == 0) 1.dp else 0.dp,
-                        ),
-                    ).padding(horizontal = 8.dp, vertical = 4.dp),
-                text = argument,
-                style = SolrTheme.typography.codeLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+          .background(
+            MaterialTheme.colorScheme.surfaceColorAtElevation(
+              if (index % 2 == 0) 1.dp else 0.dp,
+            ),
+          ).padding(horizontal = 8.dp, vertical = 4.dp),
+        text = argument,
+        style = SolrTheme.typography.codeLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
     }
+  }
 }

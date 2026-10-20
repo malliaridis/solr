@@ -36,21 +36,21 @@ import org.apache.solr.ui.components.main.viewmodel.MainViewModel
  * @param destination The section to show initially, if any.
  */
 class DefaultMainComponent(
-    private val httpClient: HttpClient,
-    private val destination: String? = null,
+  private val httpClient: HttpClient,
+  private val destination: String? = null,
 ) : MainComponent {
 
-    override val clusterComponent: ClusterComponent by lazy { DefaultClusterComponent() }
+  override val clusterComponent: ClusterComponent by lazy { DefaultClusterComponent() }
 
-    override val configsetsComponent: ConfigsetsComponent by lazy {
-        DefaultConfigsetsComponent(httpClient = httpClient)
-    }
+  override val configsetsComponent: ConfigsetsComponent by lazy {
+    DefaultConfigsetsComponent(httpClient = httpClient)
+  }
 
-    override val environmentComponent: EnvironmentComponent by lazy {
-        DefaultEnvironmentComponent(httpClient = httpClient)
-    }
+  override val environmentComponent: EnvironmentComponent by lazy {
+    DefaultEnvironmentComponent(httpClient = httpClient)
+  }
 
-    override val loggingComponent: LoggingComponent by lazy { DefaultLoggingComponent() }
+  override val loggingComponent: LoggingComponent by lazy { DefaultLoggingComponent() }
 
-    override fun createMainViewModel(): MainViewModel = MainViewModel(destination = destination)
+  override fun createMainViewModel(): MainViewModel = MainViewModel(destination = destination)
 }

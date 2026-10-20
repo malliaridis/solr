@@ -32,70 +32,70 @@ import org.w3c.files.FileReader
 
 @OptIn(ExperimentalWasmJsInterop::class)
 actual suspend fun pickFile(
-    extensions: List<String>,
+  extensions: List<String>,
 ): PickedFile? = suspendCancellableCoroutine { cont ->
-    val input = (document.createElement("input") as HTMLInputElement).apply {
-        type = "file"
-        style.display = "none"
-        if (extensions.isNotEmpty()) {
-            // Accept expects things like ".zip,.json" or MIME types.
-            accept = extensions.joinToString(",") { ".${it.trimStart('.')}" }
-        }
+  val input = (document.createElement("input") as HTMLInputElement).apply {
+    type = "file"
+    style.display = "none"
+    if (extensions.isNotEmpty()) {
+      // Accept expects things like ".zip,.json" or MIME types.
+      accept = extensions.joinToString(",") { ".${it.trimStart('.')}" }
+    }
+  }
+
+  fun cleanup() {
+    input.onchange = null
+    input.remove()
+  }
+
+  input.onchange = onchange@{
+    val chosen: File? = input.files?.asList()?.firstOrNull()
+    if (chosen == null) {
+      cleanup()
+      cont.resume(null)
+      return@onchange
     }
 
-    fun cleanup() {
-        input.onchange = null
-        input.remove()
+    val reader = FileReader()
+    reader.onload = onload@{ _: Event ->
+      val buffer = reader.result as? ArrayBuffer
+      if (buffer == null) {
+        cleanup()
+        cont.resume(null)
+        return@onload
+      }
+
+      val bytes = Uint8Array(buffer)
+      val out = ByteArray(bytes.length) { i ->
+        bytes[i].toInt().toByte()
+      }
+
+      cleanup()
+      cont.resume(
+        PickedFile(
+          name = chosen.name,
+          bytes = out,
+          extension = chosen.name.substringAfterLast("."),
+        ),
+      )
     }
 
-    input.onchange = onchange@{
-        val chosen: File? = input.files?.asList()?.firstOrNull()
-        if (chosen == null) {
-            cleanup()
-            cont.resume(null)
-            return@onchange
-        }
-
-        val reader = FileReader()
-        reader.onload = onload@{ _: Event ->
-            val buffer = reader.result as? ArrayBuffer
-            if (buffer == null) {
-                cleanup()
-                cont.resume(null)
-                return@onload
-            }
-
-            val bytes = Uint8Array(buffer)
-            val out = ByteArray(bytes.length) { i ->
-                bytes[i].toInt().toByte()
-            }
-
-            cleanup()
-            cont.resume(
-                PickedFile(
-                    name = chosen.name,
-                    bytes = out,
-                    extension = chosen.name.substringAfterLast("."),
-                ),
-            )
-        }
-
-        reader.onerror = { _: Event ->
-            cleanup()
-            cont.resume(null)
-        }
-
-        reader.readAsArrayBuffer(chosen)
-        cont.invokeOnCancellation {
-            try {
-                reader.abort()
-            } catch (_: Throwable) {
-                // Ignore: abort() may throw depending on state/platform bindings.
-            }
-            cleanup()
-        }
+    reader.onerror = { _: Event ->
+      cleanup()
+      cont.resume(null)
     }
 
-    document.body?.appendChild(input)
-    input.click()
+    reader.readAsArrayBuffer(chosen)
+    cont.invokeOnCancellation {
+      try {
+        reader.abort()
+      } catch (_: Throwable) {
+        // Ignore: abort() may throw depending on state/platform bindings.
+      }
+      cleanup()
+    }
+  }
+
+  document.body?.appendChild(input)
+  input.click()
 }

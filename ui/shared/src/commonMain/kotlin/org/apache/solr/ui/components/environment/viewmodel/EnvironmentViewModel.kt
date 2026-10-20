@@ -24,25 +24,25 @@ import org.apache.solr.ui.components.environment.domain.LoadSystemDataUseCase
 import org.apache.solr.ui.utils.AppDispatchers
 
 class EnvironmentViewModel(
-    loadSystemDataUseCase: LoadSystemDataUseCase,
-    loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase,
-    dispatchers: AppDispatchers,
+  loadSystemDataUseCase: LoadSystemDataUseCase,
+  loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase,
+  dispatchers: AppDispatchers,
 ) : ViewModel() {
 
-    private val environmentState = EnvironmentStateHolder(
-        scope = viewModelScope,
-        loadSystemDataUseCase = loadSystemDataUseCase,
-        loadJavaPropertiesUseCase = loadJavaPropertiesUseCase,
-        dispatchers = dispatchers,
-    )
+  private val environmentState = EnvironmentStateHolder(
+    scope = viewModelScope,
+    loadSystemDataUseCase = loadSystemDataUseCase,
+    loadJavaPropertiesUseCase = loadJavaPropertiesUseCase,
+    dispatchers = dispatchers,
+  )
 
-    /**
-     * UI state of the environment.
-     */
-    val uiState = environmentState.uiState
+  /**
+   * UI state of the environment.
+   */
+  val uiState = environmentState.uiState
 
-    /**
-     * Fetches the system data and the java properties again.
-     */
-    fun fetchSystemData() = environmentState.fetchSystemData()
+  /**
+   * Fetches the system data and the java properties again.
+   */
+  fun fetchSystemData() = environmentState.fetchSystemData()
 }

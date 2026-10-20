@@ -43,25 +43,25 @@ import org.apache.solr.ui.utils.getHttpClientWithAuthOption
  * @param destination The section to show initially after the user has access, if any.
  */
 class SimpleRootComponent(
-    private val httpClient: HttpClient,
-    private val destination: String? = null,
+  private val httpClient: HttpClient,
+  private val destination: String? = null,
 ) : RootComponent {
 
-    override fun createRootViewModel(): RootViewModel = RootViewModel()
+  override fun createRootViewModel(): RootViewModel = RootViewModel()
 
-    override fun createStartComponent(): StartComponent = DefaultStartComponent(httpClient = httpClient)
+  override fun createStartComponent(): StartComponent = DefaultStartComponent(httpClient = httpClient)
 
-    override fun createAuthenticationComponent(
-        url: Url,
-        methods: List<AuthMethod>,
-    ): AuthenticationComponent = DefaultAuthenticationComponent(
-        httpClient = getDefaultClient(url),
-        url = url,
-        methods = methods,
-    )
+  override fun createAuthenticationComponent(
+    url: Url,
+    methods: List<AuthMethod>,
+  ): AuthenticationComponent = DefaultAuthenticationComponent(
+    httpClient = getDefaultClient(url),
+    url = url,
+    methods = methods,
+  )
 
-    override fun createMainComponent(authOption: AuthOption): MainComponent = DefaultMainComponent(
-        httpClient = getHttpClientWithAuthOption(authOption),
-        destination = destination,
-    )
+  override fun createMainComponent(authOption: AuthOption): MainComponent = DefaultMainComponent(
+    httpClient = getHttpClientWithAuthOption(authOption),
+    destination = destination,
+  )
 }

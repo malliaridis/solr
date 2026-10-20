@@ -27,36 +27,36 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface AuthOption {
 
-    /**
-     * Authentication option that does not require anything (no authentication enabled).
-     *
-     * @property url The URL of the Solr instance that does not require any authentication.
-     */
-    @Serializable
-    data class None(val url: Url) : AuthOption
+  /**
+   * Authentication option that does not require anything (no authentication enabled).
+   *
+   * @property url The URL of the Solr instance that does not require any authentication.
+   */
+  @Serializable
+  data class None(val url: Url) : AuthOption
 
-    /**
-     * Authentication option for authenticating with basic auth (credentials).
-     *
-     * @property url The URL of the instance that requires basic auth and the credentials of this
-     * instance are for.
-     * @property username The username to use for further authenticated requests.
-     * @property password The password to use for further authenticated requests.
-     * @property realm The realm defined and used in the Basic auth method.
-     */
-    @Serializable
-    data class BasicAuthOption(
-        val url: Url,
-        val username: String,
-        val password: String,
-        val realm: String? = null,
-    ) : AuthOption
+  /**
+   * Authentication option for authenticating with basic auth (credentials).
+   *
+   * @property url The URL of the instance that requires basic auth and the credentials of this
+   * instance are for.
+   * @property username The username to use for further authenticated requests.
+   * @property password The password to use for further authenticated requests.
+   * @property realm The realm defined and used in the Basic auth method.
+   */
+  @Serializable
+  data class BasicAuthOption(
+    val url: Url,
+    val username: String,
+    val password: String,
+    val realm: String? = null,
+  ) : AuthOption
 
-    @Serializable
-    data class OAuthOption(
-        val url: Url,
-        val accessToken: String,
-        val refreshToken: String? = null,
-        val realm: String? = null,
-    ) : AuthOption
+  @Serializable
+  data class OAuthOption(
+    val url: Url,
+    val accessToken: String,
+    val refreshToken: String? = null,
+    val realm: String? = null,
+  ) : AuthOption
 }

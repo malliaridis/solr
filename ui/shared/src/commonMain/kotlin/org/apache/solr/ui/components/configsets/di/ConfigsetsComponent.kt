@@ -34,25 +34,25 @@ import org.apache.solr.ui.components.files.domain.SelectFileUseCase
  */
 interface ConfigsetsComponent {
 
-    /**
-     * Dependencies provided by the application.
-     */
-    val configsetsRepository: ConfigsetsRepository
+  /**
+   * Dependencies provided by the application.
+   */
+  val configsetsRepository: ConfigsetsRepository
 
-    /**
-     * Use case responsible for loading the available configsets.
-     */
-    val loadConfigsetsUseCase: LoadConfigsetsUseCase
+  /**
+   * Use case responsible for loading the available configsets.
+   */
+  val loadConfigsetsUseCase: LoadConfigsetsUseCase
 
-    /**
-     * Factory method to create a [ConfigsetsRouteViewModel] instance.
-     */
-    fun createConfigsetsRouteViewModel(): ConfigsetsRouteViewModel
+  /**
+   * Factory method to create a [ConfigsetsRouteViewModel] instance.
+   */
+  fun createConfigsetsRouteViewModel(): ConfigsetsRouteViewModel
 
-    /**
-     * Factory method to create a [ConfigsetsViewModel] instance.
-     */
-    fun createConfigsetsViewModel(): ConfigsetsViewModel
+  /**
+   * Factory method to create a [ConfigsetsViewModel] instance.
+   */
+  fun createConfigsetsViewModel(): ConfigsetsViewModel
 
-    fun createConfigsetsOverviewComponent(): ConfigsetsOverviewComponent
+  fun createConfigsetsOverviewComponent(): ConfigsetsOverviewComponent
 }

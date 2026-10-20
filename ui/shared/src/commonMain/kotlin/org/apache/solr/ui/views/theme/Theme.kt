@@ -27,40 +27,40 @@ import androidx.compose.runtime.CompositionLocalProvider
  */
 object SolrTheme {
 
-    /**
-     * Additional text styles provided [ExtendedTypography].
-     */
-    val typography: ExtendedTypography
-        @Composable
-        get() = LocalExtendedTypography.current
+  /**
+   * Additional text styles provided [ExtendedTypography].
+   */
+  val typography: ExtendedTypography
+    @Composable
+    get() = LocalExtendedTypography.current
 
-    /**
-     * Additional colors provided by [ExtendedColorScheme].
-     */
-    val colorScheme: ExtendedColorScheme
-        @Composable
-        get() = LocalExtendedColorScheme.current
+  /**
+   * Additional colors provided by [ExtendedColorScheme].
+   */
+  val colorScheme: ExtendedColorScheme
+    @Composable
+    get() = LocalExtendedColorScheme.current
 }
 
 @Composable
 fun SolrTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit,
+  useDarkTheme: Boolean = isSystemInDarkTheme(),
+  content: @Composable () -> Unit,
 ) {
-    val colorScheme = when {
-        useDarkTheme -> darkScheme
-        else -> lightScheme
-    }
+  val colorScheme = when {
+    useDarkTheme -> darkScheme
+    else -> lightScheme
+  }
 
-    CompositionLocalProvider(
-        LocalExtendedTypography provides extendedTypography(),
-        LocalExtendedColorScheme provides extendedColorScheme(useDarkTheme),
-    ) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            shapes = SolrShapes,
-            typography = SolrTypography(),
-            content = content,
-        )
-    }
+  CompositionLocalProvider(
+    LocalExtendedTypography provides extendedTypography(),
+    LocalExtendedColorScheme provides extendedColorScheme(useDarkTheme),
+  ) {
+    MaterialTheme(
+      colorScheme = colorScheme,
+      shapes = SolrShapes,
+      typography = SolrTypography(),
+      content = content,
+    )
+  }
 }

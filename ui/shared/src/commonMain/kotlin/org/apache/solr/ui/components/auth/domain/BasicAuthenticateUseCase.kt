@@ -22,14 +22,14 @@ package org.apache.solr.ui.components.auth.domain
  */
 interface BasicAuthenticateUseCase {
 
-    /**
-     * Authenticates the user with the given credentials.
-     *
-     * @param username The username to use.
-     * @param password The password to use.
-     * @return Success if the credentials authenticated the user. Otherwise, a failure with the
-     * error that occurred, where invalid credentials are reported as
-     * [org.apache.solr.ui.errors.InvalidCredentialsException].
-     */
-    suspend operator fun invoke(username: String, password: String): Result<Unit>
+  /**
+   * Authenticates the user with the given credentials.
+   *
+   * @param username The username to use.
+   * @param password The password to use.
+   * @return Success if the credentials authenticated the user. Otherwise, a failure with the
+   * error that occurred, where invalid credentials are reported as
+   * [org.apache.solr.ui.errors.InvalidCredentialsException].
+   */
+  suspend operator fun invoke(username: String, password: String): Result<Unit>
 }

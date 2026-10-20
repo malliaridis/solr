@@ -59,105 +59,105 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ConfigsetsOverviewContent(
-    component: ConfigsetsOverviewComponent,
-    configsetsViewModel: ConfigsetsViewModel,
-    modifier: Modifier = Modifier,
+  component: ConfigsetsOverviewComponent,
+  configsetsViewModel: ConfigsetsViewModel,
+  modifier: Modifier = Modifier,
 ) = Column(modifier) {
-    val viewModel = viewModel { component.createConfigsetsOverviewViewModel() }
+  val viewModel = viewModel { component.createConfigsetsOverviewViewModel() }
 
-    val configsetsModel by configsetsViewModel.uiState.collectAsState()
+  val configsetsModel by configsetsViewModel.uiState.collectAsState()
 
-    val onConfigsetCreated: (Configset) -> Unit = {
-        viewModel.closeDialog()
-        configsetsViewModel.reloadConfigsets()
-        configsetsViewModel.selectConfigset(it.name)
-    }
+  val onConfigsetCreated: (Configset) -> Unit = {
+    viewModel.closeDialog()
+    configsetsViewModel.reloadConfigsets()
+    configsetsViewModel.selectConfigset(it.name)
+  }
 
-    val createConfigsetEventCollector: (CreateConfigsetEvent) -> Unit = { event ->
-        when (event) {
-            is CreateConfigsetEvent.ConfigsetCreated -> onConfigsetCreated(event.configset)
+  val createConfigsetEventCollector: (CreateConfigsetEvent) -> Unit = { event ->
+    when (event) {
+      is CreateConfigsetEvent.ConfigsetCreated -> onConfigsetCreated(event.configset)
 
-            is CreateConfigsetEvent.ConfigsetCreationAborted -> viewModel.closeDialog()
+      is CreateConfigsetEvent.ConfigsetCreationAborted -> viewModel.closeDialog()
 
-            is CreateConfigsetEvent.ConfigsetCreateToggleInputForm ->
-                if (event.useFileInput) {
-                    viewModel.openImportConfigsetDialog()
-                } else {
-                    viewModel.openCreateConfigsetDialog()
-                }
-
-            else -> Unit
+      is CreateConfigsetEvent.ConfigsetCreateToggleInputForm ->
+        if (event.useFileInput) {
+          viewModel.openImportConfigsetDialog()
+        } else {
+          viewModel.openCreateConfigsetDialog()
         }
+
+      else -> Unit
     }
+  }
 
-    NavDisplay(
-        modifier = Modifier.horizontalScroll(rememberScrollState()),
-        backStack = viewModel.backStack,
-        sceneStrategies = listOf(DialogSceneStrategy(), SinglePaneSceneStrategy()),
-        onBack = {
-            if (viewModel.backStack.last() is ConfigsetsOverviewEntry.ConfigsetsOverviewDialog) {
-                viewModel.backStack.removeLastOrNull()
-            }
-        },
-        entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
-        entryProvider = entryProvider {
-            entry<ConfigsetsOverviewEntry.Main> {
-                OverviewContent(
-                    viewModel = configsetsViewModel,
-                    selectedConfigset = configsetsModel.selectedConfigset,
-                    onOpenCreateConfigsetDialog = viewModel::openCreateConfigsetDialog,
-                    onEditSolrConfig = viewModel::editSolrConfig,
-                )
-            }
-            entry<CreateConfigsetDialog>(metadata = dialog()) {
-                val createViewModel = viewModel { component.createCreateConfigsetViewModel() }
+  NavDisplay(
+    modifier = Modifier.horizontalScroll(rememberScrollState()),
+    backStack = viewModel.backStack,
+    sceneStrategies = listOf(DialogSceneStrategy(), SinglePaneSceneStrategy()),
+    onBack = {
+      if (viewModel.backStack.last() is ConfigsetsOverviewEntry.ConfigsetsOverviewDialog) {
+        viewModel.backStack.removeLastOrNull()
+      }
+    },
+    entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
+    entryProvider = entryProvider {
+      entry<ConfigsetsOverviewEntry.Main> {
+        OverviewContent(
+          viewModel = configsetsViewModel,
+          selectedConfigset = configsetsModel.selectedConfigset,
+          onOpenCreateConfigsetDialog = viewModel::openCreateConfigsetDialog,
+          onEditSolrConfig = viewModel::editSolrConfig,
+        )
+      }
+      entry<CreateConfigsetDialog>(metadata = dialog()) {
+        val createViewModel = viewModel { component.createCreateConfigsetViewModel() }
 
-                LaunchedEffect(createViewModel) {
-                    createViewModel.events.collect(collector = createConfigsetEventCollector)
-                }
+        LaunchedEffect(createViewModel) {
+          createViewModel.events.collect(collector = createConfigsetEventCollector)
+        }
 
-                CreateConfigsetDialog(viewModel = createViewModel)
-            }
-            entry<ImportConfigsetDialog>(metadata = dialog()) {
-                val importViewModel = viewModel { component.createImportConfigsetViewModel() }
+        CreateConfigsetDialog(viewModel = createViewModel)
+      }
+      entry<ImportConfigsetDialog>(metadata = dialog()) {
+        val importViewModel = viewModel { component.createImportConfigsetViewModel() }
 
-                LaunchedEffect(importViewModel) {
-                    importViewModel.events.collect(collector = createConfigsetEventCollector)
-                }
+        LaunchedEffect(importViewModel) {
+          importViewModel.events.collect(collector = createConfigsetEventCollector)
+        }
 
-                ImportConfigsetDialog(viewModel = importViewModel)
-            }
-        },
-    )
+        ImportConfigsetDialog(viewModel = importViewModel)
+      }
+    },
+  )
 }
 
 @Composable
 private fun OverviewContent(
-    viewModel: ConfigsetsViewModel,
-    onOpenCreateConfigsetDialog: () -> Unit,
-    onEditSolrConfig: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    selectedConfigset: String? = null,
+  viewModel: ConfigsetsViewModel,
+  onOpenCreateConfigsetDialog: () -> Unit,
+  onEditSolrConfig: (String) -> Unit,
+  modifier: Modifier = Modifier,
+  selectedConfigset: String? = null,
 ) = Row(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalAlignment = Alignment.CenterVertically,
+  modifier = modifier,
+  horizontalArrangement = Arrangement.spacedBy(8.dp),
+  verticalAlignment = Alignment.CenterVertically,
 ) {
-    ConfigsetsDropdown(
-        viewModel = viewModel,
-        modifier = Modifier.widthIn(min = 128.dp, max = 256.dp),
-    )
+  ConfigsetsDropdown(
+    viewModel = viewModel,
+    modifier = Modifier.widthIn(min = 128.dp, max = 256.dp),
+  )
 
-    SolrTextButton(onClick = onOpenCreateConfigsetDialog) {
-        Icon(painter = painterResource(Res.drawable.add), contentDescription = null)
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(stringResource(Res.string.action_create_configset))
+  SolrTextButton(onClick = onOpenCreateConfigsetDialog) {
+    Icon(painter = painterResource(Res.drawable.add), contentDescription = null)
+    Spacer(modifier = Modifier.width(8.dp))
+    Text(stringResource(Res.string.action_create_configset))
+  }
+  if (!selectedConfigset.isNullOrBlank()) {
+    SolrTextButton(onClick = { onEditSolrConfig(selectedConfigset) }) {
+      Icon(painter = painterResource(Res.drawable.edit), contentDescription = null)
+      Spacer(modifier = Modifier.width(8.dp))
+      Text(stringResource(Res.string.action_edit_solrconfig))
     }
-    if (!selectedConfigset.isNullOrBlank()) {
-        SolrTextButton(onClick = { onEditSolrConfig(selectedConfigset) }) {
-            Icon(painter = painterResource(Res.drawable.edit), contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(Res.string.action_edit_solrconfig))
-        }
-    }
+  }
 }

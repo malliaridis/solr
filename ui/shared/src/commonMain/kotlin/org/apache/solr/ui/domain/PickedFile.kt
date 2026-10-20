@@ -18,27 +18,27 @@
 package org.apache.solr.ui.domain
 
 data class PickedFile(
-    val name: String,
-    val bytes: ByteArray,
-    val extension: String? = null,
+  val name: String,
+  val bytes: ByteArray,
+  val extension: String? = null,
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || this::class != other::class) return false
 
-        other as PickedFile
+    other as PickedFile
 
-        if (name != other.name) return false
-        if (!bytes.contentEquals(other.bytes)) return false
-        if (extension != other.extension) return false
+    if (name != other.name) return false
+    if (!bytes.contentEquals(other.bytes)) return false
+    if (extension != other.extension) return false
 
-        return true
-    }
+    return true
+  }
 
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + bytes.contentHashCode()
-        result = 31 * result + (extension?.hashCode() ?: 0)
-        return result
-    }
+  override fun hashCode(): Int {
+    var result = name.hashCode()
+    result = 31 * result + bytes.contentHashCode()
+    result = 31 * result + (extension?.hashCode() ?: 0)
+    return result
+  }
 }

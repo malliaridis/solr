@@ -35,21 +35,21 @@ import org.apache.solr.ui.utils.platformDispatchers
  * @param httpClient The pre-configured HTTP client to use for user registration operations.
  */
 class DefaultConfigsetsComponent(
-    httpClient: HttpClient,
-    private val dispatchers: AppDispatchers = platformDispatchers(),
+  httpClient: HttpClient,
+  private val dispatchers: AppDispatchers = platformDispatchers(),
 ) : ConfigsetsComponent {
 
-    override val configsetsRepository: ConfigsetsRepository by lazy {
-        HttpConfigsetsRepository(httpClient)
-    }
+  override val configsetsRepository: ConfigsetsRepository by lazy {
+    HttpConfigsetsRepository(httpClient)
+  }
 
-    override val loadConfigsetsUseCase: LoadConfigsetsUseCase by lazy {
-        DefaultLoadConfigsetsUseCase(configsetsRepository)
-    }
+  override val loadConfigsetsUseCase: LoadConfigsetsUseCase by lazy {
+    DefaultLoadConfigsetsUseCase(configsetsRepository)
+  }
 
-    override fun createConfigsetsRouteViewModel(): ConfigsetsRouteViewModel = ConfigsetsRouteViewModel()
+  override fun createConfigsetsRouteViewModel(): ConfigsetsRouteViewModel = ConfigsetsRouteViewModel()
 
-    override fun createConfigsetsViewModel(): ConfigsetsViewModel = ConfigsetsViewModel(loadConfigsetsUseCase, dispatchers)
+  override fun createConfigsetsViewModel(): ConfigsetsViewModel = ConfigsetsViewModel(loadConfigsetsUseCase, dispatchers)
 
-    override fun createConfigsetsOverviewComponent(): ConfigsetsOverviewComponent = DefaultConfigsetsOverviewComponent(configsetsRepository)
+  override fun createConfigsetsOverviewComponent(): ConfigsetsOverviewComponent = DefaultConfigsetsOverviewComponent(configsetsRepository)
 }

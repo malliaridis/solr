@@ -36,16 +36,16 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun SolrLogo(
-    modifier: Modifier = Modifier,
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+  modifier: Modifier = Modifier,
+  useDarkTheme: Boolean = isSystemInDarkTheme(),
 ) = Image(
-    modifier = modifier,
-    painter = painterResource(
-        if (useDarkTheme) {
-            Res.drawable.solr_logo_dark
-        } else {
-            Res.drawable.solr_logo_light
-        },
-    ),
-    contentDescription = stringResource(Res.string.cd_solr_logo),
+  modifier = modifier,
+  painter = painterResource(
+    if (useDarkTheme) {
+      Res.drawable.solr_logo_dark
+    } else {
+      Res.drawable.solr_logo_light
+    },
+  ),
+  contentDescription = stringResource(Res.string.cd_solr_logo),
 )

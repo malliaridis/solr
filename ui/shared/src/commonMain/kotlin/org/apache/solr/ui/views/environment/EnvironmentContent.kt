@@ -18,7 +18,6 @@
 package org.apache.solr.ui.views.environment
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
@@ -42,13 +41,13 @@ import org.apache.solr.ui.components.environment.viewmodel.EnvironmentUiState
  */
 @Composable
 fun EnvironmentContent(
-    component: EnvironmentComponent,
-    modifier: Modifier = Modifier,
+  component: EnvironmentComponent,
+  modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel { component.createEnvironmentViewModel() }
-    val uiState by viewModel.uiState.collectAsState()
+  val viewModel = viewModel { component.createEnvironmentViewModel() }
+  val uiState by viewModel.uiState.collectAsState()
 
-    EnvironmentContent(uiState = uiState, modifier = modifier)
+  EnvironmentContent(uiState = uiState, modifier = modifier)
 }
 
 /**
@@ -60,33 +59,32 @@ fun EnvironmentContent(
  * @param uiState The state of the environment to render.
  * @param modifier Modifier to apply to the root composable.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun EnvironmentContent(
-    uiState: EnvironmentUiState,
-    modifier: Modifier = Modifier,
+  uiState: EnvironmentUiState,
+  modifier: Modifier = Modifier,
 ) = FlowRow(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  horizontalArrangement = Arrangement.spacedBy(16.dp),
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    val minChildWidth: Dp = 400.dp
-    val maxChildWidth: Dp = 800.dp
+  val minChildWidth: Dp = 400.dp
+  val maxChildWidth: Dp = 800.dp
 
-    VersionsCard(
-        modifier = Modifier.weight(1f)
-            .widthIn(min = minChildWidth, max = maxChildWidth),
-        versions = uiState.lucene,
-        jvm = uiState.jvm,
-    )
-    CommandLineArgumentsCard(
-        modifier = Modifier.weight(1f)
-            .widthIn(min = minChildWidth, max = maxChildWidth),
-        arguments = uiState.jvm.jmx.commandLineArgs,
-    )
-    JavaPropertiesCard(
-        modifier = Modifier.weight(1f)
-            .widthIn(min = minChildWidth, max = maxChildWidth),
-        properties = uiState.javaProperties,
-    )
+  VersionsCard(
+    modifier = Modifier.weight(1f)
+      .widthIn(min = minChildWidth, max = maxChildWidth),
+    versions = uiState.lucene,
+    jvm = uiState.jvm,
+  )
+  CommandLineArgumentsCard(
+    modifier = Modifier.weight(1f)
+      .widthIn(min = minChildWidth, max = maxChildWidth),
+    arguments = uiState.jvm.jmx.commandLineArgs,
+  )
+  JavaPropertiesCard(
+    modifier = Modifier.weight(1f)
+      .widthIn(min = minChildWidth, max = maxChildWidth),
+    properties = uiState.javaProperties,
+  )
 }

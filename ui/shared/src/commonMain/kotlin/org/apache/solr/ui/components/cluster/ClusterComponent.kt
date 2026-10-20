@@ -27,8 +27,8 @@ import org.apache.solr.ui.components.cluster.viewmodel.ClusterViewModel
  */
 interface ClusterComponent {
 
-    /**
-     * Factory method to create a [ClusterViewModel] instance.
-     */
-    fun createClusterViewModel(): ClusterViewModel
+  /**
+   * Factory method to create a [ClusterViewModel] instance.
+   */
+  fun createClusterViewModel(): ClusterViewModel
 }

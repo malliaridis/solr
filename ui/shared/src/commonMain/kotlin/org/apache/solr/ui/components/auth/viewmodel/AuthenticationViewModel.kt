@@ -27,51 +27,51 @@ import org.apache.solr.ui.domain.AuthMethod
 import org.apache.solr.ui.utils.AppDispatchers
 
 class AuthenticationViewModel(
-    url: Url,
-    methods: List<AuthMethod>,
-    basicAuthenticateUseCase: BasicAuthenticateUseCase,
-    createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase,
-    oAuthAuthenticateUseCase: OAuthAuthenticateUseCase,
-    dispatchers: AppDispatchers,
+  url: Url,
+  methods: List<AuthMethod>,
+  basicAuthenticateUseCase: BasicAuthenticateUseCase,
+  createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase,
+  oAuthAuthenticateUseCase: OAuthAuthenticateUseCase,
+  dispatchers: AppDispatchers,
 ) : ViewModel() {
 
-    private val authenticationState = AuthenticationStateHolder(
-        scope = viewModelScope,
-        url = url,
-        methods = methods,
-        basicAuthenticateUseCase = basicAuthenticateUseCase,
-        createOAuthAuthorizationUseCase = createOAuthAuthorizationUseCase,
-        oAuthAuthenticateUseCase = oAuthAuthenticateUseCase,
-        dispatchers = dispatchers,
-    )
+  private val authenticationState = AuthenticationStateHolder(
+    scope = viewModelScope,
+    url = url,
+    methods = methods,
+    basicAuthenticateUseCase = basicAuthenticateUseCase,
+    createOAuthAuthorizationUseCase = createOAuthAuthorizationUseCase,
+    oAuthAuthenticateUseCase = oAuthAuthenticateUseCase,
+    dispatchers = dispatchers,
+  )
 
-    /**
-     * UI state of the authentication screen.
-     */
-    val uiState = authenticationState.uiState
+  /**
+   * UI state of the authentication screen.
+   */
+  val uiState = authenticationState.uiState
 
-    /**
-     * Events emitted by the authentication screen.
-     */
-    val events = authenticationState.events
+  /**
+   * Events emitted by the authentication screen.
+   */
+  val events = authenticationState.events
 
-    /**
-     * URLs of the identity provider that are supposed to be opened for authorizing the user.
-     */
-    val authorizationUrls = authenticationState.authorizationUrls
+  /**
+   * URLs of the identity provider that are supposed to be opened for authorizing the user.
+   */
+  val authorizationUrls = authenticationState.authorizationUrls
 
-    /**
-     * State holder for authentication with credentials (basic auth), if it is supported.
-     */
-    val basicAuth = authenticationState.basicAuth
+  /**
+   * State holder for authentication with credentials (basic auth), if it is supported.
+   */
+  val basicAuth = authenticationState.basicAuth
 
-    /**
-     * State holder for authentication with OAuth (bearer token), if it is supported.
-     */
-    val oAuth = authenticationState.oAuth
+  /**
+   * State holder for authentication with OAuth (bearer token), if it is supported.
+   */
+  val oAuth = authenticationState.oAuth
 
-    /**
-     * Aborts the authentication attempt.
-     */
-    fun abort() = authenticationState.abort()
+  /**
+   * Aborts the authentication attempt.
+   */
+  fun abort() = authenticationState.abort()
 }

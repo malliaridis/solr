@@ -24,10 +24,10 @@ import org.apache.solr.ui.components.environment.data.JavaProperty
  */
 interface LoadJavaPropertiesUseCase {
 
-    /**
-     * Default invocation for loading the java properties.
-     *
-     * @return A Result containing the list of [JavaProperty]s.
-     */
-    suspend operator fun invoke(): Result<List<JavaProperty>>
+  /**
+   * Default invocation for loading the java properties.
+   *
+   * @return A Result containing the list of [JavaProperty]s.
+   */
+  suspend operator fun invoke(): Result<List<JavaProperty>>
 }

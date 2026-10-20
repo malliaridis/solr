@@ -46,87 +46,87 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigsetsDropdown(
-    viewModel: ConfigsetsViewModel,
-    modifier: Modifier = Modifier,
-    enableReset: Boolean = false,
+  viewModel: ConfigsetsViewModel,
+  modifier: Modifier = Modifier,
+  enableReset: Boolean = false,
 ) {
-    val model by viewModel.uiState.collectAsState()
+  val model by viewModel.uiState.collectAsState()
 
-    ConfigsetsDropdown(
-        configsets = model.configsets,
-        selectedConfigset = model.selectedConfigset,
-        selectConfigset = viewModel::selectConfigset,
-        modifier = modifier,
-        enableReset = enableReset,
-    )
+  ConfigsetsDropdown(
+    configsets = model.configsets,
+    selectedConfigset = model.selectedConfigset,
+    selectConfigset = viewModel::selectConfigset,
+    modifier = modifier,
+    enableReset = enableReset,
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigsetsDropdown(
-    selectedConfigset: String?,
-    configsets: List<Configset>,
-    selectConfigset: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    enableReset: Boolean = false,
+  selectedConfigset: String?,
+  configsets: List<Configset>,
+  selectConfigset: (String) -> Unit,
+  modifier: Modifier = Modifier,
+  enableReset: Boolean = false,
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val enabled = configsets.isNotEmpty()
+  var expanded by remember { mutableStateOf(false) }
+  val enabled = configsets.isNotEmpty()
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = it },
-        modifier = modifier,
-    ) {
-        OutlinedTextField(
-            value = selectedConfigset ?: "",
-            onValueChange = {},
-            readOnly = true,
-            enabled = enabled,
-            singleLine = true,
-            label = { Text(stringResource(Res.string.nav_configsets)) },
-            placeholder = {
-                if (configsets.isEmpty()) {
-                    Text(
-                        modifier = Modifier.testTag("no_configsets_placeholder"),
-                        text = stringResource(Res.string.no_configsets),
-                    )
-                }
-            },
-            trailingIcon = {
-                if (enableReset && !selectedConfigset.isNullOrEmpty()) {
-                    IconButton(onClick = { selectConfigset("") }) {
-                        Icon(
-                            painter = painterResource(Res.drawable.close),
-                            contentDescription = stringResource(Res.string.cd_clear_field),
-                        )
-                    }
-                } else {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                }
-            },
-            modifier = Modifier
-                .menuAnchor(
-                    type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
-                    enabled = enabled,
-                )
-                .testTag("configsets_dropdown"),
-        )
-        ExposedDropdownMenu(
-            modifier = Modifier.testTag("configsets_exposed_dropdown_menu"),
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            configsets.forEach { configset ->
-                DropdownMenuItem(
-                    modifier = Modifier.testTag(tag = configset.name),
-                    text = { Text(configset.name) },
-                    onClick = {
-                        selectConfigset(configset.name)
-                        expanded = false
-                    },
-                )
-            }
+  ExposedDropdownMenuBox(
+    expanded = expanded,
+    onExpandedChange = { expanded = it },
+    modifier = modifier,
+  ) {
+    OutlinedTextField(
+      value = selectedConfigset ?: "",
+      onValueChange = {},
+      readOnly = true,
+      enabled = enabled,
+      singleLine = true,
+      label = { Text(stringResource(Res.string.nav_configsets)) },
+      placeholder = {
+        if (configsets.isEmpty()) {
+          Text(
+            modifier = Modifier.testTag("no_configsets_placeholder"),
+            text = stringResource(Res.string.no_configsets),
+          )
         }
+      },
+      trailingIcon = {
+        if (enableReset && !selectedConfigset.isNullOrEmpty()) {
+          IconButton(onClick = { selectConfigset("") }) {
+            Icon(
+              painter = painterResource(Res.drawable.close),
+              contentDescription = stringResource(Res.string.cd_clear_field),
+            )
+          }
+        } else {
+          ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+        }
+      },
+      modifier = Modifier
+        .menuAnchor(
+          type = ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+          enabled = enabled,
+        )
+        .testTag("configsets_dropdown"),
+    )
+    ExposedDropdownMenu(
+      modifier = Modifier.testTag("configsets_exposed_dropdown_menu"),
+      expanded = expanded,
+      onDismissRequest = { expanded = false },
+    ) {
+      configsets.forEach { configset ->
+        DropdownMenuItem(
+          modifier = Modifier.testTag(tag = configset.name),
+          text = { Text(configset.name) },
+          onClick = {
+            selectConfigset(configset.name)
+            expanded = false
+          },
+        )
+      }
     }
+  }
 }

@@ -30,62 +30,62 @@ import org.apache.solr.ui.components.files.domain.SelectFileUseCase
 import org.apache.solr.ui.domain.PickedFile
 
 class FileSelectorStateHolder(
-    private val scope: CoroutineScope,
-    private val selectFileUseCase: SelectFileUseCase,
+  private val scope: CoroutineScope,
+  private val selectFileUseCase: SelectFileUseCase,
 ) {
 
-    /**
-     * State of the configset create form.
-     */
-    val uiState: StateFlow<FileSelectorUiState>
-        field = MutableStateFlow(FileSelectorUiState())
+  /**
+   * State of the configset create form.
+   */
+  val uiState: StateFlow<FileSelectorUiState>
+    field = MutableStateFlow(FileSelectorUiState())
 
-    /**
-     * Events emitted by the state holer.
-     */
-    val events: SharedFlow<FileSelectorEvent>
-        field = MutableSharedFlow<FileSelectorEvent>(extraBufferCapacity = 1)
+  /**
+   * Events emitted by the state holer.
+   */
+  val events: SharedFlow<FileSelectorEvent>
+    field = MutableSharedFlow<FileSelectorEvent>(extraBufferCapacity = 1)
 
-    fun selectFile(extensions: List<String>) {
-        uiState.update { it.copy(fileError = null) }
-        scope.launch {
-            when (val result = selectFileUseCase(extensions)) {
-                is SelectFileResult.Aborted -> Unit
+  fun selectFile(extensions: List<String>) {
+    uiState.update { it.copy(fileError = null) }
+    scope.launch {
+      when (val result = selectFileUseCase(extensions)) {
+        is SelectFileResult.Aborted -> Unit
 
-                // Ignore
-                is SelectFileResult.Success -> {
-                    uiState.update {
-                        it.copy(file = result.file, fileError = null)
-                    }
-                    events.emit(FileSelectorEvent.FileSelected(result.file))
-                }
-
-                is SelectFileResult.ValidationFailure ->
-                    uiState.update { it.copy(fileError = result.error) }
-
-                is SelectFileResult.UnexpectedFailure -> {
-                    // TODO Handle general error
-                }
-            }
+        // Ignore
+        is SelectFileResult.Success -> {
+          uiState.update {
+            it.copy(file = result.file, fileError = null)
+          }
+          events.emit(FileSelectorEvent.FileSelected(result.file))
         }
-    }
 
-    fun clearFile() {
-        uiState.update { it.copy(file = null) }
-    }
+        is SelectFileResult.ValidationFailure ->
+          uiState.update { it.copy(fileError = result.error) }
 
-    fun validateAndGetFile(): PickedFile? {
-        var isValid = true
-        if (uiState.value.file == null) {
-            uiState.update { it.copy(fileError = SelectFileResult.Error.FileNotSelected) }
-            isValid = false
+        is SelectFileResult.UnexpectedFailure -> {
+          // TODO Handle general error
         }
-        if (isValid) return uiState.value.file
-        return null
+      }
     }
+  }
+
+  fun clearFile() {
+    uiState.update { it.copy(file = null) }
+  }
+
+  fun validateAndGetFile(): PickedFile? {
+    var isValid = true
+    if (uiState.value.file == null) {
+      uiState.update { it.copy(fileError = SelectFileResult.Error.FileNotSelected) }
+      isValid = false
+    }
+    if (isValid) return uiState.value.file
+    return null
+  }
 }
 
 data class FileSelectorUiState(
-    val file: PickedFile? = null,
-    val fileError: SelectFileResult.Error? = null,
+  val file: PickedFile? = null,
+  val fileError: SelectFileResult.Error? = null,
 )

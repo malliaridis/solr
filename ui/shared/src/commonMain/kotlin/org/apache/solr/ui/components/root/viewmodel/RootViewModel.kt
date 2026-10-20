@@ -40,60 +40,60 @@ import org.apache.solr.ui.domain.AuthOption
  */
 class RootViewModel : ViewModel() {
 
-    /**
-     * The back stack that holds the navigation state.
-     */
-    val backStack: SnapshotStateList<RootScene> = mutableStateListOf(RootScene.Start)
+  /**
+   * The back stack that holds the navigation state.
+   */
+  val backStack: SnapshotStateList<RootScene> = mutableStateListOf(RootScene.Start)
 
-    /**
-     * Event handler for any event emitted by the start screen.
-     *
-     * @param event The event emitted by the start screen.
-     */
-    fun onStartEvent(event: StartEvent) = when (event) {
-        is StartEvent.AuthRequired -> backStack.add(
-            RootScene.Authentication(
-                url = event.url,
-                methods = event.methods,
-            ),
-        )
+  /**
+   * Event handler for any event emitted by the start screen.
+   *
+   * @param event The event emitted by the start screen.
+   */
+  fun onStartEvent(event: StartEvent) = when (event) {
+    is StartEvent.AuthRequired -> backStack.add(
+      RootScene.Authentication(
+        url = event.url,
+        methods = event.methods,
+      ),
+    )
 
-        is StartEvent.Connected ->
-            replaceAll(RootScene.Main(authOption = AuthOption.None(url = event.url)))
-    }
+    is StartEvent.Connected ->
+      replaceAll(RootScene.Main(authOption = AuthOption.None(url = event.url)))
+  }
 
-    /**
-     * Event handler for any event emitted by the authentication screen.
-     *
-     * @param event The event emitted by the authentication screen.
-     */
-    fun onAuthenticationEvent(event: AuthenticationEvent) = when (event) {
-        is AuthenticationEvent.Authenticated ->
-            replaceAll(RootScene.Main(authOption = event.option))
+  /**
+   * Event handler for any event emitted by the authentication screen.
+   *
+   * @param event The event emitted by the authentication screen.
+   */
+  fun onAuthenticationEvent(event: AuthenticationEvent) = when (event) {
+    is AuthenticationEvent.Authenticated ->
+      replaceAll(RootScene.Main(authOption = event.option))
 
-        is AuthenticationEvent.Aborted -> navigateBack()
-    }
+    is AuthenticationEvent.Aborted -> navigateBack()
+  }
 
-    /**
-     * Event handler for any event emitted by the main screen.
-     *
-     * @param event The event emitted by the main screen.
-     */
-    fun onMainEvent(event: MainEvent) = when (event) {
-        is MainEvent.UserLoggedOut -> replaceAll(RootScene.Start)
-    }
+  /**
+   * Event handler for any event emitted by the main screen.
+   *
+   * @param event The event emitted by the main screen.
+   */
+  fun onMainEvent(event: MainEvent) = when (event) {
+    is MainEvent.UserLoggedOut -> replaceAll(RootScene.Start)
+  }
 
-    /**
-     * Navigates back to the previous screen, if there is any.
-     */
-    fun navigateBack() {
-        if (backStack.size > 1) backStack.removeLastOrNull()
-    }
+  /**
+   * Navigates back to the previous screen, if there is any.
+   */
+  fun navigateBack() {
+    if (backStack.size > 1) backStack.removeLastOrNull()
+  }
 
-    private fun replaceAll(scene: RootScene) = Snapshot.withMutableSnapshot {
-        backStack.clear()
-        backStack.add(scene)
-    }
+  private fun replaceAll(scene: RootScene) = Snapshot.withMutableSnapshot {
+    backStack.clear()
+    backStack.add(scene)
+  }
 }
 
 /**
@@ -102,23 +102,23 @@ class RootViewModel : ViewModel() {
 @Serializable
 sealed interface RootScene : NavKey {
 
-    @Serializable
-    data object Start : RootScene
+  @Serializable
+  data object Start : RootScene
 
-    /**
-     * Scene for pending authentication actions.
-     *
-     * @property url The URL where the user is not authenticated.
-     * @property methods List of methods that can be used to authenticate the user again.
-     */
-    @Serializable
-    data class Authentication(val url: Url, val methods: List<AuthMethod>) : RootScene
+  /**
+   * Scene for pending authentication actions.
+   *
+   * @property url The URL where the user is not authenticated.
+   * @property methods List of methods that can be used to authenticate the user again.
+   */
+  @Serializable
+  data class Authentication(val url: Url, val methods: List<AuthMethod>) : RootScene
 
-    /**
-     * Scene for users that have access.
-     *
-     * @property authOption The option that was used to authenticate the user.
-     */
-    @Serializable
-    data class Main(val authOption: AuthOption) : RootScene
+  /**
+   * Scene for users that have access.
+   *
+   * @property authOption The option that was used to authenticate the user.
+   */
+  @Serializable
+  data class Main(val authOption: AuthOption) : RootScene
 }

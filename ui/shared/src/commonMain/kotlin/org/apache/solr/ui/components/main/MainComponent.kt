@@ -31,40 +31,40 @@ import org.apache.solr.ui.components.main.viewmodel.MainViewModel
  */
 interface MainComponent {
 
-    // TODO Add DashboardComponent once available
+  // TODO Add DashboardComponent once available
 
-    // TODO Add MetricsComponent once available
+  // TODO Add MetricsComponent once available
 
-    /**
-     * Component of the cluster section.
-     */
-    val clusterComponent: ClusterComponent
+  /**
+   * Component of the cluster section.
+   */
+  val clusterComponent: ClusterComponent
 
-    // TODO Add SecurityComponent once available
+  // TODO Add SecurityComponent once available
 
-    /**
-     * Component of the configsets section.
-     */
-    val configsetsComponent: ConfigsetsComponent
+  /**
+   * Component of the configsets section.
+   */
+  val configsetsComponent: ConfigsetsComponent
 
-    // TODO Add CollectionsComponent once available
+  // TODO Add CollectionsComponent once available
 
-    // TODO Add QueriesAndOperationsComponent once available
+  // TODO Add QueriesAndOperationsComponent once available
 
-    /**
-     * Component of the environment section.
-     */
-    val environmentComponent: EnvironmentComponent
+  /**
+   * Component of the environment section.
+   */
+  val environmentComponent: EnvironmentComponent
 
-    /**
-     * Component of the logging section.
-     */
-    val loggingComponent: LoggingComponent
+  /**
+   * Component of the logging section.
+   */
+  val loggingComponent: LoggingComponent
 
-    // TODO Add ThreadDumpComponent once available
+  // TODO Add ThreadDumpComponent once available
 
-    /**
-     * Factory method to create a [MainViewModel] instance.
-     */
-    fun createMainViewModel(): MainViewModel
+  /**
+   * Factory method to create a [MainViewModel] instance.
+   */
+  fun createMainViewModel(): MainViewModel
 }

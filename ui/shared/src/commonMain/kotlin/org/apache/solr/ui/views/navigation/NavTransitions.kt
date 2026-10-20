@@ -28,7 +28,7 @@ import androidx.navigation3.scene.Scene
  * Transition spec for navigation displays that switches between destinations without animations.
  */
 internal fun <T : Any> noTransition(): AnimatedContentTransitionScope<Scene<T>>.() -> ContentTransform = {
-    EnterTransition.None togetherWith ExitTransition.None
+  EnterTransition.None togetherWith ExitTransition.None
 }
 
 /**
@@ -36,5 +36,5 @@ internal fun <T : Any> noTransition(): AnimatedContentTransitionScope<Scene<T>>.
  * without animations.
  */
 internal fun <T : Any> noPredictiveTransition(): AnimatedContentTransitionScope<Scene<T>>.(Int) -> ContentTransform = {
-    EnterTransition.None togetherWith ExitTransition.None
+  EnterTransition.None togetherWith ExitTransition.None
 }

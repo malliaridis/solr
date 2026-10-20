@@ -51,44 +51,44 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun OAuthContent(
-    uiState: OAuthUiState,
-    onAuthenticate: () -> Unit,
-    modifier: Modifier = Modifier,
-    isAuthenticating: Boolean = true,
-    showSupportingText: Boolean = true,
+  uiState: OAuthUiState,
+  onAuthenticate: () -> Unit,
+  modifier: Modifier = Modifier,
+  isAuthenticating: Boolean = true,
+  showSupportingText: Boolean = true,
 ) = Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    if (showSupportingText) {
-        Text(
-            text = uiState.realm?.let {
-                stringResource(Res.string.desc_sign_in_with_oauth_to_realm, it)
-            } ?: stringResource(Res.string.desc_sign_in_with_oauth),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
+  if (showSupportingText) {
+    Text(
+      text = uiState.realm?.let {
+        stringResource(Res.string.desc_sign_in_with_oauth_to_realm, it)
+      } ?: stringResource(Res.string.desc_sign_in_with_oauth),
+      style = MaterialTheme.typography.bodyMedium,
+    )
+  }
 
-    Column {
-        SolrButton(
-            modifier = Modifier.fillMaxWidth().testTag(tag = "oauth_sign_in_button"),
-            onClick = onAuthenticate,
-            enabled = !isAuthenticating,
-        ) {
-            Text(
-                text = if (isAuthenticating) {
-                    stringResource(Res.string.authenticating)
-                } else {
-                    uiState.realm?.let {
-                        stringResource(Res.string.action_sign_in_with_realm, it)
-                    } ?: stringResource(Res.string.action_sign_in_with_identity_provider)
-                },
-            )
-        }
-        if (isAuthenticating) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth().testTag(tag = "loading_indicator"),
-            )
-        }
+  Column {
+    SolrButton(
+      modifier = Modifier.fillMaxWidth().testTag(tag = "oauth_sign_in_button"),
+      onClick = onAuthenticate,
+      enabled = !isAuthenticating,
+    ) {
+      Text(
+        text = if (isAuthenticating) {
+          stringResource(Res.string.authenticating)
+        } else {
+          uiState.realm?.let {
+            stringResource(Res.string.action_sign_in_with_realm, it)
+          } ?: stringResource(Res.string.action_sign_in_with_identity_provider)
+        },
+      )
     }
+    if (isAuthenticating) {
+      LinearProgressIndicator(
+        modifier = Modifier.fillMaxWidth().testTag(tag = "loading_indicator"),
+      )
+    }
+  }
 }

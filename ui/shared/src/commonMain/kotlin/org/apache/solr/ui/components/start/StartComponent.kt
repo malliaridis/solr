@@ -26,18 +26,18 @@ import org.apache.solr.ui.components.start.viewmodel.StartViewModel
  */
 interface StartComponent {
 
-    /**
-     * Dependencies provided by the application.
-     */
-    val startRepository: StartRepository
+  /**
+   * Dependencies provided by the application.
+   */
+  val startRepository: StartRepository
 
-    /**
-     * Use case responsible for connecting to a Solr instance.
-     */
-    val connectUseCase: ConnectUseCase
+  /**
+   * Use case responsible for connecting to a Solr instance.
+   */
+  val connectUseCase: ConnectUseCase
 
-    /**
-     * Factory method to create a [StartViewModel] instance.
-     */
-    fun createStartViewModel(): StartViewModel
+  /**
+   * Factory method to create a [StartViewModel] instance.
+   */
+  fun createStartViewModel(): StartViewModel
 }

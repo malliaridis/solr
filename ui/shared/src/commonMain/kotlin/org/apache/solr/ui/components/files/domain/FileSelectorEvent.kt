@@ -20,8 +20,8 @@ package org.apache.solr.ui.components.files.domain
 import org.apache.solr.ui.domain.PickedFile
 
 sealed interface FileSelectorEvent {
-    /**
-     * Event that is emitted whenever a file is selected.
-     */
-    data class FileSelected(val file: PickedFile) : FileSelectorEvent
+  /**
+   * Event that is emitted whenever a file is selected.
+   */
+  data class FileSelected(val file: PickedFile) : FileSelectorEvent
 }

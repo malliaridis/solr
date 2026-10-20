@@ -25,21 +25,21 @@ import org.apache.solr.ui.domain.OAuthData
  * OAuth repository for mocking the OAuth server responses.
  */
 internal class FakeOAuthRepository(
-    private val result: suspend () -> Result<BearerTokens>,
+  private val result: suspend () -> Result<BearerTokens>,
 ) : OAuthRepository {
 
-    var lastState: String? = null
-    var lastVerifier: String? = null
-    var lastData: OAuthData? = null
+  var lastState: String? = null
+  var lastVerifier: String? = null
+  var lastData: OAuthData? = null
 
-    override suspend fun authenticate(
-        state: String,
-        verifier: String,
-        data: OAuthData,
-    ): Result<BearerTokens> {
-        lastState = state
-        lastVerifier = verifier
-        lastData = data
-        return result()
-    }
+  override suspend fun authenticate(
+    state: String,
+    verifier: String,
+    data: OAuthData,
+  ): Result<BearerTokens> {
+    lastState = state
+    lastVerifier = verifier
+    lastData = data
+    return result()
+  }
 }

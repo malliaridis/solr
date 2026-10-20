@@ -38,39 +38,39 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun FileSelector(
-    file: PickedFile?,
-    onSelectFile: () -> Unit,
-    onClearSelection: () -> Unit,
-    label: String,
-    selectFileText: String,
-    modifier: Modifier = Modifier,
+  file: PickedFile?,
+  onSelectFile: () -> Unit,
+  onClearSelection: () -> Unit,
+  label: String,
+  selectFileText: String,
+  modifier: Modifier = Modifier,
 ) {
-    if (file != null) {
-        OutlinedTextField(
-            modifier = modifier,
-            value = file.name,
-            label = { Text(label) },
-            onValueChange = {},
-            readOnly = true,
-            singleLine = true,
-            leadingIcon = { FileTypeIcon(file.extension ?: "") },
-            trailingIcon = {
-                IconButton(
-                    modifier = Modifier.testTag("file_selector_clear_button"),
-                    onClick = onClearSelection,
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.close),
-                        contentDescription = stringResource(Res.string.cd_clear_field),
-                    )
-                }
-            },
-        )
-    } else {
-        SolrTextButton(modifier = modifier, onClick = onSelectFile) {
-            Icon(painter = painterResource(Res.drawable.upload), contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = selectFileText)
+  if (file != null) {
+    OutlinedTextField(
+      modifier = modifier,
+      value = file.name,
+      label = { Text(label) },
+      onValueChange = {},
+      readOnly = true,
+      singleLine = true,
+      leadingIcon = { FileTypeIcon(file.extension ?: "") },
+      trailingIcon = {
+        IconButton(
+          modifier = Modifier.testTag("file_selector_clear_button"),
+          onClick = onClearSelection,
+        ) {
+          Icon(
+            painter = painterResource(Res.drawable.close),
+            contentDescription = stringResource(Res.string.cd_clear_field),
+          )
         }
+      },
+    )
+  } else {
+    SolrTextButton(modifier = modifier, onClick = onSelectFile) {
+      Icon(painter = painterResource(Res.drawable.upload), contentDescription = null)
+      Spacer(modifier = Modifier.width(8.dp))
+      Text(text = selectFileText)
     }
+  }
 }

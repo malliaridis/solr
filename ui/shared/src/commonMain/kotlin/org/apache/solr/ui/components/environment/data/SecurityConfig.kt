@@ -21,5 +21,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SecurityConfig(
-    val tls: Boolean = false,
+  val tls: Boolean = false,
 )

@@ -33,33 +33,33 @@ import org.apache.solr.ui.components.auth.viewmodel.AuthenticationViewModel
  */
 interface AuthenticationComponent {
 
-    /**
-     * Dependencies provided by the application.
-     */
-    val basicAuthRepository: BasicAuthRepository
+  /**
+   * Dependencies provided by the application.
+   */
+  val basicAuthRepository: BasicAuthRepository
 
-    /**
-     * Dependencies provided by the application.
-     */
-    val oAuthRepository: OAuthRepository
+  /**
+   * Dependencies provided by the application.
+   */
+  val oAuthRepository: OAuthRepository
 
-    /**
-     * Use case responsible for authenticating with credentials (basic auth).
-     */
-    val basicAuthenticateUseCase: BasicAuthenticateUseCase
+  /**
+   * Use case responsible for authenticating with credentials (basic auth).
+   */
+  val basicAuthenticateUseCase: BasicAuthenticateUseCase
 
-    /**
-     * Use case responsible for creating OAuth authorization requests.
-     */
-    val createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase
+  /**
+   * Use case responsible for creating OAuth authorization requests.
+   */
+  val createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase
 
-    /**
-     * Use case responsible for authenticating with OAuth.
-     */
-    val oAuthAuthenticateUseCase: OAuthAuthenticateUseCase
+  /**
+   * Use case responsible for authenticating with OAuth.
+   */
+  val oAuthAuthenticateUseCase: OAuthAuthenticateUseCase
 
-    /**
-     * Factory method to create a [AuthenticationViewModel] instance.
-     */
-    fun createAuthenticationViewModel(): AuthenticationViewModel
+  /**
+   * Factory method to create a [AuthenticationViewModel] instance.
+   */
+  fun createAuthenticationViewModel(): AuthenticationViewModel
 }

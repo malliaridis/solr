@@ -42,52 +42,52 @@ import org.jetbrains.compose.resources.StringResource
  * State holder of the start screen that manages the Solr URL and connection attempts.
  */
 class StartStateHolder(
-    private val scope: CoroutineScope,
-    private val connectUseCase: ConnectUseCase,
-    private val dispatchers: AppDispatchers,
+  private val scope: CoroutineScope,
+  private val connectUseCase: ConnectUseCase,
+  private val dispatchers: AppDispatchers,
 ) {
 
-    /**
-     * UI state of the start screen.
-     */
-    val uiState: StateFlow<StartUiState>
-        field = MutableStateFlow(StartUiState())
+  /**
+   * UI state of the start screen.
+   */
+  val uiState: StateFlow<StartUiState>
+    field = MutableStateFlow(StartUiState())
 
-    /**
-     * Events emitted by the state holder.
-     */
-    val events: SharedFlow<StartEvent>
-        field = MutableSharedFlow<StartEvent>(extraBufferCapacity = 1)
+  /**
+   * Events emitted by the state holder.
+   */
+  val events: SharedFlow<StartEvent>
+    field = MutableSharedFlow<StartEvent>(extraBufferCapacity = 1)
 
-    /**
-     * Updates the Solr URL and resets any error.
-     *
-     * @param url The new Solr URL value.
-     */
-    fun changeSolrUrl(url: String) = uiState.update { it.copy(url = url, error = null) }
+  /**
+   * Updates the Solr URL and resets any error.
+   *
+   * @param url The new Solr URL value.
+   */
+  fun changeSolrUrl(url: String) = uiState.update { it.copy(url = url, error = null) }
 
-    /**
-     * Connects to the Solr instance with the current [StartUiState.url].
-     */
-    fun connect() {
-        scope.launch {
-            val result = withContext(dispatchers.io) {
-                connectUseCase(uiState.value.url)
-            }
+  /**
+   * Connects to the Solr instance with the current [StartUiState.url].
+   */
+  fun connect() {
+    scope.launch {
+      val result = withContext(dispatchers.io) {
+        connectUseCase(uiState.value.url)
+      }
 
-            when (result) {
-                is ConnectResult.Connected -> events.emit(StartEvent.Connected(result.url))
+      when (result) {
+        is ConnectResult.Connected -> events.emit(StartEvent.Connected(result.url))
 
-                is ConnectResult.AuthRequired -> events.emit(
-                    StartEvent.AuthRequired(url = result.url, methods = result.methods),
-                )
+        is ConnectResult.AuthRequired -> events.emit(
+          StartEvent.AuthRequired(url = result.url, methods = result.methods),
+        )
 
-                is ConnectResult.Failure -> uiState.update {
-                    it.copy(error = result.error.toErrorResource())
-                }
-            }
+        is ConnectResult.Failure -> uiState.update {
+          it.copy(error = result.error.toErrorResource())
         }
+      }
     }
+  }
 }
 
 /**
@@ -98,14 +98,14 @@ class StartStateHolder(
  * @property error The error that occurred during the last connection attempt, if any.
  */
 data class StartUiState(
-    val url: String = "",
-    val isConnecting: Boolean = false,
-    val error: StringResource? = null,
+  val url: String = "",
+  val isConnecting: Boolean = false,
+  val error: StringResource? = null,
 )
 
 private fun Throwable.toErrorResource(): StringResource = when (this) {
-    is URLParserException -> Res.string.error_invalid_url
-    is HostNotFoundException -> Res.string.error_solr_host_not_found
-    is ConnectTimeoutException -> Res.string.error_solr_host_not_found
-    else -> Res.string.error_unknown
+  is URLParserException -> Res.string.error_invalid_url
+  is HostNotFoundException -> Res.string.error_solr_host_not_found
+  is ConnectTimeoutException -> Res.string.error_solr_host_not_found
+  else -> Res.string.error_unknown
 }

@@ -25,14 +25,14 @@ package org.apache.solr.ui.views.navigation
  * specific class of the business logic.
  */
 enum class MainMenu {
-    Dashboard,
-    Metrics,
-    Cluster,
-    Security,
-    Configsets,
-    Collections,
-    IndexAndQuery,
-    Environment,
-    Logging,
-    ThreadDump,
+  Dashboard,
+  Metrics,
+  Cluster,
+  Security,
+  Configsets,
+  Collections,
+  IndexAndQuery,
+  Environment,
+  Logging,
+  ThreadDump,
 }

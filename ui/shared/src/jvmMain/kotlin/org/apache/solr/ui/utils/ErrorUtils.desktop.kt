@@ -21,6 +21,6 @@ import java.net.ConnectException
 import org.apache.solr.ui.errors.HostNotFoundException
 
 actual fun parseError(error: Throwable): Throwable = when (error) {
-    is ConnectException -> HostNotFoundException(error)
-    else -> error
+  is ConnectException -> HostNotFoundException(error)
+  else -> error
 }

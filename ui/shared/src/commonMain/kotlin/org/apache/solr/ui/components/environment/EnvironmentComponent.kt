@@ -27,23 +27,23 @@ import org.apache.solr.ui.components.environment.viewmodel.EnvironmentViewModel
  */
 interface EnvironmentComponent {
 
-    /**
-     * Dependencies provided by the application.
-     */
-    val environmentRepository: EnvironmentRepository
+  /**
+   * Dependencies provided by the application.
+   */
+  val environmentRepository: EnvironmentRepository
 
-    /**
-     * Use case responsible for loading the system data.
-     */
-    val loadSystemDataUseCase: LoadSystemDataUseCase
+  /**
+   * Use case responsible for loading the system data.
+   */
+  val loadSystemDataUseCase: LoadSystemDataUseCase
 
-    /**
-     * Use case responsible for loading the java properties.
-     */
-    val loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase
+  /**
+   * Use case responsible for loading the java properties.
+   */
+  val loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase
 
-    /**
-     * Factory method to create a [EnvironmentViewModel] instance.
-     */
-    fun createEnvironmentViewModel(): EnvironmentViewModel
+  /**
+   * Factory method to create a [EnvironmentViewModel] instance.
+   */
+  fun createEnvironmentViewModel(): EnvironmentViewModel
 }

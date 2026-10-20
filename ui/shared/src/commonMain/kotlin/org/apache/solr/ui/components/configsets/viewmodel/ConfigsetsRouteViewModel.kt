@@ -29,76 +29,76 @@ import kotlinx.serialization.Serializable
 
 // TODO Make savedStateHandle mandatory
 class ConfigsetsRouteViewModel(
-    savedStateHandle: SavedStateHandle? = null,
+  savedStateHandle: SavedStateHandle? = null,
 ) : ViewModel() {
 
-    private val initialTab = savedStateHandle
-        ?.get<String>("tab")
-        ?.let { ConfigsetsTab.valueOf(it) }
-        ?: ConfigsetsTab.Overview
+  private val initialTab = savedStateHandle
+    ?.get<String>("tab")
+    ?.let { ConfigsetsTab.valueOf(it) }
+    ?: ConfigsetsTab.Overview
 
-    val backStack: SnapshotStateList<ConfigsetsScene> = mutableStateListOf(
-        when (initialTab) {
-            ConfigsetsTab.Overview -> ConfigsetsScene.Overview
-            ConfigsetsTab.Files -> ConfigsetsScene.Files
-            ConfigsetsTab.Schema -> ConfigsetsScene.Schema
-            ConfigsetsTab.UpdateConfig -> ConfigsetsScene.UpdateConfig
-            ConfigsetsTab.IndexQuery -> ConfigsetsScene.IndexQuery
-            ConfigsetsTab.Handlers -> ConfigsetsScene.Handlers
-            ConfigsetsTab.SearchComponents -> ConfigsetsScene.SearchComponents
-        },
-    )
+  val backStack: SnapshotStateList<ConfigsetsScene> = mutableStateListOf(
+    when (initialTab) {
+      ConfigsetsTab.Overview -> ConfigsetsScene.Overview
+      ConfigsetsTab.Files -> ConfigsetsScene.Files
+      ConfigsetsTab.Schema -> ConfigsetsScene.Schema
+      ConfigsetsTab.UpdateConfig -> ConfigsetsScene.UpdateConfig
+      ConfigsetsTab.IndexQuery -> ConfigsetsScene.IndexQuery
+      ConfigsetsTab.Handlers -> ConfigsetsScene.Handlers
+      ConfigsetsTab.SearchComponents -> ConfigsetsScene.SearchComponents
+    },
+  )
 
-    /**
-     * The dialog that is currently open, if any.
-     */
-    val uiState: StateFlow<ConfigsetsSceneUiState>
-        field = MutableStateFlow(ConfigsetsSceneUiState(selectedTab = initialTab))
+  /**
+   * The dialog that is currently open, if any.
+   */
+  val uiState: StateFlow<ConfigsetsSceneUiState>
+    field = MutableStateFlow(ConfigsetsSceneUiState(selectedTab = initialTab))
 
-    /**
-     * Switches to the configset [tab] that was provided.
-     *
-     * @param tab The tab to select.
-     */
-    fun selectTab(tab: ConfigsetsTab) = uiState.update { it.copy(selectedTab = tab) }
+  /**
+   * Switches to the configset [tab] that was provided.
+   *
+   * @param tab The tab to select.
+   */
+  fun selectTab(tab: ConfigsetsTab) = uiState.update { it.copy(selectedTab = tab) }
 }
 
 data class ConfigsetsSceneUiState(
-    val selectedTab: ConfigsetsTab = ConfigsetsTab.Overview,
+  val selectedTab: ConfigsetsTab = ConfigsetsTab.Overview,
 )
 
 @Serializable
 sealed interface ConfigsetsScene : NavKey {
 
-    @Serializable
-    data object Overview : ConfigsetsScene
+  @Serializable
+  data object Overview : ConfigsetsScene
 
-    @Serializable
-    data object Files : ConfigsetsScene
+  @Serializable
+  data object Files : ConfigsetsScene
 
-    @Serializable
-    data object Schema : ConfigsetsScene
+  @Serializable
+  data object Schema : ConfigsetsScene
 
-    @Serializable
-    data object UpdateConfig : ConfigsetsScene
+  @Serializable
+  data object UpdateConfig : ConfigsetsScene
 
-    @Serializable
-    data object IndexQuery : ConfigsetsScene
+  @Serializable
+  data object IndexQuery : ConfigsetsScene
 
-    @Serializable
-    data object Handlers : ConfigsetsScene
+  @Serializable
+  data object Handlers : ConfigsetsScene
 
-    @Serializable
-    data object SearchComponents : ConfigsetsScene
+  @Serializable
+  data object SearchComponents : ConfigsetsScene
 }
 
 @Serializable
 enum class ConfigsetsTab {
-    Overview,
-    Files,
-    Schema,
-    UpdateConfig,
-    IndexQuery,
-    Handlers,
-    SearchComponents,
+  Overview,
+  Files,
+  Schema,
+  UpdateConfig,
+  IndexQuery,
+  Handlers,
+  SearchComponents,
 }

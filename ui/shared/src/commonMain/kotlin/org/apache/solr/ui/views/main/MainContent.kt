@@ -55,68 +55,68 @@ import org.apache.solr.ui.views.navigation.noTransition
  */
 @Composable
 fun MainContent(
-    component: MainComponent,
-    onEvent: (MainEvent) -> Unit,
-    modifier: Modifier = Modifier,
+  component: MainComponent,
+  onEvent: (MainEvent) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel { component.createMainViewModel() }
-    val currentOnEvent by rememberUpdatedState(onEvent)
-    val scrollState = rememberScrollState()
+  val viewModel = viewModel { component.createMainViewModel() }
+  val currentOnEvent by rememberUpdatedState(onEvent)
+  val scrollState = rememberScrollState()
 
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { currentOnEvent(it) }
-    }
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { currentOnEvent(it) }
+  }
 
-    Row(modifier = modifier) {
-        NavigationSideBar(
-            modifier = Modifier.fillMaxHeight()
-                .width(224.dp),
-            selectedItem = viewModel.backStack.last().menuItem,
-            onNavigate = viewModel::navigate,
-            onLogout = viewModel::logout,
-        )
+  Row(modifier = modifier) {
+    NavigationSideBar(
+      modifier = Modifier.fillMaxHeight()
+        .width(224.dp),
+      selectedItem = viewModel.backStack.last().menuItem,
+      onNavigate = viewModel::navigate,
+      onLogout = viewModel::logout,
+    )
 
-        NavDisplay(
-            backStack = viewModel.backStack,
-            modifier = Modifier.weight(1f),
-            onBack = viewModel::navigateBack,
-            entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
-            transitionSpec = noTransition(),
-            popTransitionSpec = noTransition(),
-            predictivePopTransitionSpec = noPredictiveTransition(),
-            entryProvider = entryProvider {
-                entry<MainScene.Cluster> {
-                    ClusterContent(
-                        component = component.clusterComponent,
-                        modifier = Modifier.fillMaxWidth()
-                            .verticalScroll(scrollState),
-                    )
-                }
+    NavDisplay(
+      backStack = viewModel.backStack,
+      modifier = Modifier.weight(1f),
+      onBack = viewModel::navigateBack,
+      entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
+      transitionSpec = noTransition(),
+      popTransitionSpec = noTransition(),
+      predictivePopTransitionSpec = noPredictiveTransition(),
+      entryProvider = entryProvider {
+        entry<MainScene.Cluster> {
+          ClusterContent(
+            component = component.clusterComponent,
+            modifier = Modifier.fillMaxWidth()
+              .verticalScroll(scrollState),
+          )
+        }
 
-                entry<MainScene.Configsets> {
-                    ConfigsetsScene(
-                        component = component.configsetsComponent,
-                        modifier = Modifier.fillMaxWidth()
-                            .verticalScroll(scrollState),
-                    )
-                }
+        entry<MainScene.Configsets> {
+          ConfigsetsScene(
+            component = component.configsetsComponent,
+            modifier = Modifier.fillMaxWidth()
+              .verticalScroll(scrollState),
+          )
+        }
 
-                entry<MainScene.Environment> {
-                    EnvironmentContent(
-                        component = component.environmentComponent,
-                        modifier = Modifier.fillMaxWidth()
-                            .verticalScroll(scrollState)
-                            .padding(16.dp),
-                    )
-                }
+        entry<MainScene.Environment> {
+          EnvironmentContent(
+            component = component.environmentComponent,
+            modifier = Modifier.fillMaxWidth()
+              .verticalScroll(scrollState)
+              .padding(16.dp),
+          )
+        }
 
-                entry<MainScene.Logging> {
-                    LoggingContent(
-                        component = component.loggingComponent,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            },
-        )
-    }
+        entry<MainScene.Logging> {
+          LoggingContent(
+            component = component.loggingComponent,
+            modifier = Modifier.fillMaxWidth(),
+          )
+        }
+      },
+    )
+  }
 }

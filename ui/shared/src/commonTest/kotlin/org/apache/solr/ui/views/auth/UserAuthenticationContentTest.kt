@@ -30,15 +30,14 @@ import org.apache.solr.ui.shared.generated.resources.error_invalid_credentials
 @OptIn(ExperimentalTestApi::class)
 class UserAuthenticationContentTest {
 
-    @Test
-    @Ignore // TODO Currently fails on wasmJs
-    fun `GIVEN error THEN error displayed`() = runComposeUiTest {
-        val error = Res.string.error_invalid_credentials
-        setContent {
-            UserAuthenticationContent(uiState = AuthenticationUiState(error = error), onAbort = {})
-        }
-
-        onNodeWithTag("error_text").assertIsDisplayed()
+  @Test
+  @Ignore // TODO Currently fails on wasmJs
+  fun `GIVEN error THEN error displayed`() = runComposeUiTest {
+    val error = Res.string.error_invalid_credentials
+    setContent {
+      UserAuthenticationContent(uiState = AuthenticationUiState(error = error), onAbort = {})
     }
 
+    onNodeWithTag("error_text").assertIsDisplayed()
+  }
 }

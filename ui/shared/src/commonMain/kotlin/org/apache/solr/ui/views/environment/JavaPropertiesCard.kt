@@ -43,28 +43,28 @@ import org.apache.solr.ui.views.theme.SolrTheme
  */
 @Composable
 internal fun JavaPropertiesCard(
-    properties: List<JavaProperty>,
-    modifier: Modifier = Modifier,
+  properties: List<JavaProperty>,
+  modifier: Modifier = Modifier,
 ) = SolrCard(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    Text(
-        text = "Java Properties",
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Column(
-        modifier = Modifier.fillMaxWidth()
-            .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)),
-    ) {
-        properties.forEachIndexed { index, property ->
-            JavaPropertyEntry(
-                property = property,
-                isOdd = index % 2 == 0,
-            )
-        }
+  Text(
+    text = "Java Properties",
+    style = MaterialTheme.typography.headlineSmall,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+  Column(
+    modifier = Modifier.fillMaxWidth()
+      .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)),
+  ) {
+    properties.forEachIndexed { index, property ->
+      JavaPropertyEntry(
+        property = property,
+        isOdd = index % 2 == 0,
+      )
     }
+  }
 }
 
 /**
@@ -77,26 +77,26 @@ internal fun JavaPropertiesCard(
  */
 @Composable
 private fun JavaPropertyEntry(
-    property: JavaProperty,
-    modifier: Modifier = Modifier,
-    isOdd: Boolean = false,
+  property: JavaProperty,
+  modifier: Modifier = Modifier,
+  isOdd: Boolean = false,
 ) = Row(
-    modifier = modifier.background(
-        MaterialTheme.colorScheme.surfaceColorAtElevation(
-            if (isOdd) 1.dp else 0.dp,
-        ),
-    ).padding(horizontal = 8.dp, vertical = 4.dp),
+  modifier = modifier.background(
+    MaterialTheme.colorScheme.surfaceColorAtElevation(
+      if (isOdd) 1.dp else 0.dp,
+    ),
+  ).padding(horizontal = 8.dp, vertical = 4.dp),
 ) {
-    Text(
-        modifier = Modifier.weight(1f),
-        text = property.first,
-        style = SolrTheme.typography.codeLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        modifier = Modifier.weight(1f),
-        text = property.second,
-        style = SolrTheme.typography.codeLarge,
-        color = MaterialTheme.colorScheme.onSurface,
-    )
+  Text(
+    modifier = Modifier.weight(1f),
+    text = property.first,
+    style = SolrTheme.typography.codeLarge,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+  Text(
+    modifier = Modifier.weight(1f),
+    text = property.second,
+    style = SolrTheme.typography.codeLarge,
+    color = MaterialTheme.colorScheme.onSurface,
+  )
 }

@@ -40,32 +40,32 @@ import androidx.compose.ui.unit.sp
  */
 @Composable
 fun SolrTypography(): Typography = Typography(
-    headlineLarge = MaterialTheme.typography.headlineLarge.copy(
-        fontWeight = FontWeight.Light,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = 0.sp,
-    ),
-    headlineMedium = MaterialTheme.typography.headlineMedium.copy(
-        fontWeight = FontWeight.Light,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = 0.sp,
-    ),
-    headlineSmall = MaterialTheme.typography.headlineSmall.copy(
-        fontWeight = FontWeight.Light,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        letterSpacing = 0.sp,
-    ),
+  headlineLarge = MaterialTheme.typography.headlineLarge.copy(
+    fontWeight = FontWeight.Light,
+    fontSize = 32.sp,
+    lineHeight = 40.sp,
+    letterSpacing = 0.sp,
+  ),
+  headlineMedium = MaterialTheme.typography.headlineMedium.copy(
+    fontWeight = FontWeight.Light,
+    fontSize = 28.sp,
+    lineHeight = 36.sp,
+    letterSpacing = 0.sp,
+  ),
+  headlineSmall = MaterialTheme.typography.headlineSmall.copy(
+    fontWeight = FontWeight.Light,
+    fontSize = 24.sp,
+    lineHeight = 32.sp,
+    letterSpacing = 0.sp,
+  ),
 )
 
 // Customize the extended typography
 @Composable
 fun extendedTypography() = ExtendedTypography(
-    codeSmall = SolrTheme.typography.codeSmall,
-    codeMedium = SolrTheme.typography.codeMedium,
-    codeLarge = SolrTheme.typography.codeLarge,
+  codeSmall = SolrTheme.typography.codeSmall,
+  codeMedium = SolrTheme.typography.codeMedium,
+  codeLarge = SolrTheme.typography.codeLarge,
 )
 
 /**
@@ -73,54 +73,54 @@ fun extendedTypography() = ExtendedTypography(
  */
 @Immutable
 data class ExtendedTypography(
-    val codeSmall: TextStyle = TextStyle.Default.copy(
-        fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.0.sp,
-        letterSpacing = 0.5.sp,
-    ),
-    val codeMedium: TextStyle = TextStyle.Default.copy(
-        fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
-        lineHeight = 16.0.sp,
-        letterSpacing = 0.5.sp,
-    ),
-    val codeLarge: TextStyle = TextStyle.Default.copy(
-        fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.0.sp,
-        letterSpacing = 0.1.sp,
-    ),
+  val codeSmall: TextStyle = TextStyle.Default.copy(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.Medium,
+    fontSize = 11.sp,
+    lineHeight = 16.0.sp,
+    letterSpacing = 0.5.sp,
+  ),
+  val codeMedium: TextStyle = TextStyle.Default.copy(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.Medium,
+    fontSize = 12.sp,
+    lineHeight = 16.0.sp,
+    letterSpacing = 0.5.sp,
+  ),
+  val codeLarge: TextStyle = TextStyle.Default.copy(
+    fontFamily = FontFamily.Monospace,
+    fontWeight = FontWeight.Medium,
+    fontSize = 14.sp,
+    lineHeight = 20.0.sp,
+    letterSpacing = 0.1.sp,
+  ),
 )
 
 /**
  * Providable composition local for retrieving the current [ExtendedTypography] values.
  */
 internal val LocalExtendedTypography = staticCompositionLocalOf {
-    ExtendedTypography(
-        codeSmall = TextStyle.Default.copy(
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Medium,
-            fontSize = 11.sp,
-            lineHeight = 16.0.sp,
-            letterSpacing = 0.5.sp,
-        ),
-        codeMedium = TextStyle.Default.copy(
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Medium,
-            fontSize = 12.sp,
-            lineHeight = 16.0.sp,
-            letterSpacing = 0.5.sp,
-        ),
-        codeLarge = TextStyle.Default.copy(
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Medium,
-            fontSize = 14.sp,
-            lineHeight = 20.0.sp,
-            letterSpacing = 0.1.sp,
-        ),
-    )
+  ExtendedTypography(
+    codeSmall = TextStyle.Default.copy(
+      fontFamily = FontFamily.Monospace,
+      fontWeight = FontWeight.Medium,
+      fontSize = 11.sp,
+      lineHeight = 16.0.sp,
+      letterSpacing = 0.5.sp,
+    ),
+    codeMedium = TextStyle.Default.copy(
+      fontFamily = FontFamily.Monospace,
+      fontWeight = FontWeight.Medium,
+      fontSize = 12.sp,
+      lineHeight = 16.0.sp,
+      letterSpacing = 0.5.sp,
+    ),
+    codeLarge = TextStyle.Default.copy(
+      fontFamily = FontFamily.Monospace,
+      fontWeight = FontWeight.Medium,
+      fontSize = 14.sp,
+      lineHeight = 20.0.sp,
+      letterSpacing = 0.1.sp,
+    ),
+  )
 }

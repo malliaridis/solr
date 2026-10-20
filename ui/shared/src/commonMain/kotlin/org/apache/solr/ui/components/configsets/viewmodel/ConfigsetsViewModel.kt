@@ -23,35 +23,35 @@ import org.apache.solr.ui.components.configsets.domain.LoadConfigsetsUseCase
 import org.apache.solr.ui.utils.AppDispatchers
 
 class ConfigsetsViewModel(
-    loadConfigsetsUseCase: LoadConfigsetsUseCase,
-    dispatchers: AppDispatchers,
+  loadConfigsetsUseCase: LoadConfigsetsUseCase,
+  dispatchers: AppDispatchers,
 ) : ViewModel() {
 
-    private val configsetsState = ConfigsetsStateHolder(
-        scope = viewModelScope,
-        loadConfigsetsUseCase = loadConfigsetsUseCase,
-        dispatchers = dispatchers,
-    )
+  private val configsetsState = ConfigsetsStateHolder(
+    scope = viewModelScope,
+    loadConfigsetsUseCase = loadConfigsetsUseCase,
+    dispatchers = dispatchers,
+  )
 
-    /**
-     * UI State of the configsets.
-     */
-    val uiState = configsetsState.uiState
+  /**
+   * UI State of the configsets.
+   */
+  val uiState = configsetsState.uiState
 
-    /**
-     * Selects the given [configset].
-     *
-     * @param configset The configset to select.
-     */
-    fun selectConfigset(configset: String) = configsetsState.selectConfigset(configset)
+  /**
+   * Selects the given [configset].
+   *
+   * @param configset The configset to select.
+   */
+  fun selectConfigset(configset: String) = configsetsState.selectConfigset(configset)
 
-    /**
-     * Clears the currently selected configset, if any.
-     */
-    fun clearSelectedConfigset() = configsetsState.clearSelectedConfigset()
+  /**
+   * Clears the currently selected configset, if any.
+   */
+  fun clearSelectedConfigset() = configsetsState.clearSelectedConfigset()
 
-    /**
-     * Reloads the configsets.
-     */
-    fun reloadConfigsets() = configsetsState.reloadConfigsets()
+  /**
+   * Reloads the configsets.
+   */
+  fun reloadConfigsets() = configsetsState.reloadConfigsets()
 }

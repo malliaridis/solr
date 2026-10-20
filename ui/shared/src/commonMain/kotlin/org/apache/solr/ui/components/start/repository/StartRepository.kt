@@ -24,11 +24,11 @@ import io.ktor.http.Url
  */
 interface StartRepository {
 
-    /**
-     * Tries to connect to a Solr instance with the given URL.
-     *
-     * @param url The Solr URL to connect to.
-     * @return Result of whether the connection was established.
-     */
-    suspend fun connect(url: Url): Result<Unit>
+  /**
+   * Tries to connect to a Solr instance with the given URL.
+   *
+   * @param url The Solr URL to connect to.
+   * @return Result of whether the connection was established.
+   */
+  suspend fun connect(url: Url): Result<Unit>
 }

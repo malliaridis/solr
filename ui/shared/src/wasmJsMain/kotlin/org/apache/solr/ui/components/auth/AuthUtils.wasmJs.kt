@@ -22,9 +22,9 @@ import io.ktor.http.appendPathSegments
 import kotlinx.browser.window
 
 internal actual fun getRedirectUri(): String {
-    // For wasmJs we return the current origin with the full path
-    // TODO window.location.href may not be reliable, update if necessary
-    return URLBuilder(window.location.href).apply {
-        appendPathSegments("callback")
-    }.buildString()
+  // For wasmJs we return the current origin with the full path
+  // TODO window.location.href may not be reliable, update if necessary
+  return URLBuilder(window.location.href).apply {
+    appendPathSegments("callback")
+  }.buildString()
 }

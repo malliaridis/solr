@@ -40,31 +40,31 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun <T : Enum<T>> NavigationTabs(
-    tabs: EnumEntries<T>,
-    selectedTab: T,
-    onSelectTab: (T) -> Unit,
-    mapper: (T) -> StringResource,
-    modifier: Modifier = Modifier,
+  tabs: EnumEntries<T>,
+  selectedTab: T,
+  onSelectTab: (T) -> Unit,
+  mapper: (T) -> StringResource,
+  modifier: Modifier = Modifier,
 ) {
-    PrimaryScrollableTabRow(
-        modifier = modifier,
-        selectedTabIndex = selectedTab.ordinal,
-        edgePadding = 16.dp,
-    ) {
-        tabs.forEach { tab ->
-            val selected = selectedTab == tab
+  PrimaryScrollableTabRow(
+    modifier = modifier,
+    selectedTabIndex = selectedTab.ordinal,
+    edgePadding = 16.dp,
+  ) {
+    tabs.forEach { tab ->
+      val selected = selectedTab == tab
 
-            Tab(
-                selected = selected,
-                onClick = { onSelectTab(tab) },
-                text = {
-                    Text(
-                        text = stringResource(mapper(tab)),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-            )
-        }
+      Tab(
+        selected = selected,
+        onClick = { onSelectTab(tab) },
+        text = {
+          Text(
+            text = stringResource(mapper(tab)),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+        },
+      )
     }
+  }
 }

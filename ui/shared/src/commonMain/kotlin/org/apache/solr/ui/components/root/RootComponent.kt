@@ -34,28 +34,28 @@ import org.apache.solr.ui.domain.AuthOption
  */
 interface RootComponent {
 
-    /**
-     * Factory method to create a [RootViewModel] instance.
-     */
-    fun createRootViewModel(): RootViewModel
+  /**
+   * Factory method to create a [RootViewModel] instance.
+   */
+  fun createRootViewModel(): RootViewModel
 
-    /**
-     * Factory method to create the component of the start screen.
-     */
-    fun createStartComponent(): StartComponent
+  /**
+   * Factory method to create the component of the start screen.
+   */
+  fun createStartComponent(): StartComponent
 
-    /**
-     * Factory method to create the component of the authentication screen.
-     *
-     * @param url The URL of the Solr instance the user is authenticating against.
-     * @param methods The authentication methods that can be used to authenticate the user.
-     */
-    fun createAuthenticationComponent(url: Url, methods: List<AuthMethod>): AuthenticationComponent
+  /**
+   * Factory method to create the component of the authentication screen.
+   *
+   * @param url The URL of the Solr instance the user is authenticating against.
+   * @param methods The authentication methods that can be used to authenticate the user.
+   */
+  fun createAuthenticationComponent(url: Url, methods: List<AuthMethod>): AuthenticationComponent
 
-    /**
-     * Factory method to create the component of the main screen.
-     *
-     * @param authOption The option that was used to authenticate the user.
-     */
-    fun createMainComponent(authOption: AuthOption): MainComponent
+  /**
+   * Factory method to create the component of the main screen.
+   *
+   * @param authOption The option that was used to authenticate the user.
+   */
+  fun createMainComponent(authOption: AuthOption): MainComponent
 }

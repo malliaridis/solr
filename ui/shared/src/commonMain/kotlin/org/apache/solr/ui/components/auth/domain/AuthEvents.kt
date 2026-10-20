@@ -26,17 +26,17 @@ import org.apache.solr.ui.domain.AuthOption
  */
 sealed interface AuthenticationEvent {
 
-    /**
-     * Emitted when the user successfully authenticated against the Solr instance.
-     *
-     * @property option The final authentication option that succeeded.
-     */
-    data class Authenticated(val option: AuthOption) : AuthenticationEvent
+  /**
+   * Emitted when the user successfully authenticated against the Solr instance.
+   *
+   * @property option The final authentication option that succeeded.
+   */
+  data class Authenticated(val option: AuthOption) : AuthenticationEvent
 
-    /**
-     * Emitted when the user aborts the authentication flow.
-     */
-    data object Aborted : AuthenticationEvent
+  /**
+   * Emitted when the user aborts the authentication flow.
+   */
+  data object Aborted : AuthenticationEvent
 }
 
 /**
@@ -44,35 +44,35 @@ sealed interface AuthenticationEvent {
  */
 sealed interface BasicAuthEvent {
 
-    /**
-     * Emitted when a connection process is started.
-     */
-    data object AuthenticationStarted : BasicAuthEvent
+  /**
+   * Emitted when a connection process is started.
+   */
+  data object AuthenticationStarted : BasicAuthEvent
 
-    /**
-     * Emitted when the user successfully connected to the server with the credentials.
-     *
-     * @property method The method that was used for authentication.
-     * @property username The username that was used for authentication.
-     * @property password The password that was used for authentication.
-     */
-    data class Authenticated(
-        val method: AuthMethod.BasicAuthMethod,
-        val username: String,
-        val password: String,
-    ) : BasicAuthEvent
+  /**
+   * Emitted when the user successfully connected to the server with the credentials.
+   *
+   * @property method The method that was used for authentication.
+   * @property username The username that was used for authentication.
+   * @property password The password that was used for authentication.
+   */
+  data class Authenticated(
+    val method: AuthMethod.BasicAuthMethod,
+    val username: String,
+    val password: String,
+  ) : BasicAuthEvent
 
-    /**
-     * Emitted when an authentication error occurs, for example, in case of invalid credentials.
-     *
-     * @property error The error that occurred during the connection establishment.
-     */
-    data class AuthenticationFailed(val error: Throwable) : BasicAuthEvent
+  /**
+   * Emitted when an authentication error occurs, for example, in case of invalid credentials.
+   *
+   * @property error The error that occurred during the connection establishment.
+   */
+  data class AuthenticationFailed(val error: Throwable) : BasicAuthEvent
 
-    /**
-     * Emitted when an error reported via [AuthenticationFailed] is reset.
-     */
-    data object ErrorReset : BasicAuthEvent
+  /**
+   * Emitted when an error reported via [AuthenticationFailed] is reset.
+   */
+  data object ErrorReset : BasicAuthEvent
 }
 
 /**
@@ -80,31 +80,31 @@ sealed interface BasicAuthEvent {
  */
 sealed interface OAuthEvent {
 
-    /**
-     * Emitted when a connection process is started.
-     *
-     * @property url The URL of the identity provider to open for authentication.
-     */
-    data class AuthenticationStarted(val url: Url) : OAuthEvent
+  /**
+   * Emitted when a connection process is started.
+   *
+   * @property url The URL of the identity provider to open for authentication.
+   */
+  data class AuthenticationStarted(val url: Url) : OAuthEvent
 
-    /**
-     * Emitted when the user successfully connected to the server with the OAuth method.
-     *
-     * @property method The method that was used for authentication.
-     * @property accessToken The access token that was issued.
-     * @property refreshToken The refresh token that was issued, if any.
-     */
-    data class Authenticated(
-        val method: AuthMethod.OAuthMethod,
-        val accessToken: String,
-        val refreshToken: String? = null,
-    ) : OAuthEvent
+  /**
+   * Emitted when the user successfully connected to the server with the OAuth method.
+   *
+   * @property method The method that was used for authentication.
+   * @property accessToken The access token that was issued.
+   * @property refreshToken The refresh token that was issued, if any.
+   */
+  data class Authenticated(
+    val method: AuthMethod.OAuthMethod,
+    val accessToken: String,
+    val refreshToken: String? = null,
+  ) : OAuthEvent
 
-    /**
-     * Emitted when an authentication error occurs, for example, in case of timeout or invalid
-     * configuration.
-     *
-     * @property error The error that occurred during the connection establishment.
-     */
-    data class AuthenticationFailed(val error: Throwable) : OAuthEvent
+  /**
+   * Emitted when an authentication error occurs, for example, in case of timeout or invalid
+   * configuration.
+   *
+   * @property error The error that occurred during the connection establishment.
+   */
+  data class AuthenticationFailed(val error: Throwable) : OAuthEvent
 }

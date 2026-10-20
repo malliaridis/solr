@@ -35,20 +35,20 @@ import org.apache.solr.ui.utils.platformDispatchers
  * @param httpClient The pre-configured HTTP client to use for connection attempts.
  */
 class DefaultStartComponent(
-    httpClient: HttpClient,
-    private val dispatchers: AppDispatchers = platformDispatchers(),
+  httpClient: HttpClient,
+  private val dispatchers: AppDispatchers = platformDispatchers(),
 ) : StartComponent {
 
-    override val startRepository: StartRepository by lazy {
-        HttpStartRepository(httpClient)
-    }
+  override val startRepository: StartRepository by lazy {
+    HttpStartRepository(httpClient)
+  }
 
-    override val connectUseCase: ConnectUseCase by lazy {
-        DefaultConnectUseCase(startRepository)
-    }
+  override val connectUseCase: ConnectUseCase by lazy {
+    DefaultConnectUseCase(startRepository)
+  }
 
-    override fun createStartViewModel(): StartViewModel = StartViewModel(
-        connectUseCase = connectUseCase,
-        dispatchers = dispatchers,
-    )
+  override fun createStartViewModel(): StartViewModel = StartViewModel(
+    connectUseCase = connectUseCase,
+    dispatchers = dispatchers,
+  )
 }

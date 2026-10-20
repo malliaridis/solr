@@ -29,9 +29,9 @@ import org.apache.solr.ui.domain.OAuthData
  * already set.
  */
 expect class PlatformOAuthRepository(httpClient: HttpClient) : OAuthRepository {
-    override suspend fun authenticate(
-        state: String,
-        verifier: String,
-        data: OAuthData,
-    ): Result<BearerTokens>
+  override suspend fun authenticate(
+    state: String,
+    verifier: String,
+    data: OAuthData,
+  ): Result<BearerTokens>
 }

@@ -25,20 +25,20 @@ import org.apache.solr.ui.domain.AuthMethod
  */
 sealed interface StartEvent {
 
-    /**
-     * Emitted when a connection to a Solr instance has been
-     * established and no authentication is required.
-     *
-     * @property url The URL the connection was established.
-     */
-    data class Connected(val url: Url) : StartEvent
+  /**
+   * Emitted when a connection to a Solr instance has been
+   * established and no authentication is required.
+   *
+   * @property url The URL the connection was established.
+   */
+  data class Connected(val url: Url) : StartEvent
 
-    /**
-     * Emitted when a connection to a Solr instance has been established and authentication
-     * is needed.
-     *
-     * @property url The URL the connection was established but requires authentication.
-     * @property methods List of authentication methods that can be used for authenticating.
-     */
-    data class AuthRequired(val url: Url, val methods: List<AuthMethod>) : StartEvent
+  /**
+   * Emitted when a connection to a Solr instance has been established and authentication
+   * is needed.
+   *
+   * @property url The URL the connection was established but requires authentication.
+   * @property methods List of authentication methods that can be used for authenticating.
+   */
+  data class AuthRequired(val url: Url, val methods: List<AuthMethod>) : StartEvent
 }

@@ -29,49 +29,49 @@ import org.apache.solr.ui.domain.Configset
 @OptIn(ExperimentalTestApi::class)
 class ConfigsetsDropdownTest {
 
-    @Test
-    fun `GIVEN empty availableConfigsets WHEN dropdown clicked THEN not expanded`() = runComposeUiTest {
-        setContent {
-            ConfigsetsDropdown(
-                selectConfigset = {},
-                configsets = emptyList(),
-                selectedConfigset = "",
-            )
-        }
-
-        // Field click shouldn’t open the menu (anchor is disabled in our impl)
-        onNodeWithTag(testTag = "configsets_dropdown").performClick()
-        onNodeWithTag(testTag = "configsets_exposed_dropdown_menu").assertDoesNotExist()
+  @Test
+  fun `GIVEN empty availableConfigsets WHEN dropdown clicked THEN not expanded`() = runComposeUiTest {
+    setContent {
+      ConfigsetsDropdown(
+        selectConfigset = {},
+        configsets = emptyList(),
+        selectedConfigset = "",
+      )
     }
 
-    @Test
-    fun `GIVEN empty availableConfigsets THEN dropdown disabled`() = runComposeUiTest {
-        setContent {
-            ConfigsetsDropdown(
-                selectConfigset = {},
-                configsets = emptyList(),
-                selectedConfigset = "",
-            )
-        }
+    // Field click shouldn’t open the menu (anchor is disabled in our impl)
+    onNodeWithTag(testTag = "configsets_dropdown").performClick()
+    onNodeWithTag(testTag = "configsets_exposed_dropdown_menu").assertDoesNotExist()
+  }
 
-        // Field click shouldn’t open the menu (anchor is disabled in our impl)
-        onNodeWithTag(testTag = "configsets_dropdown").assertIsNotEnabled()
+  @Test
+  fun `GIVEN empty availableConfigsets THEN dropdown disabled`() = runComposeUiTest {
+    setContent {
+      ConfigsetsDropdown(
+        selectConfigset = {},
+        configsets = emptyList(),
+        selectedConfigset = "",
+      )
     }
 
-    @Test
-    fun `GIVEN configsets WHEN clicking dropdown THEN dropdown expands`() = runComposeUiTest {
-        val selectedConfigset = "gettingstarted"
+    // Field click shouldn’t open the menu (anchor is disabled in our impl)
+    onNodeWithTag(testTag = "configsets_dropdown").assertIsNotEnabled()
+  }
 
-        setContent {
-            ConfigsetsDropdown(
-                selectConfigset = {},
-                configsets = listOf(selectedConfigset, "techproducts")
-                    .map { Configset(it) },
-                selectedConfigset = selectedConfigset,
-            )
-        }
+  @Test
+  fun `GIVEN configsets WHEN clicking dropdown THEN dropdown expands`() = runComposeUiTest {
+    val selectedConfigset = "gettingstarted"
 
-        onNodeWithTag(testTag = "configsets_dropdown").performClick()
-        onNodeWithTag(testTag = "configsets_exposed_dropdown_menu").isDisplayed()
+    setContent {
+      ConfigsetsDropdown(
+        selectConfigset = {},
+        configsets = listOf(selectedConfigset, "techproducts")
+          .map { Configset(it) },
+        selectedConfigset = selectedConfigset,
+      )
     }
+
+    onNodeWithTag(testTag = "configsets_dropdown").performClick()
+    onNodeWithTag(testTag = "configsets_exposed_dropdown_menu").isDisplayed()
+  }
 }

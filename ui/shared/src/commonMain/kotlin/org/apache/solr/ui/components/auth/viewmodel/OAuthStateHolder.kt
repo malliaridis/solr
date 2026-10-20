@@ -38,54 +38,54 @@ import org.apache.solr.ui.utils.AppDispatchers
  * @property method The OAuth method the user is authenticating with.
  */
 class OAuthStateHolder(
-    private val scope: CoroutineScope,
-    private val method: AuthMethod.OAuthMethod,
-    private val createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase,
-    private val oAuthAuthenticateUseCase: OAuthAuthenticateUseCase,
-    private val dispatchers: AppDispatchers,
+  private val scope: CoroutineScope,
+  private val method: AuthMethod.OAuthMethod,
+  private val createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase,
+  private val oAuthAuthenticateUseCase: OAuthAuthenticateUseCase,
+  private val dispatchers: AppDispatchers,
 ) {
 
-    private var authJob: Job? = null
+  private var authJob: Job? = null
 
-    /**
-     * UI state of the OAuth authentication.
-     */
-    val uiState: StateFlow<OAuthUiState>
-        field = MutableStateFlow(OAuthUiState(realm = method.realm))
+  /**
+   * UI state of the OAuth authentication.
+   */
+  val uiState: StateFlow<OAuthUiState>
+    field = MutableStateFlow(OAuthUiState(realm = method.realm))
 
-    /**
-     * Events emitted by the state holder.
-     */
-    val events: SharedFlow<OAuthEvent>
-        field = MutableSharedFlow<OAuthEvent>(extraBufferCapacity = 1)
+  /**
+   * Events emitted by the state holder.
+   */
+  val events: SharedFlow<OAuthEvent>
+    field = MutableSharedFlow<OAuthEvent>(extraBufferCapacity = 1)
 
-    /**
-     * Starts an authentication attempt with the OAuth method.
-     */
-    fun authenticate() {
-        val authorization = createOAuthAuthorizationUseCase(method)
+  /**
+   * Starts an authentication attempt with the OAuth method.
+   */
+  fun authenticate() {
+    val authorization = createOAuthAuthorizationUseCase(method)
 
-        authJob?.cancel()
-        authJob = scope.launch {
-            events.emit(OAuthEvent.AuthenticationStarted(url = authorization.url))
+    authJob?.cancel()
+    authJob = scope.launch {
+      events.emit(OAuthEvent.AuthenticationStarted(url = authorization.url))
 
-            withContext(dispatchers.io) {
-                oAuthAuthenticateUseCase(authorization, method)
-            }.onSuccess {
-                // Authentication succeeded with the given credentials
-                events.emit(
-                    OAuthEvent.Authenticated(
-                        method = method,
-                        accessToken = it.accessToken,
-                        refreshToken = it.refreshToken,
-                    ),
-                )
-            }.onFailure { error ->
-                uiState.update { it.copy(hasError = true) }
-                events.emit(OAuthEvent.AuthenticationFailed(error))
-            }
-        }
+      withContext(dispatchers.io) {
+        oAuthAuthenticateUseCase(authorization, method)
+      }.onSuccess {
+        // Authentication succeeded with the given credentials
+        events.emit(
+          OAuthEvent.Authenticated(
+            method = method,
+            accessToken = it.accessToken,
+            refreshToken = it.refreshToken,
+          ),
+        )
+      }.onFailure { error ->
+        uiState.update { it.copy(hasError = true) }
+        events.emit(OAuthEvent.AuthenticationFailed(error))
+      }
     }
+  }
 }
 
 /**
@@ -95,6 +95,6 @@ class OAuthStateHolder(
  * @property hasError Whether the current input has an error.
  */
 data class OAuthUiState(
-    val realm: String? = null,
-    val hasError: Boolean = false,
+  val realm: String? = null,
+  val hasError: Boolean = false,
 )

@@ -21,7 +21,7 @@ import org.apache.solr.ui.components.environment.data.JavaProperty
 import org.apache.solr.ui.components.environment.repository.EnvironmentRepository
 
 internal class DefaultLoadJavaPropertiesUseCase(
-    private val repository: EnvironmentRepository,
+  private val repository: EnvironmentRepository,
 ) : LoadJavaPropertiesUseCase {
-    override suspend fun invoke(): Result<List<JavaProperty>> = repository.getJavaProperties()
+  override suspend fun invoke(): Result<List<JavaProperty>> = repository.getJavaProperties()
 }

@@ -27,15 +27,15 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun FileTypeIcon(
-    fileType: String,
-    modifier: Modifier = Modifier,
+  fileType: String,
+  modifier: Modifier = Modifier,
 ) = Icon(
-    modifier = modifier,
-    painter = painterResource(
-        when (fileType) {
-            "zip", "rar", "gz", "7z" -> Res.drawable.folder_zip
-            else -> Res.drawable.draft
-        },
-    ),
-    contentDescription = null,
+  modifier = modifier,
+  painter = painterResource(
+    when (fileType) {
+      "zip", "rar", "gz", "7z" -> Res.drawable.folder_zip
+      else -> Res.drawable.draft
+    },
+  ),
+  contentDescription = null,
 )

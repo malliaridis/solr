@@ -47,9 +47,9 @@ internal const val STATE_LENGTH = 32
  * and the required length as defined by [CODE_VERIFIER_LENGTH].
  */
 internal fun generateCodeVerifier(): String = buildString {
-    repeat(CODE_VERIFIER_LENGTH) {
-        append(CODE_VERIFIER_CHARSET[Random.nextInt(CODE_VERIFIER_CHARSET.length)])
-    }
+  repeat(CODE_VERIFIER_LENGTH) {
+    append(CODE_VERIFIER_CHARSET[Random.nextInt(CODE_VERIFIER_CHARSET.length)])
+  }
 }
 
 /**
@@ -59,8 +59,8 @@ internal fun generateCodeVerifier(): String = buildString {
  * @return The URL-safe, Base64-encoded code challenge.
  */
 internal fun generateCodeChallenge(verifier: String): String {
-    val sha256Bytes: ByteString = verifier.encodeUtf8().sha256()
-    return Base64.UrlSafe.withPadding(PaddingOption.ABSENT).encode(sha256Bytes.toByteArray())
+  val sha256Bytes: ByteString = verifier.encodeUtf8().sha256()
+  return Base64.UrlSafe.withPadding(PaddingOption.ABSENT).encode(sha256Bytes.toByteArray())
 }
 
 /**
@@ -69,9 +69,9 @@ internal fun generateCodeChallenge(verifier: String): String {
  * @return State value with characters from [STATE_CHARSET] and length [STATE_LENGTH].
  */
 internal fun generateOAuthState(): String = buildString {
-    repeat(STATE_LENGTH) {
-        append(STATE_CHARSET[Random.nextInt(STATE_CHARSET.length)])
-    }
+  repeat(STATE_LENGTH) {
+    append(STATE_CHARSET[Random.nextInt(STATE_CHARSET.length)])
+  }
 }
 
 /**

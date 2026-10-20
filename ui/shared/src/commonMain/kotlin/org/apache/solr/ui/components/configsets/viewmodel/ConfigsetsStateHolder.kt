@@ -28,66 +28,66 @@ import org.apache.solr.ui.domain.Configset
 import org.apache.solr.ui.utils.AppDispatchers
 
 class ConfigsetsStateHolder(
-    private val scope: CoroutineScope,
-    private val loadConfigsetsUseCase: LoadConfigsetsUseCase,
-    private val dispatchers: AppDispatchers,
+  private val scope: CoroutineScope,
+  private val loadConfigsetsUseCase: LoadConfigsetsUseCase,
+  private val dispatchers: AppDispatchers,
 ) {
 
-    /**
-     * State of the configset create form.
-     */
-    val uiState: StateFlow<ConfigsetsUiState>
-        field = MutableStateFlow(ConfigsetsUiState())
+  /**
+   * State of the configset create form.
+   */
+  val uiState: StateFlow<ConfigsetsUiState>
+    field = MutableStateFlow(ConfigsetsUiState())
 
-    init {
-        loadConfigsets()
-    }
+  init {
+    loadConfigsets()
+  }
 
-    /**
-     * Selects the given [configset].
-     *
-     * @param configset The configset to select.
-     */
-    fun selectConfigset(configset: String) = uiState.update {
-        it.copy(selectedConfigset = configset)
-    }
+  /**
+   * Selects the given [configset].
+   *
+   * @param configset The configset to select.
+   */
+  fun selectConfigset(configset: String) = uiState.update {
+    it.copy(selectedConfigset = configset)
+  }
 
-    /**
-     * Clears the currently selected configset, if any.
-     */
-    fun clearSelectedConfigset() = uiState.update { it.copy(selectedConfigset = null) }
+  /**
+   * Clears the currently selected configset, if any.
+   */
+  fun clearSelectedConfigset() = uiState.update { it.copy(selectedConfigset = null) }
 
-    /**
-     * Reloads the configsets.
-     */
-    fun reloadConfigsets() {
-        loadConfigsets(clearOnFailure = true)
-    }
+  /**
+   * Reloads the configsets.
+   */
+  fun reloadConfigsets() {
+    loadConfigsets(clearOnFailure = true)
+  }
 
-    private fun loadConfigsets(clearOnFailure: Boolean = false) = scope.launch {
-        withContext(dispatchers.io) {
-            loadConfigsetsUseCase()
-        }.onSuccess { configsets ->
-            uiState.update { it.copy(configsets = configsets.sortedBy(Configset::name)) }
-            if (configsets.none { it.name == uiState.value.selectedConfigset }) {
-                // Unselect current configset
-                clearSelectedConfigset()
-            }
-        }.onFailure {
-            // TODO Notify user about loading issue
-            if (clearOnFailure) {
-                uiState.update {
-                    it.copy(
-                        configsets = emptyList(),
-                        selectedConfigset = null,
-                    )
-                }
-            }
+  private fun loadConfigsets(clearOnFailure: Boolean = false) = scope.launch {
+    withContext(dispatchers.io) {
+      loadConfigsetsUseCase()
+    }.onSuccess { configsets ->
+      uiState.update { it.copy(configsets = configsets.sortedBy(Configset::name)) }
+      if (configsets.none { it.name == uiState.value.selectedConfigset }) {
+        // Unselect current configset
+        clearSelectedConfigset()
+      }
+    }.onFailure {
+      // TODO Notify user about loading issue
+      if (clearOnFailure) {
+        uiState.update {
+          it.copy(
+            configsets = emptyList(),
+            selectedConfigset = null,
+          )
         }
+      }
     }
+  }
 }
 
 data class ConfigsetsUiState(
-    val configsets: List<Configset> = emptyList(),
-    val selectedConfigset: String? = null,
+  val configsets: List<Configset> = emptyList(),
+  val selectedConfigset: String? = null,
 )

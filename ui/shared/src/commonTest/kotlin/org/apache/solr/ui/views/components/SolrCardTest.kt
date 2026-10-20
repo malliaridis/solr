@@ -27,19 +27,19 @@ import kotlin.test.Test
 
 class SolrCardTest {
 
-    @OptIn(ExperimentalTestApi::class)
-    @Test
-    fun testSolrCardContent() = runComposeUiTest {
-        setContent {
-            SolrCard {
-                Text(
-                    text = "My Text",
-                    modifier = Modifier.testTag("text"),
-                )
-            }
-        }
-
-        // Test if the content is actually placed inside the SolrCard
-        onNodeWithTag("text").assertExists()
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun testSolrCardContent() = runComposeUiTest {
+    setContent {
+      SolrCard {
+        Text(
+          text = "My Text",
+          modifier = Modifier.testTag("text"),
+        )
+      }
     }
+
+    // Test if the content is actually placed inside the SolrCard
+    onNodeWithTag("text").assertExists()
+  }
 }

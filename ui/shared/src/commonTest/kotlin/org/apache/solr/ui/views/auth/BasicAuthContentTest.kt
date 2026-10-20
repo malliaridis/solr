@@ -33,70 +33,70 @@ import org.apache.solr.ui.isErrorSemantics
 @OptIn(ExperimentalTestApi::class)
 class BasicAuthContentTest {
 
-    @Test
-    fun `WHEN initialized THEN input is empty`() = runComposeUiTest {
-        setContent {
-            TestBasicAuthContent()
-        }
-
-        assertEquals(
-            expected = "",
-            actual = onNodeWithTag("username_input_field")
-                .assertExists()
-                .fetchSemanticsNode()
-                .config[SemanticsProperties.EditableText]
-                .text,
-        )
-
-        assertEquals(
-            expected = "",
-            actual = onNodeWithTag("password_input_field")
-                .assertExists()
-                .fetchSemanticsNode()
-                .config[SemanticsProperties.EditableText]
-                .text,
-        )
+  @Test
+  fun `WHEN initialized THEN input is empty`() = runComposeUiTest {
+    setContent {
+      TestBasicAuthContent()
     }
 
-    @Test
-    fun `GIVEN isAuthenticating THEN inputs disabled`() = runComposeUiTest {
-        setContent {
-            TestBasicAuthContent(isAuthenticating = true)
-        }
-
-        onNodeWithTag("username_input_field").assertIsNotEnabled()
-        onNodeWithTag("password_input_field").assertIsNotEnabled()
-        onNodeWithTag("sign_in_button").assertIsNotEnabled()
-    }
-
-    @Test
-    fun `GIVEN isAuthenticating THEN loading indicator displayed`() = runComposeUiTest {
-        setContent {
-            TestBasicAuthContent(isAuthenticating = true)
-        }
-
-        onNodeWithTag("loading_indicator").assertIsDisplayed()
-    }
-
-    @Test
-    fun `GIVEN has error THEN input fields highlighted as error`() = runComposeUiTest {
-        setContent {
-            TestBasicAuthContent(uiState = BasicAuthUiState(hasError = true))
-        }
-
-        onNodeWithTag("username_input_field").assert(matcher = isErrorSemantics)
-        onNodeWithTag("password_input_field").assert(matcher = isErrorSemantics)
-    }
-
-    @Composable
-    private fun TestBasicAuthContent(
-        uiState: BasicAuthUiState = BasicAuthUiState(),
-        isAuthenticating: Boolean = true,
-    ) = BasicAuthContent(
-        uiState = uiState,
-        onChangeUsername = {},
-        onChangePassword = {},
-        onAuthenticate = {},
-        isAuthenticating = isAuthenticating,
+    assertEquals(
+      expected = "",
+      actual = onNodeWithTag("username_input_field")
+        .assertExists()
+        .fetchSemanticsNode()
+        .config[SemanticsProperties.EditableText]
+        .text,
     )
+
+    assertEquals(
+      expected = "",
+      actual = onNodeWithTag("password_input_field")
+        .assertExists()
+        .fetchSemanticsNode()
+        .config[SemanticsProperties.EditableText]
+        .text,
+    )
+  }
+
+  @Test
+  fun `GIVEN isAuthenticating THEN inputs disabled`() = runComposeUiTest {
+    setContent {
+      TestBasicAuthContent(isAuthenticating = true)
+    }
+
+    onNodeWithTag("username_input_field").assertIsNotEnabled()
+    onNodeWithTag("password_input_field").assertIsNotEnabled()
+    onNodeWithTag("sign_in_button").assertIsNotEnabled()
+  }
+
+  @Test
+  fun `GIVEN isAuthenticating THEN loading indicator displayed`() = runComposeUiTest {
+    setContent {
+      TestBasicAuthContent(isAuthenticating = true)
+    }
+
+    onNodeWithTag("loading_indicator").assertIsDisplayed()
+  }
+
+  @Test
+  fun `GIVEN has error THEN input fields highlighted as error`() = runComposeUiTest {
+    setContent {
+      TestBasicAuthContent(uiState = BasicAuthUiState(hasError = true))
+    }
+
+    onNodeWithTag("username_input_field").assert(matcher = isErrorSemantics)
+    onNodeWithTag("password_input_field").assert(matcher = isErrorSemantics)
+  }
+
+  @Composable
+  private fun TestBasicAuthContent(
+    uiState: BasicAuthUiState = BasicAuthUiState(),
+    isAuthenticating: Boolean = true,
+  ) = BasicAuthContent(
+    uiState = uiState,
+    onChangeUsername = {},
+    onChangePassword = {},
+    onAuthenticate = {},
+    isAuthenticating = isAuthenticating,
+  )
 }

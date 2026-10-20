@@ -25,13 +25,13 @@ import org.apache.solr.ui.domain.OAuthData
  */
 interface OAuthRepository {
 
-    /**
-     * Authenticates the user with the current Solr instance.
-     *
-     * @param state The state value used in the authorization flow with PKCE.
-     * @param verifier Code verifier used in the authorization flow with PKCE.
-     * @param data The OAuth data to use for the auth flow.
-     * @return Returns success results iff the user has successfully authenticated.
-     */
-    suspend fun authenticate(state: String, verifier: String, data: OAuthData): Result<BearerTokens>
+  /**
+   * Authenticates the user with the current Solr instance.
+   *
+   * @param state The state value used in the authorization flow with PKCE.
+   * @param verifier Code verifier used in the authorization flow with PKCE.
+   * @param data The OAuth data to use for the auth flow.
+   * @return Returns success results iff the user has successfully authenticated.
+   */
+  suspend fun authenticate(state: String, verifier: String, data: OAuthData): Result<BearerTokens>
 }

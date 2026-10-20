@@ -33,34 +33,34 @@ import org.apache.solr.ui.components.environment.repository.EnvironmentRepositor
  * is enabled.
  */
 class HttpEnvironmentRepository(
-    private val httpClient: HttpClient,
+  private val httpClient: HttpClient,
 ) : EnvironmentRepository {
 
-    override suspend fun getSystemData(): Result<SystemData> {
-        val response = httpClient.get("api/node/system")
+  override suspend fun getSystemData(): Result<SystemData> {
+    val response = httpClient.get("api/node/system")
 
-        return when {
-            response.status.isSuccess() -> Result.success(response.body())
-            else -> Result.failure(Exception("Unknown error"))
-            // TODO Add proper error handling
-        }
+    return when {
+      response.status.isSuccess() -> Result.success(response.body())
+      else -> Result.failure(Exception("Unknown error"))
+      // TODO Add proper error handling
     }
+  }
 
-    override suspend fun getJavaProperties(): Result<List<JavaProperty>> {
-        val response = httpClient.get("api/node/properties")
+  override suspend fun getJavaProperties(): Result<List<JavaProperty>> {
+    val response = httpClient.get("api/node/properties")
 
-        return when {
-            response.status.isSuccess() -> {
-                // Map the response data to a list of JavaProperty for better readability
-                val javaProperties = response.body<JavaPropertiesResponse>()
-                    .properties
-                    .map { (key, value) -> key to value }
+    return when {
+      response.status.isSuccess() -> {
+        // Map the response data to a list of JavaProperty for better readability
+        val javaProperties = response.body<JavaPropertiesResponse>()
+          .properties
+          .map { (key, value) -> key to value }
 
-                Result.success(javaProperties)
-            }
+        Result.success(javaProperties)
+      }
 
-            else -> Result.failure(Exception("Unknown error"))
-            // TODO Add proper error handling
-        }
+      else -> Result.failure(Exception("Unknown error"))
+      // TODO Add proper error handling
     }
+  }
 }

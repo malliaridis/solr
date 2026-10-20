@@ -24,10 +24,10 @@ import org.apache.solr.ui.components.environment.data.SystemData
  */
 interface LoadSystemDataUseCase {
 
-    /**
-     * Default invocation for loading the system data.
-     *
-     * @return A Result containing the system data.
-     */
-    suspend operator fun invoke(): Result<SystemData>
+  /**
+   * Default invocation for loading the system data.
+   *
+   * @return A Result containing the system data.
+   */
+  suspend operator fun invoke(): Result<SystemData>
 }

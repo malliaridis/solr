@@ -48,68 +48,68 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ImportConfigsetDialog(
-    viewModel: ImportConfigsetViewModel,
-    modifier: Modifier = Modifier,
+  viewModel: ImportConfigsetViewModel,
+  modifier: Modifier = Modifier,
 ) = Dialog(onDismissRequest = viewModel::abortImport) {
-    val model by viewModel.uiState.collectAsState()
-    val fileSelectorModel by viewModel.fileSelectorUiState.collectAsState()
+  val model by viewModel.uiState.collectAsState()
+  val fileSelectorModel by viewModel.fileSelectorUiState.collectAsState()
 
-    SolrCard(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+  SolrCard(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    Text(
+      text = stringResource(Res.string.title_import_configset),
+      style = MaterialTheme.typography.headlineSmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = stringResource(Res.string.title_import_configset),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            FileSelector(
-                modifier = Modifier.weight(1f).testTag("import_configset_file_field"),
-                file = fileSelectorModel.file,
-                onSelectFile = viewModel::selectFile,
-                onClearSelection = viewModel::clearFile,
-                label = stringResource(Res.string.label_select_configset_file),
-                selectFileText = stringResource(Res.string.label_select_configset_file),
-            )
-            OutlinedTextField(
-                modifier = Modifier.weight(1f).testTag("import_configset_name_field"),
-                value = model.configsetName,
-                onValueChange = viewModel::changeConfigsetName,
-                label = { Text(stringResource(Res.string.label_configset_name)) },
-                singleLine = true,
-            )
-        }
-
-        val canImportConfigset = fileSelectorModel.file != null &&
-            model.configsetName.isNotBlank() &&
-            !model.isLoading
-
-        Row(
-            modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            // Dialog actions
-            SolrTextButton(onClick = viewModel::toggleInput) {
-                Text(stringResource(Res.string.action_create_configset))
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SolrTextButton(onClick = viewModel::abortImport) {
-                    Text(stringResource(Res.string.action_cancel))
-                }
-                SolrButton(
-                    modifier = Modifier.testTag("configset_import_button"),
-                    onClick = viewModel::importConfigset,
-                    enabled = canImportConfigset,
-                ) {
-                    Text(stringResource(Res.string.action_import_configset))
-                }
-            }
-        }
+      FileSelector(
+        modifier = Modifier.weight(1f).testTag("import_configset_file_field"),
+        file = fileSelectorModel.file,
+        onSelectFile = viewModel::selectFile,
+        onClearSelection = viewModel::clearFile,
+        label = stringResource(Res.string.label_select_configset_file),
+        selectFileText = stringResource(Res.string.label_select_configset_file),
+      )
+      OutlinedTextField(
+        modifier = Modifier.weight(1f).testTag("import_configset_name_field"),
+        value = model.configsetName,
+        onValueChange = viewModel::changeConfigsetName,
+        label = { Text(stringResource(Res.string.label_configset_name)) },
+        singleLine = true,
+      )
     }
+
+    val canImportConfigset = fileSelectorModel.file != null &&
+      model.configsetName.isNotBlank() &&
+      !model.isLoading
+
+    Row(
+      modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      // Dialog actions
+      SolrTextButton(onClick = viewModel::toggleInput) {
+        Text(stringResource(Res.string.action_create_configset))
+      }
+
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        SolrTextButton(onClick = viewModel::abortImport) {
+          Text(stringResource(Res.string.action_cancel))
+        }
+        SolrButton(
+          modifier = Modifier.testTag("configset_import_button"),
+          onClick = viewModel::importConfigset,
+          enabled = canImportConfigset,
+        ) {
+          Text(stringResource(Res.string.action_import_configset))
+        }
+      }
+    }
+  }
 }

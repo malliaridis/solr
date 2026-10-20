@@ -24,10 +24,10 @@ import kotlinx.coroutines.CoroutineDispatcher
  */
 interface AppDispatchers {
 
-    /**
-     * Coroutine dispatcher used for IO operations.
-     */
-    val io: CoroutineDispatcher
+  /**
+   * Coroutine dispatcher used for IO operations.
+   */
+  val io: CoroutineDispatcher
 }
 
 /**

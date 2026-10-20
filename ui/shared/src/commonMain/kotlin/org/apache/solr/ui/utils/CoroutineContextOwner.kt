@@ -24,14 +24,14 @@ import kotlin.coroutines.CoroutineContext
  */
 interface CoroutineContextOwner {
 
-    /**
-     * Main coroutine context that is used for operations closely related to UI.
-     * These operations typically don't fail.
-     */
-    val mainContext: CoroutineContext
+  /**
+   * Main coroutine context that is used for operations closely related to UI.
+   * These operations typically don't fail.
+   */
+  val mainContext: CoroutineContext
 
-    /**
-     * [CoroutineContext] used for IO operations. These operations are more likely to fail.
-     */
-    val ioContext: CoroutineContext
+  /**
+   * [CoroutineContext] used for IO operations. These operations are more likely to fail.
+   */
+  val ioContext: CoroutineContext
 }

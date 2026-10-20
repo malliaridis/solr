@@ -36,74 +36,74 @@ import org.apache.solr.ui.utils.AppDispatchers
  * @property method The basic auth method the user is authenticating with.
  */
 class BasicAuthStateHolder(
-    private val scope: CoroutineScope,
-    private val method: AuthMethod.BasicAuthMethod,
-    private val basicAuthenticateUseCase: BasicAuthenticateUseCase,
-    private val dispatchers: AppDispatchers,
+  private val scope: CoroutineScope,
+  private val method: AuthMethod.BasicAuthMethod,
+  private val basicAuthenticateUseCase: BasicAuthenticateUseCase,
+  private val dispatchers: AppDispatchers,
 ) {
 
-    /**
-     * UI state of the basic authentication form.
-     */
-    val uiState: StateFlow<BasicAuthUiState>
-        field = MutableStateFlow(BasicAuthUiState(realm = method.realm))
+  /**
+   * UI state of the basic authentication form.
+   */
+  val uiState: StateFlow<BasicAuthUiState>
+    field = MutableStateFlow(BasicAuthUiState(realm = method.realm))
 
-    /**
-     * Events emitted by the state holder.
-     */
-    val events: SharedFlow<BasicAuthEvent>
-        field = MutableSharedFlow<BasicAuthEvent>(extraBufferCapacity = 1)
+  /**
+   * Events emitted by the state holder.
+   */
+  val events: SharedFlow<BasicAuthEvent>
+    field = MutableSharedFlow<BasicAuthEvent>(extraBufferCapacity = 1)
 
-    /**
-     * Updates the username that is typed in.
-     *
-     * @param username The new username.
-     */
-    fun changeUsername(username: String) {
-        resetError()
-        uiState.update { it.copy(username = username, hasError = false) }
+  /**
+   * Updates the username that is typed in.
+   *
+   * @param username The new username.
+   */
+  fun changeUsername(username: String) {
+    resetError()
+    uiState.update { it.copy(username = username, hasError = false) }
+  }
+
+  /**
+   * Updates the password that is typed in.
+   *
+   * @param password The new password.
+   */
+  fun changePassword(password: String) {
+    resetError()
+    uiState.update { it.copy(password = password, hasError = false) }
+  }
+
+  /**
+   * Tries to authenticate the user with the username and password that are currently typed in.
+   */
+  fun authenticate() {
+    val username = uiState.value.username
+    val password = uiState.value.password
+
+    scope.launch {
+      events.emit(BasicAuthEvent.AuthenticationStarted)
+
+      withContext(dispatchers.io) {
+        basicAuthenticateUseCase(username, password)
+      }.onSuccess {
+        // Authentication succeeded with the given credentials
+        events.emit(BasicAuthEvent.Authenticated(method, username, password))
+      }.onFailure { error ->
+        uiState.update { it.copy(hasError = true) }
+        events.emit(BasicAuthEvent.AuthenticationFailed(error))
+      }
     }
+  }
 
-    /**
-     * Updates the password that is typed in.
-     *
-     * @param password The new password.
-     */
-    fun changePassword(password: String) {
-        resetError()
-        uiState.update { it.copy(password = password, hasError = false) }
+  /**
+   * Notifies listeners about the reset of the error, if there is one.
+   */
+  private fun resetError() {
+    if (uiState.value.hasError) {
+      scope.launch { events.emit(BasicAuthEvent.ErrorReset) }
     }
-
-    /**
-     * Tries to authenticate the user with the username and password that are currently typed in.
-     */
-    fun authenticate() {
-        val username = uiState.value.username
-        val password = uiState.value.password
-
-        scope.launch {
-            events.emit(BasicAuthEvent.AuthenticationStarted)
-
-            withContext(dispatchers.io) {
-                basicAuthenticateUseCase(username, password)
-            }.onSuccess {
-                // Authentication succeeded with the given credentials
-                events.emit(BasicAuthEvent.Authenticated(method, username, password))
-            }.onFailure { error ->
-                uiState.update { it.copy(hasError = true) }
-                events.emit(BasicAuthEvent.AuthenticationFailed(error))
-            }
-        }
-    }
-
-    /**
-     * Notifies listeners about the reset of the error, if there is one.
-     */
-    private fun resetError() {
-        if (uiState.value.hasError) {
-            scope.launch { events.emit(BasicAuthEvent.ErrorReset) }
-        }
-    }
+  }
 }
 
 /**
@@ -116,8 +116,8 @@ class BasicAuthStateHolder(
  * does not distinguish input fields.
  */
 data class BasicAuthUiState(
-    val realm: String? = null,
-    val username: String = "",
-    val password: String = "",
-    val hasError: Boolean = false,
+  val realm: String? = null,
+  val username: String = "",
+  val password: String = "",
+  val hasError: Boolean = false,
 )

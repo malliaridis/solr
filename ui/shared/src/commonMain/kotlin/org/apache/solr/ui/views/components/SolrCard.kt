@@ -41,16 +41,16 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun SolrCard(
-    modifier: Modifier = Modifier,
-    verticalArrangement: Arrangement.Vertical = Arrangement.Top,
-    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
-    content: @Composable ColumnScope.() -> Unit,
+  modifier: Modifier = Modifier,
+  verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+  horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+  content: @Composable ColumnScope.() -> Unit,
 ) = Column(
-    modifier = modifier
-        .background(MaterialTheme.colorScheme.surfaceContainer)
-        .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
-        .padding(16.dp),
-    verticalArrangement = verticalArrangement,
-    horizontalAlignment = horizontalAlignment,
-    content = content,
+  modifier = modifier
+    .background(MaterialTheme.colorScheme.surfaceContainer)
+    .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant))
+    .padding(16.dp),
+  verticalArrangement = verticalArrangement,
+  horizontalAlignment = horizontalAlignment,
+  content = content,
 )

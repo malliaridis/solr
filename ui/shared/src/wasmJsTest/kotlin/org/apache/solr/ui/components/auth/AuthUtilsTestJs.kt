@@ -26,55 +26,55 @@ import kotlinx.browser.window
 
 class AuthUtilsTestJs {
 
-    @Test
-    fun `WHEN generate redirect URI with defaults THEN redirect URI appends callback to the end`() {
-        val redirectUri = getRedirectUri()
+  @Test
+  fun `WHEN generate redirect URI with defaults THEN redirect URI appends callback to the end`() {
+    val redirectUri = getRedirectUri()
 
-        assertContains(
-            charSequence = redirectUri,
-            other = "callback",
-            message = """The path "callback" should be in the generated redirect URI""",
-        )
+    assertContains(
+      charSequence = redirectUri,
+      other = "callback",
+      message = """The path "callback" should be in the generated redirect URI""",
+    )
 
-        assertTrue(
-            actual = redirectUri.endsWith("/callback"),
-            message = """The generated redirect URI should end with "/callback".""",
-        )
-    }
+    assertTrue(
+      actual = redirectUri.endsWith("/callback"),
+      message = """The generated redirect URI should end with "/callback".""",
+    )
+  }
 
-    @Test
-    fun `WHEN generate redirect URI with defaults THEN no double slash exists`() {
-        val redirectUri = getRedirectUri().removePrefix("http://")
+  @Test
+  fun `WHEN generate redirect URI with defaults THEN no double slash exists`() {
+    val redirectUri = getRedirectUri().removePrefix("http://")
 
-        assertFalse(
-            actual = redirectUri.contains("//"),
-            message = """The generated URI "$redirectUri" should contain double slashes.""",
-        )
-    }
+    assertFalse(
+      actual = redirectUri.contains("//"),
+      message = """The generated URI "$redirectUri" should contain double slashes.""",
+    )
+  }
 
-    @Test
-    fun `WHEN generate redirect URI THEN redirect URI contains current origin`() {
-        val redirectUri = getRedirectUri()
+  @Test
+  fun `WHEN generate redirect URI THEN redirect URI contains current origin`() {
+    val redirectUri = getRedirectUri()
 
-        assertContains(
-            charSequence = redirectUri,
-            other = window.location.origin,
-            message = "Origin should be part of the generated redirect URI",
-        )
-    }
+    assertContains(
+      charSequence = redirectUri,
+      other = window.location.origin,
+      message = "Origin should be part of the generated redirect URI",
+    )
+  }
 
-    /**
-     * Future scenario for allowing overriding base path.
-     */
-    @Test
-    @Ignore
-    fun `WHEN generate redirect URI with custom path THEN only custom path included`() {
-        // val redirectUri = getRedirectUri("/custom/path")
+  /**
+   * Future scenario for allowing overriding base path.
+   */
+  @Test
+  @Ignore
+  fun `WHEN generate redirect URI with custom path THEN only custom path included`() {
+    // val redirectUri = getRedirectUri("/custom/path")
 
-        // assertContains(
-        //     charSequence = redirectUri,
-        //     other = "callback",
-        //     message = """The path "callback" should be in the generated redirect URI""",
-        // )
-    }
+    // assertContains(
+    //     charSequence = redirectUri,
+    //     other = "callback",
+    //     message = """The path "callback" should be in the generated redirect URI""",
+    // )
+  }
 }

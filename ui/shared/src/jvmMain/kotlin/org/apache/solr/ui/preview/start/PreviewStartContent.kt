@@ -28,32 +28,32 @@ import org.apache.solr.ui.views.start.StartContent
 @Preview
 @Composable
 private fun PreviewStartContent() = PreviewContainer {
-    StartContent(
-        uiState = StartUiState(),
-        onSolrUrlChange = {},
-        onConnect = {},
-    )
+  StartContent(
+    uiState = StartUiState(),
+    onSolrUrlChange = {},
+    onConnect = {},
+  )
 }
 
 @Preview
 @Composable
 private fun PreviewStartContentWithError() = PreviewContainer {
-    StartContent(
-        uiState = StartUiState(
-            url = "some-invalid-url!",
-            error = Res.string.error_invalid_url,
-        ),
-        onSolrUrlChange = {},
-        onConnect = {},
-    )
+  StartContent(
+    uiState = StartUiState(
+      url = "some-invalid-url!",
+      error = Res.string.error_invalid_url,
+    ),
+    onSolrUrlChange = {},
+    onConnect = {},
+  )
 }
 
 @Preview
 @Composable
 private fun PreviewStartContentWithConnecting() = PreviewContainer {
-    StartContent(
-        uiState = StartUiState(isConnecting = true),
-        onSolrUrlChange = {},
-        onConnect = {},
-    )
+  StartContent(
+    uiState = StartUiState(isConnecting = true),
+    onSolrUrlChange = {},
+    onConnect = {},
+  )
 }

@@ -35,14 +35,14 @@ import kotlinx.serialization.json.Json
  *
  */
 fun TestScope.createMockEngine(
-    vararg handlers: MockRequestHandler,
-    reuseHandlers: Boolean = true,
+  vararg handlers: MockRequestHandler,
+  reuseHandlers: Boolean = true,
 ): MockEngine = MockEngine(
-    MockEngineConfig().apply {
-        dispatcher = StandardTestDispatcher(testScheduler)
-        handlers.forEach(::addHandler)
-        this.reuseHandlers = reuseHandlers
-    },
+  MockEngineConfig().apply {
+    dispatcher = StandardTestDispatcher(testScheduler)
+    handlers.forEach(::addHandler)
+    this.reuseHandlers = reuseHandlers
+  },
 )
 
 /**
@@ -51,12 +51,12 @@ fun TestScope.createMockEngine(
  * @param engine The mock engine that contains handlers with HTTP JSON responses.
  */
 fun testHttpClient(engine: MockEngine) = HttpClient(engine) {
-    install(ContentNegotiation) {
-        json(
-            Json {
-                ignoreUnknownKeys = true
-                allowSpecialFloatingPointValues = true
-            },
-        )
-    }
+  install(ContentNegotiation) {
+    json(
+      Json {
+        ignoreUnknownKeys = true
+        allowSpecialFloatingPointValues = true
+      },
+    )
+  }
 }

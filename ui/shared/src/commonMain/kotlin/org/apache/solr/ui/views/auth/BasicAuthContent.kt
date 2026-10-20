@@ -54,62 +54,62 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun BasicAuthContent(
-    uiState: BasicAuthUiState,
-    onChangeUsername: (String) -> Unit,
-    onChangePassword: (String) -> Unit,
-    onAuthenticate: () -> Unit,
-    modifier: Modifier = Modifier,
-    isAuthenticating: Boolean = true,
+  uiState: BasicAuthUiState,
+  onChangeUsername: (String) -> Unit,
+  onChangePassword: (String) -> Unit,
+  onAuthenticate: () -> Unit,
+  modifier: Modifier = Modifier,
+  isAuthenticating: Boolean = true,
 ) = Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    Text(
-        text = uiState.realm?.let {
-            stringResource(Res.string.desc_sign_in_with_credentials_to_realm, it)
-        } ?: stringResource(Res.string.desc_sign_in_with_credentials),
-        style = MaterialTheme.typography.bodyMedium,
-    )
+  Text(
+    text = uiState.realm?.let {
+      stringResource(Res.string.desc_sign_in_with_credentials_to_realm, it)
+    } ?: stringResource(Res.string.desc_sign_in_with_credentials),
+    style = MaterialTheme.typography.bodyMedium,
+  )
 
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().testTag(tag = "username_input_field"),
-        value = uiState.username,
-        singleLine = true,
-        isError = uiState.hasError,
-        label = { Text(stringResource(Res.string.label_username)) },
-        onValueChange = onChangeUsername,
-        enabled = !isAuthenticating,
-    )
+  OutlinedTextField(
+    modifier = Modifier.fillMaxWidth().testTag(tag = "username_input_field"),
+    value = uiState.username,
+    singleLine = true,
+    isError = uiState.hasError,
+    label = { Text(stringResource(Res.string.label_username)) },
+    onValueChange = onChangeUsername,
+    enabled = !isAuthenticating,
+  )
 
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth().testTag(tag = "password_input_field"),
-        value = uiState.password,
-        singleLine = true,
-        isError = uiState.hasError,
-        label = { Text(stringResource(Res.string.label_password)) },
-        visualTransformation = PasswordVisualTransformation(),
-        onValueChange = onChangePassword,
-        enabled = !isAuthenticating,
-    )
+  OutlinedTextField(
+    modifier = Modifier.fillMaxWidth().testTag(tag = "password_input_field"),
+    value = uiState.password,
+    singleLine = true,
+    isError = uiState.hasError,
+    label = { Text(stringResource(Res.string.label_password)) },
+    visualTransformation = PasswordVisualTransformation(),
+    onValueChange = onChangePassword,
+    enabled = !isAuthenticating,
+  )
 
-    Column {
-        SolrButton(
-            modifier = Modifier.fillMaxWidth().testTag(tag = "sign_in_button"),
-            onClick = onAuthenticate,
-            enabled = !isAuthenticating,
-        ) {
-            Text(
-                text = if (isAuthenticating) {
-                    stringResource(Res.string.authenticating)
-                } else {
-                    stringResource(Res.string.action_sign_in_with_credentials)
-                },
-            )
-        }
-        if (isAuthenticating) {
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth().testTag(tag = "loading_indicator"),
-            )
-        }
+  Column {
+    SolrButton(
+      modifier = Modifier.fillMaxWidth().testTag(tag = "sign_in_button"),
+      onClick = onAuthenticate,
+      enabled = !isAuthenticating,
+    ) {
+      Text(
+        text = if (isAuthenticating) {
+          stringResource(Res.string.authenticating)
+        } else {
+          stringResource(Res.string.action_sign_in_with_credentials)
+        },
+      )
     }
+    if (isAuthenticating) {
+      LinearProgressIndicator(
+        modifier = Modifier.fillMaxWidth().testTag(tag = "loading_indicator"),
+      )
+    }
+  }
 }

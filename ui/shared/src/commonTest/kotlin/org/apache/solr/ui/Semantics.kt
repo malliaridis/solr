@@ -24,8 +24,8 @@ import androidx.compose.ui.test.SemanticsMatcher
  * Checks if a node contains at least one error property.
  */
 val isErrorSemantics = SemanticsMatcher(
-    description = "Node contains error",
-    matcher = { node ->
-        node.config[SemanticsProperties.Error].isNotEmpty()
-    },
+  description = "Node contains error",
+  matcher = { node ->
+    node.config[SemanticsProperties.Error].isNotEmpty()
+  },
 )

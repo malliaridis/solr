@@ -20,35 +20,35 @@ package org.apache.solr.ui.components.files.domain
 import org.apache.solr.ui.domain.PickedFile
 
 interface SelectFileUseCase {
-    /**
-     * Default invocation for selecting a file.
-     *
-     * @param extensions The allowed file extensions to filter.
-     *
-     * @return A Result containing the file that was selected.
-     */
-    suspend operator fun invoke(
-        extensions: List<String>,
-        maxSize: Int? = null,
-    ): SelectFileResult
+  /**
+   * Default invocation for selecting a file.
+   *
+   * @param extensions The allowed file extensions to filter.
+   *
+   * @return A Result containing the file that was selected.
+   */
+  suspend operator fun invoke(
+    extensions: List<String>,
+    maxSize: Int? = null,
+  ): SelectFileResult
 }
 
 sealed interface SelectFileResult {
-    data class Success(val file: PickedFile) : SelectFileResult
+  data class Success(val file: PickedFile) : SelectFileResult
 
-    data object Aborted : SelectFileResult
+  data object Aborted : SelectFileResult
 
-    data class ValidationFailure(val error: Error) : SelectFileResult
+  data class ValidationFailure(val error: Error) : SelectFileResult
 
-    data class UnexpectedFailure(val cause: Throwable) : SelectFileResult
+  data class UnexpectedFailure(val cause: Throwable) : SelectFileResult
 
-    enum class Error {
+  enum class Error {
 
-        /**
-         * Error for indicating that no file has been selected.
-         */
-        FileNotSelected,
-        FileTooLarge,
-        UnsupportedFormat,
-    }
+    /**
+     * Error for indicating that no file has been selected.
+     */
+    FileNotSelected,
+    FileTooLarge,
+    UnsupportedFormat,
+  }
 }

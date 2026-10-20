@@ -50,10 +50,9 @@ subprojects {
       // Apply to all Kotlin and Kotlin DSL files
       target("**/*.kt", "**/*.kts")
 
-      // TODO Enable ktlint in the UI module
-//      ktlint(rootProject.rootLibs.versions.ktlint.get())
-//        .setEditorConfigPath(rootProject.file("../.editorconfig"))
-//        .customRuleSets(listOf(libs.nlopez.compose.ktlintrules.get().toString()))
+      ktlint(libs.versions.ktlint.get())
+        .setEditorConfigPath(rootProject.file("../.editorconfig"))
+        .customRuleSets(listOf(libs.nlopez.compose.ktlintrules.get().toString()))
     }
   }
 }

@@ -36,28 +36,28 @@ import org.apache.solr.ui.domain.AuthMethod
 @OptIn(ExperimentalCoroutinesApi::class)
 class AuthenticationStateHolderTest {
 
-    @Test
-    fun `GIVEN basic auth method THEN basicAuth populated`() = runTest {
-        val stateHolder = createStateHolder(methods = listOf(AuthMethod.BasicAuthMethod(realm = "solr")))
-        advanceUntilIdle()
+  @Test
+  fun `GIVEN basic auth method THEN basicAuth populated`() = runTest {
+    val stateHolder = createStateHolder(methods = listOf(AuthMethod.BasicAuthMethod(realm = "solr")))
+    advanceUntilIdle()
 
-        assertNotNull(stateHolder.basicAuth)
-    }
+    assertNotNull(stateHolder.basicAuth)
+  }
 
-    /**
-     * Helper function for creating an instance of the [AuthenticationStateHolder].
-     */
-    private fun TestScope.createStateHolder(
-        httpClient: HttpClient = HttpClient(),
-        urlString: String = "",
-        methods: List<AuthMethod> = emptyList(),
-    ) = AuthenticationStateHolder(
-        scope = backgroundScope,
-        url = Url(urlString),
-        methods = methods,
-        basicAuthenticateUseCase = DefaultBasicAuthenticateUseCase(HttpBasicAuthRepository(httpClient)),
-        createOAuthAuthorizationUseCase = DefaultCreateOAuthAuthorizationUseCase(),
-        oAuthAuthenticateUseCase = DefaultOAuthAuthenticateUseCase(FakeOAuthRepository { Result.failure(Exception()) }),
-        dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
-    )
+  /**
+   * Helper function for creating an instance of the [AuthenticationStateHolder].
+   */
+  private fun TestScope.createStateHolder(
+    httpClient: HttpClient = HttpClient(),
+    urlString: String = "",
+    methods: List<AuthMethod> = emptyList(),
+  ) = AuthenticationStateHolder(
+    scope = backgroundScope,
+    url = Url(urlString),
+    methods = methods,
+    basicAuthenticateUseCase = DefaultBasicAuthenticateUseCase(HttpBasicAuthRepository(httpClient)),
+    createOAuthAuthorizationUseCase = DefaultCreateOAuthAuthorizationUseCase(),
+    oAuthAuthenticateUseCase = DefaultOAuthAuthenticateUseCase(FakeOAuthRepository { Result.failure(Exception()) }),
+    dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+  )
 }

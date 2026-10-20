@@ -35,80 +35,80 @@ import org.apache.solr.ui.views.auth.UserAuthenticationContent
 @Composable
 @Preview
 internal fun PreviewBasicUserAuthenticationContent() = PreviewContainer {
-    PreviewUserAuthenticationContent(
-        withBasicAuth = true,
-        withOAuth = false,
-    )
+  PreviewUserAuthenticationContent(
+    withBasicAuth = true,
+    withOAuth = false,
+  )
 }
 
 @Composable
 @Preview
 internal fun PreviewOAuthUserAuthenticationContent() = PreviewContainer {
-    PreviewUserAuthenticationContent(
-        withBasicAuth = false,
-        withOAuth = true,
-    )
+  PreviewUserAuthenticationContent(
+    withBasicAuth = false,
+    withOAuth = true,
+  )
 }
 
 @Composable
 @Preview
 internal fun PreviewMultiUserAuthenticationContent() = PreviewContainer {
-    PreviewUserAuthenticationContent(
-        withBasicAuth = true,
-        withOAuth = true,
-    )
+  PreviewUserAuthenticationContent(
+    withBasicAuth = true,
+    withOAuth = true,
+  )
 }
 
 @Composable
 private fun PreviewUserAuthenticationContent(
-    withBasicAuth: Boolean,
-    withOAuth: Boolean,
+  withBasicAuth: Boolean,
+  withOAuth: Boolean,
 ) = UserAuthenticationContent(
-    uiState = AuthenticationUiState(
-        methods = listOfNotNull(
-            if (withBasicAuth) AuthMethod.BasicAuthMethod() else null,
-            if (withOAuth) {
-                AuthMethod.OAuthMethod(
-                    data = OAuthData(
-                        clientId = "",
-                        authorizationFlow = AuthorizationFlow.CodePKCE,
-                        scope = "",
-                        redirectUris = listOf(Url("http://127.0.0.1")),
-                        authorizationEndpoint = Url("http://127.0.0.1"),
-                        tokenEndpoint = Url("http://127.0.0.1"),
-                    ),
-                )
-            } else {
-                null
-            },
-        ),
+  uiState = AuthenticationUiState(
+    methods = listOfNotNull(
+      if (withBasicAuth) AuthMethod.BasicAuthMethod() else null,
+      if (withOAuth) {
+        AuthMethod.OAuthMethod(
+          data = OAuthData(
+            clientId = "",
+            authorizationFlow = AuthorizationFlow.CodePKCE,
+            scope = "",
+            redirectUris = listOf(Url("http://127.0.0.1")),
+            authorizationEndpoint = Url("http://127.0.0.1"),
+            tokenEndpoint = Url("http://127.0.0.1"),
+          ),
+        )
+      } else {
+        null
+      },
     ),
-    onAbort = {},
-    basicAuthContent = if (withBasicAuth) {
-        { modifier: Modifier ->
-            BasicAuthContent(
-                uiState = BasicAuthUiState(),
-                onChangeUsername = {},
-                onChangePassword = {},
-                onAuthenticate = {},
-                modifier = modifier,
-                isAuthenticating = false,
-            )
-        }
-    } else {
-        null
-    },
-    oAuthContent = if (withOAuth) {
-        { modifier: Modifier, showSupportingText: Boolean ->
-            OAuthContent(
-                uiState = OAuthUiState(),
-                onAuthenticate = {},
-                modifier = modifier,
-                isAuthenticating = false,
-                showSupportingText = showSupportingText,
-            )
-        }
-    } else {
-        null
-    },
+  ),
+  onAbort = {},
+  basicAuthContent = if (withBasicAuth) {
+    { modifier: Modifier ->
+      BasicAuthContent(
+        uiState = BasicAuthUiState(),
+        onChangeUsername = {},
+        onChangePassword = {},
+        onAuthenticate = {},
+        modifier = modifier,
+        isAuthenticating = false,
+      )
+    }
+  } else {
+    null
+  },
+  oAuthContent = if (withOAuth) {
+    { modifier: Modifier, showSupportingText: Boolean ->
+      OAuthContent(
+        uiState = OAuthUiState(),
+        onAuthenticate = {},
+        modifier = modifier,
+        isAuthenticating = false,
+        showSupportingText = showSupportingText,
+      )
+    }
+  } else {
+    null
+  },
 )

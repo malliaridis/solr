@@ -56,9 +56,9 @@ import org.apache.solr.ui.shared.generated.resources.nav_collections
 import org.apache.solr.ui.shared.generated.resources.nav_configsets
 import org.apache.solr.ui.shared.generated.resources.nav_dashboard
 import org.apache.solr.ui.shared.generated.resources.nav_environment
+import org.apache.solr.ui.shared.generated.resources.nav_index_and_query
 import org.apache.solr.ui.shared.generated.resources.nav_logging
 import org.apache.solr.ui.shared.generated.resources.nav_metrics
-import org.apache.solr.ui.shared.generated.resources.nav_index_and_query
 import org.apache.solr.ui.shared.generated.resources.nav_security
 import org.apache.solr.ui.shared.generated.resources.nav_thread_dump
 import org.apache.solr.ui.shared.generated.resources.other_admission
@@ -84,131 +84,131 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun NavigationSideBar(
-    onNavigate: (MainMenu) -> Unit,
-    onLogout: () -> Unit,
-    modifier: Modifier = Modifier,
-    selectedItem: MainMenu? = null,
+  onNavigate: (MainMenu) -> Unit,
+  onLogout: () -> Unit,
+  modifier: Modifier = Modifier,
+  selectedItem: MainMenu? = null,
 ) = Row(modifier = modifier) {
-    val scrollState = rememberScrollState(48 * (selectedItem?.ordinal ?: 0))
+  val scrollState = rememberScrollState(48 * (selectedItem?.ordinal ?: 0))
 
-    Column(Modifier.fillMaxHeight()) {
-        SolrLogo(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+  Column(Modifier.fillMaxHeight()) {
+    SolrLogo(
+      modifier = Modifier.fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp),
+    )
+    Column(
+      modifier = Modifier.weight(1f)
+        .verticalScroll(scrollState),
+    ) {
+      MainMenu.entries.forEach { item ->
+        val isSelected = item == selectedItem
+        MenuElement(
+          text = stringResource(getMainMenuText(item)),
+          drawable = getMenuIcon(item, isSelected),
+          modifier = Modifier.fillMaxWidth(),
+          selected = isSelected,
+          enabled = isSectionAvailable(item),
+          onClick = { onNavigate(item) },
         )
-        Column(
-            modifier = Modifier.weight(1f)
-                .verticalScroll(scrollState),
-        ) {
-            MainMenu.entries.forEach { item ->
-                val isSelected = item == selectedItem
-                MenuElement(
-                    text = stringResource(getMainMenuText(item)),
-                    drawable = getMenuIcon(item, isSelected),
-                    modifier = Modifier.fillMaxWidth(),
-                    selected = isSelected,
-                    enabled = isSectionAvailable(item),
-                    onClick = { onNavigate(item) },
-                )
-            }
+      }
 
-            // TODO Add condition for displaying logout button if user identity / auth present
-            MenuElement(
-                text = stringResource(Res.string.action_logout),
-                drawable = Res.drawable.logout,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onLogout,
-            )
-        }
+      // TODO Add condition for displaying logout button if user identity / auth present
+      MenuElement(
+        text = stringResource(Res.string.action_logout),
+        drawable = Res.drawable.logout,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onLogout,
+      )
     }
-    VerticalDivider()
+  }
+  VerticalDivider()
 }
 
 @Composable
 private fun MenuElement(
-    text: String,
-    drawable: DrawableResource,
-    modifier: Modifier = Modifier,
-    selected: Boolean = false,
-    enabled: Boolean = true,
-    onClick: () -> Unit = {},
+  text: String,
+  drawable: DrawableResource,
+  modifier: Modifier = Modifier,
+  selected: Boolean = false,
+  enabled: Boolean = true,
+  onClick: () -> Unit = {},
 ) {
-    val alpha = if (enabled) 1f else 0.38f
-    Button(
-        colors = if (selected) {
-            ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = alpha),
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = alpha),
-                disabledContainerColor = Color.Transparent,
-            )
-        } else {
-            ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
-                disabledContainerColor = Color.Transparent,
-            )
-        },
-        shape = RectangleShape,
-        enabled = enabled,
-        onClick = onClick,
+  val alpha = if (enabled) 1f else 0.38f
+  Button(
+    colors = if (selected) {
+      ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = alpha),
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = alpha),
+        disabledContainerColor = Color.Transparent,
+      )
+    } else {
+      ButtonDefaults.buttonColors(
+        containerColor = Color.Transparent,
+        contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
+        disabledContainerColor = Color.Transparent,
+      )
+    },
+    shape = RectangleShape,
+    enabled = enabled,
+    onClick = onClick,
+  ) {
+    Row(
+      modifier = Modifier.fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 12.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(drawable),
-                contentDescription = null,
-            )
-            Text(
-                style = MaterialTheme.typography.labelLarge,
-                text = text,
-            )
-        }
+      Icon(
+        painter = painterResource(drawable),
+        contentDescription = null,
+      )
+      Text(
+        style = MaterialTheme.typography.labelLarge,
+        text = text,
+      )
     }
+  }
 }
 
 private fun getMainMenuText(item: MainMenu) = when (item) {
-    MainMenu.Dashboard -> Res.string.nav_dashboard
-    MainMenu.Metrics -> Res.string.nav_metrics
-    MainMenu.Cluster -> Res.string.nav_cluster
-    MainMenu.Security -> Res.string.nav_security
-    MainMenu.Configsets -> Res.string.nav_configsets
-    MainMenu.Collections -> Res.string.nav_collections
-    MainMenu.IndexAndQuery -> Res.string.nav_index_and_query
-    MainMenu.Environment -> Res.string.nav_environment
-    MainMenu.Logging -> Res.string.nav_logging
-    MainMenu.ThreadDump -> Res.string.nav_thread_dump
+  MainMenu.Dashboard -> Res.string.nav_dashboard
+  MainMenu.Metrics -> Res.string.nav_metrics
+  MainMenu.Cluster -> Res.string.nav_cluster
+  MainMenu.Security -> Res.string.nav_security
+  MainMenu.Configsets -> Res.string.nav_configsets
+  MainMenu.Collections -> Res.string.nav_collections
+  MainMenu.IndexAndQuery -> Res.string.nav_index_and_query
+  MainMenu.Environment -> Res.string.nav_environment
+  MainMenu.Logging -> Res.string.nav_logging
+  MainMenu.ThreadDump -> Res.string.nav_thread_dump
 }
 
 private fun getMenuIcon(
-    item: MainMenu,
-    isSelected: Boolean = false,
+  item: MainMenu,
+  isSelected: Boolean = false,
 ): DrawableResource = when (item) {
-    MainMenu.Dashboard -> if (isSelected) Res.drawable.dashboard_filled else Res.drawable.dashboard
+  MainMenu.Dashboard -> if (isSelected) Res.drawable.dashboard_filled else Res.drawable.dashboard
 
-    MainMenu.Metrics -> if (isSelected) Res.drawable.analytics_filled else Res.drawable.analytics
+  MainMenu.Metrics -> if (isSelected) Res.drawable.analytics_filled else Res.drawable.analytics
 
-    MainMenu.Cluster -> if (isSelected) Res.drawable.hub_filled else Res.drawable.hub
+  MainMenu.Cluster -> if (isSelected) Res.drawable.hub_filled else Res.drawable.hub
 
-    MainMenu.Security -> Res.drawable.security
+  MainMenu.Security -> Res.drawable.security
 
-    MainMenu.Configsets ->
-        if (isSelected) Res.drawable.folder_data_filled else Res.drawable.folder_data
+  MainMenu.Configsets ->
+    if (isSelected) Res.drawable.folder_data_filled else Res.drawable.folder_data
 
-    MainMenu.Collections -> Res.drawable.apps
+  MainMenu.Collections -> Res.drawable.apps
 
-    MainMenu.IndexAndQuery ->
-        if (isSelected) Res.drawable.other_admission_filled else Res.drawable.other_admission
+  MainMenu.IndexAndQuery ->
+    if (isSelected) Res.drawable.other_admission_filled else Res.drawable.other_admission
 
-    MainMenu.Environment -> if (isSelected) Res.drawable.memory_filled else Res.drawable.memory
+  MainMenu.Environment -> if (isSelected) Res.drawable.memory_filled else Res.drawable.memory
 
-    MainMenu.Logging ->
-        if (isSelected) Res.drawable.text_snippet_filled else Res.drawable.text_snippet
+  MainMenu.Logging ->
+    if (isSelected) Res.drawable.text_snippet_filled else Res.drawable.text_snippet
 
-    MainMenu.ThreadDump -> if (isSelected) Res.drawable.view_list_filled else Res.drawable.view_list
+  MainMenu.ThreadDump -> if (isSelected) Res.drawable.view_list_filled else Res.drawable.view_list
 }
 
 /**
@@ -219,9 +219,9 @@ private fun getMenuIcon(
  * TODO Remove once all sections are added
  */
 private fun isSectionAvailable(item: MainMenu): Boolean = when (item) {
-    MainMenu.Cluster -> true
-    MainMenu.Configsets -> true
-    MainMenu.Environment -> true
-    MainMenu.Logging -> true
-    else -> false
+  MainMenu.Cluster -> true
+  MainMenu.Configsets -> true
+  MainMenu.Environment -> true
+  MainMenu.Logging -> true
+  else -> false
 }

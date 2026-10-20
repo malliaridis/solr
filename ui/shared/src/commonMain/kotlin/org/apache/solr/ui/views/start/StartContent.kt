@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,24 +65,24 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 fun StartContent(
-    component: StartComponent,
-    onEvent: (StartEvent) -> Unit,
-    modifier: Modifier = Modifier,
+  component: StartComponent,
+  onEvent: (StartEvent) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel { component.createStartViewModel() }
-    val uiState by viewModel.uiState.collectAsState()
-    val currentOnEvent by rememberUpdatedState(onEvent)
+  val viewModel = viewModel { component.createStartViewModel() }
+  val uiState by viewModel.uiState.collectAsState()
+  val currentOnEvent by rememberUpdatedState(onEvent)
 
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { currentOnEvent(it) }
-    }
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { currentOnEvent(it) }
+  }
 
-    StartContent(
-        uiState = uiState,
-        onSolrUrlChange = viewModel::changeSolrUrl,
-        onConnect = viewModel::connect,
-        modifier = modifier,
-    )
+  StartContent(
+    uiState = uiState,
+    onSolrUrlChange = viewModel::changeSolrUrl,
+    onConnect = viewModel::connect,
+    modifier = modifier,
+  )
 }
 
 /**
@@ -95,85 +94,85 @@ fun StartContent(
  */
 @Composable
 fun StartContent(
-    uiState: StartUiState,
-    onSolrUrlChange: (String) -> Unit,
-    onConnect: () -> Unit,
-    modifier: Modifier = Modifier,
+  uiState: StartUiState,
+  onSolrUrlChange: (String) -> Unit,
+  onConnect: () -> Unit,
+  modifier: Modifier = Modifier,
 ) = Row(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalAlignment = Alignment.CenterVertically,
+  modifier = modifier,
+  horizontalArrangement = Arrangement.spacedBy(16.dp),
+  verticalAlignment = Alignment.CenterVertically,
 ) {
-    Image(
-        modifier = Modifier.weight(1f)
-            .align(Alignment.Bottom)
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .scale(1.5f),
-        alpha = .3f,
-        painter = painterResource(Res.drawable.solr_sun),
-        contentDescription = stringResource(Res.string.cd_solr_logo),
-    )
+  Image(
+    modifier = Modifier.weight(1f)
+      .align(Alignment.Bottom)
+      .fillMaxWidth()
+      .aspectRatio(1f)
+      .scale(1.5f),
+    alpha = .3f,
+    painter = painterResource(Res.drawable.solr_sun),
+    contentDescription = stringResource(Res.string.cd_solr_logo),
+  )
 
-    Column(
-        modifier = Modifier.weight(1f).padding(64.dp),
+  Column(
+    modifier = Modifier.weight(1f).padding(64.dp),
+  ) {
+    SolrCard(
+      modifier = Modifier.widthIn(min = 512.dp, max = 640.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        SolrCard(
-            modifier = Modifier.widthIn(min = 512.dp, max = 640.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+      Text(
+        modifier = Modifier.testTag("start_title"),
+        text = stringResource(Res.string.title_welcome_to_solr),
+        style = MaterialTheme.typography.headlineMedium,
+      )
+      Text(
+        modifier = Modifier.testTag("start_description"),
+        text = stringResource(Res.string.desc_to_get_started),
+        style = MaterialTheme.typography.bodyMedium,
+      )
+
+      SolrOutlinedTextField(
+        modifier = Modifier.fillMaxWidth().testTag("solr_url_input"),
+        value = uiState.url,
+        singleLine = true,
+        onValueChange = onSolrUrlChange,
+        placeholder = { Text(text = defaultSolrUrl()) },
+        enabled = !uiState.isConnecting,
+        supportingText = {
+          uiState.error?.let {
+            Text(
+              modifier = Modifier.testTag("input_error"),
+              text = stringResource(it),
+              color = MaterialTheme.colorScheme.error,
+            )
+          }
+        },
+        // TODO Update colors if necessary
+      )
+
+      Column {
+        SolrButton(
+          modifier = Modifier.fillMaxWidth().testTag("connect_button"),
+          enabled = !uiState.isConnecting,
+          onClick = onConnect,
         ) {
-            Text(
-                modifier = Modifier.testTag("start_title"),
-                text = stringResource(Res.string.title_welcome_to_solr),
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            Text(
-                modifier = Modifier.testTag("start_description"),
-                text = stringResource(Res.string.desc_to_get_started),
-                style = MaterialTheme.typography.bodyMedium,
-            )
-
-            SolrOutlinedTextField(
-                modifier = Modifier.fillMaxWidth().testTag("solr_url_input"),
-                value = uiState.url,
-                singleLine = true,
-                onValueChange = onSolrUrlChange,
-                placeholder = { Text(text = defaultSolrUrl()) },
-                enabled = !uiState.isConnecting,
-                supportingText = {
-                    uiState.error?.let {
-                        Text(
-                            modifier = Modifier.testTag("input_error"),
-                            text = stringResource(it),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    }
-                },
-                // TODO Update colors if necessary
-            )
-
-            Column {
-                SolrButton(
-                    modifier = Modifier.fillMaxWidth().testTag("connect_button"),
-                    enabled = !uiState.isConnecting,
-                    onClick = onConnect,
-                ) {
-                    Text(
-                        text = stringResource(
-                            if (uiState.isConnecting) {
-                                Res.string.connecting
-                            } else {
-                                Res.string.action_connect
-                            },
-                        ),
-                    )
-                }
-                if (uiState.isConnecting) {
-                    SolrLinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth().testTag("loading_indicator"),
-                    )
-                }
-            }
+          Text(
+            text = stringResource(
+              if (uiState.isConnecting) {
+                Res.string.connecting
+              } else {
+                Res.string.action_connect
+              },
+            ),
+          )
         }
+        if (uiState.isConnecting) {
+          SolrLinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth().testTag("loading_indicator"),
+          )
+        }
+      }
     }
+  }
 }

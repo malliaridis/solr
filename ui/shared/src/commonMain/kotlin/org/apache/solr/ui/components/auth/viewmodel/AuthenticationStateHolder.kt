@@ -57,131 +57,131 @@ import org.jetbrains.compose.resources.StringResource
  * @param methods The authentication methods that are supported by the Solr instance.
  */
 class AuthenticationStateHolder(
-    private val scope: CoroutineScope,
-    private val url: Url,
-    methods: List<AuthMethod>,
-    basicAuthenticateUseCase: BasicAuthenticateUseCase,
-    createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase,
-    oAuthAuthenticateUseCase: OAuthAuthenticateUseCase,
-    dispatchers: AppDispatchers,
+  private val scope: CoroutineScope,
+  private val url: Url,
+  methods: List<AuthMethod>,
+  basicAuthenticateUseCase: BasicAuthenticateUseCase,
+  createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase,
+  oAuthAuthenticateUseCase: OAuthAuthenticateUseCase,
+  dispatchers: AppDispatchers,
 ) {
 
-    /**
-     * State holder for authentication with credentials (basic auth), if it is supported.
-     */
-    val basicAuth: BasicAuthStateHolder? = methods
-        .filterIsInstance<AuthMethod.BasicAuthMethod>()
-        .lastOrNull()
-        ?.let { method ->
-            BasicAuthStateHolder(
-                scope = scope,
-                method = method,
-                basicAuthenticateUseCase = basicAuthenticateUseCase,
-                dispatchers = dispatchers,
-            )
-        }
-
-    /**
-     * State holder for authentication with OAuth (bearer token), if it is supported.
-     */
-    val oAuth: OAuthStateHolder? = methods
-        .filterIsInstance<AuthMethod.OAuthMethod>()
-        .lastOrNull()
-        ?.let { method ->
-            OAuthStateHolder(
-                scope = scope,
-                method = method,
-                createOAuthAuthorizationUseCase = createOAuthAuthorizationUseCase,
-                oAuthAuthenticateUseCase = oAuthAuthenticateUseCase,
-                dispatchers = dispatchers,
-            )
-        }
-
-    /**
-     * UI state of the authentication screen.
-     */
-    val uiState: StateFlow<AuthenticationUiState>
-        field = MutableStateFlow(AuthenticationUiState(url = url.toString(), methods = methods))
-
-    /**
-     * Events emitted by the state holder that are meant to be handled by the parent.
-     */
-    val events: SharedFlow<AuthenticationEvent>
-        field = MutableSharedFlow<AuthenticationEvent>(extraBufferCapacity = 1)
-
-    /**
-     * URLs of the identity provider that are supposed to be opened for authorizing the user.
-     */
-    val authorizationUrls: SharedFlow<Url>
-        field = MutableSharedFlow<Url>(extraBufferCapacity = 1)
-
-    init {
-        // Undispatched start makes sure the collectors are subscribed before anyone can emit
-        basicAuth?.let { holder ->
-            scope.launch(start = CoroutineStart.UNDISPATCHED) {
-                holder.events.collect(::handleBasicAuthEvent)
-            }
-        }
-        oAuth?.let { holder ->
-            scope.launch(start = CoroutineStart.UNDISPATCHED) {
-                holder.events.collect(::handleOAuthEvent)
-            }
-        }
+  /**
+   * State holder for authentication with credentials (basic auth), if it is supported.
+   */
+  val basicAuth: BasicAuthStateHolder? = methods
+    .filterIsInstance<AuthMethod.BasicAuthMethod>()
+    .lastOrNull()
+    ?.let { method ->
+      BasicAuthStateHolder(
+        scope = scope,
+        method = method,
+        basicAuthenticateUseCase = basicAuthenticateUseCase,
+        dispatchers = dispatchers,
+      )
     }
 
-    /**
-     * Aborts the authentication attempt.
-     */
-    fun abort() {
-        scope.launch { events.emit(AuthenticationEvent.Aborted) }
+  /**
+   * State holder for authentication with OAuth (bearer token), if it is supported.
+   */
+  val oAuth: OAuthStateHolder? = methods
+    .filterIsInstance<AuthMethod.OAuthMethod>()
+    .lastOrNull()
+    ?.let { method ->
+      OAuthStateHolder(
+        scope = scope,
+        method = method,
+        createOAuthAuthorizationUseCase = createOAuthAuthorizationUseCase,
+        oAuthAuthenticateUseCase = oAuthAuthenticateUseCase,
+        dispatchers = dispatchers,
+      )
     }
 
-    private suspend fun handleBasicAuthEvent(event: BasicAuthEvent) = when (event) {
-        is BasicAuthEvent.AuthenticationStarted -> startAuthenticating()
+  /**
+   * UI state of the authentication screen.
+   */
+  val uiState: StateFlow<AuthenticationUiState>
+    field = MutableStateFlow(AuthenticationUiState(url = url.toString(), methods = methods))
 
-        is BasicAuthEvent.Authenticated -> events.emit(
-            AuthenticationEvent.Authenticated(
-                option = AuthOption.BasicAuthOption(
-                    url = url,
-                    username = event.username,
-                    password = event.password,
-                    realm = event.method.realm,
-                ),
-            ),
-        )
+  /**
+   * Events emitted by the state holder that are meant to be handled by the parent.
+   */
+  val events: SharedFlow<AuthenticationEvent>
+    field = MutableSharedFlow<AuthenticationEvent>(extraBufferCapacity = 1)
 
-        is BasicAuthEvent.AuthenticationFailed -> failAuthentication(event.error)
+  /**
+   * URLs of the identity provider that are supposed to be opened for authorizing the user.
+   */
+  val authorizationUrls: SharedFlow<Url>
+    field = MutableSharedFlow<Url>(extraBufferCapacity = 1)
 
-        is BasicAuthEvent.ErrorReset -> resetError()
+  init {
+    // Undispatched start makes sure the collectors are subscribed before anyone can emit
+    basicAuth?.let { holder ->
+      scope.launch(start = CoroutineStart.UNDISPATCHED) {
+        holder.events.collect(::handleBasicAuthEvent)
+      }
+    }
+    oAuth?.let { holder ->
+      scope.launch(start = CoroutineStart.UNDISPATCHED) {
+        holder.events.collect(::handleOAuthEvent)
+      }
+    }
+  }
+
+  /**
+   * Aborts the authentication attempt.
+   */
+  fun abort() {
+    scope.launch { events.emit(AuthenticationEvent.Aborted) }
+  }
+
+  private suspend fun handleBasicAuthEvent(event: BasicAuthEvent) = when (event) {
+    is BasicAuthEvent.AuthenticationStarted -> startAuthenticating()
+
+    is BasicAuthEvent.Authenticated -> events.emit(
+      AuthenticationEvent.Authenticated(
+        option = AuthOption.BasicAuthOption(
+          url = url,
+          username = event.username,
+          password = event.password,
+          realm = event.method.realm,
+        ),
+      ),
+    )
+
+    is BasicAuthEvent.AuthenticationFailed -> failAuthentication(event.error)
+
+    is BasicAuthEvent.ErrorReset -> resetError()
+  }
+
+  private suspend fun handleOAuthEvent(event: OAuthEvent) = when (event) {
+    is OAuthEvent.AuthenticationStarted -> {
+      startAuthenticating()
+      authorizationUrls.emit(event.url)
     }
 
-    private suspend fun handleOAuthEvent(event: OAuthEvent) = when (event) {
-        is OAuthEvent.AuthenticationStarted -> {
-            startAuthenticating()
-            authorizationUrls.emit(event.url)
-        }
+    is OAuthEvent.Authenticated -> events.emit(
+      AuthenticationEvent.Authenticated(
+        option = AuthOption.OAuthOption(
+          url = url,
+          accessToken = event.accessToken,
+          refreshToken = event.refreshToken,
+          realm = event.method.realm,
+        ),
+      ),
+    )
 
-        is OAuthEvent.Authenticated -> events.emit(
-            AuthenticationEvent.Authenticated(
-                option = AuthOption.OAuthOption(
-                    url = url,
-                    accessToken = event.accessToken,
-                    refreshToken = event.refreshToken,
-                    realm = event.method.realm,
-                ),
-            ),
-        )
+    is OAuthEvent.AuthenticationFailed -> failAuthentication(event.error)
+  }
 
-        is OAuthEvent.AuthenticationFailed -> failAuthentication(event.error)
-    }
+  private fun startAuthenticating() = uiState.update { it.copy(isAuthenticating = true) }
 
-    private fun startAuthenticating() = uiState.update { it.copy(isAuthenticating = true) }
+  private fun failAuthentication(error: Throwable) = uiState.update {
+    it.copy(error = error.toErrorResource(), isAuthenticating = false)
+  }
 
-    private fun failAuthentication(error: Throwable) = uiState.update {
-        it.copy(error = error.toErrorResource(), isAuthenticating = false)
-    }
-
-    private fun resetError() = uiState.update { it.copy(error = null) }
+  private fun resetError() = uiState.update { it.copy(error = null) }
 }
 
 /**
@@ -193,13 +193,13 @@ class AuthenticationStateHolder(
  * @property error The error that may have occurred.
  */
 data class AuthenticationUiState(
-    val url: String = "",
-    val methods: List<AuthMethod> = emptyList(),
-    val isAuthenticating: Boolean = false,
-    val error: StringResource? = null,
+  val url: String = "",
+  val methods: List<AuthMethod> = emptyList(),
+  val isAuthenticating: Boolean = false,
+  val error: StringResource? = null,
 )
 
 private fun Throwable.toErrorResource(): StringResource = when (this) {
-    is InvalidCredentialsException -> Res.string.error_invalid_credentials
-    else -> Res.string.error_unknown
+  is InvalidCredentialsException -> Res.string.error_invalid_credentials
+  else -> Res.string.error_unknown
 }

@@ -24,34 +24,34 @@ import org.apache.solr.ui.domain.PickedFile
  * Use case for importing a configset from a file.
  */
 interface ImportConfigsetUseCase {
-    /**
-     * Default invocation for importing a configset from a simple zip file.
-     *
-     * @param configsetName The name of the configset to use.
-     * @param file The configset file to import.
-     *
-     * @return A Result containing the Configset of the created configset or an error if the import
-     * failed.
-     */
-    suspend operator fun invoke(configsetName: String, file: PickedFile): ImportConfigsetResult
+  /**
+   * Default invocation for importing a configset from a simple zip file.
+   *
+   * @param configsetName The name of the configset to use.
+   * @param file The configset file to import.
+   *
+   * @return A Result containing the Configset of the created configset or an error if the import
+   * failed.
+   */
+  suspend operator fun invoke(configsetName: String, file: PickedFile): ImportConfigsetResult
 }
 
 sealed interface ImportConfigsetResult {
-    data class Success(val configset: Configset) : ImportConfigsetResult
+  data class Success(val configset: Configset) : ImportConfigsetResult
 
-    data class ValidationFailure(val error: Error) : ImportConfigsetResult
+  data class ValidationFailure(val error: Error) : ImportConfigsetResult
 
-    data class UnexpectedFailure(val cause: Throwable) : ImportConfigsetResult
+  data class UnexpectedFailure(val cause: Throwable) : ImportConfigsetResult
 
-    enum class Error {
-        /**
-         * Error for indicating an invalid configset name.
-         */
-        InvalidConfigsetName,
+  enum class Error {
+    /**
+     * Error for indicating an invalid configset name.
+     */
+    InvalidConfigsetName,
 
-        /**
-         * Error for indicating that the configset with the given name already exists.
-         */
-        DuplicateConfigset,
-    }
+    /**
+     * Error for indicating that the configset with the given name already exists.
+     */
+    DuplicateConfigset,
+  }
 }

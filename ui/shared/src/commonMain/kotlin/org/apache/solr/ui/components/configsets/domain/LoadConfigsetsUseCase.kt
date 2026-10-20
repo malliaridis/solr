@@ -24,10 +24,10 @@ import org.apache.solr.ui.domain.PickedFile
  * Use case for loading the available configsets.
  */
 interface LoadConfigsetsUseCase {
-    /**
-     * Default invocation for loading the available configsets.
-     *
-     * @return A Result containing the list of available Configsets.
-     */
-    suspend operator fun invoke(): Result<List<Configset>>
+  /**
+   * Default invocation for loading the available configsets.
+   *
+   * @return A Result containing the list of available Configsets.
+   */
+  suspend operator fun invoke(): Result<List<Configset>>
 }

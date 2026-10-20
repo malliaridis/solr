@@ -47,119 +47,119 @@ import org.apache.solr.ui.errors.InvalidCredentialsException
 @OptIn(ExperimentalCoroutinesApi::class)
 class BasicAuthStateHolderTest {
 
-    /**
-     * A normal basic auth method with the realm "solr".
-     */
-    private val method = AuthMethod.BasicAuthMethod(realm = "solr")
+  /**
+   * A normal basic auth method with the realm "solr".
+   */
+  private val method = AuthMethod.BasicAuthMethod(realm = "solr")
 
-    /**
-     * Valid username used for authentication.
-     */
-    private val validUsername = "Player1"
+  /**
+   * Valid username used for authentication.
+   */
+  private val validUsername = "Player1"
 
-    /**
-     * Valid password used for authentication.
-     */
-    private val validPassword = "SomeSuperSecurePassword12345"
+  /**
+   * Valid password used for authentication.
+   */
+  private val validPassword = "SomeSuperSecurePassword12345"
 
-    /**
-     * The authorization header that should be used for basic auth with [validUsername] and
-     * [validPassword].
-     */
-    @OptIn(ExperimentalEncodingApi::class)
-    private val validBasicAuthHeader =
-        "Basic ${Base64.encode("$validUsername:$validPassword".toByteArray())}"
+  /**
+   * The authorization header that should be used for basic auth with [validUsername] and
+   * [validPassword].
+   */
+  @OptIn(ExperimentalEncodingApi::class)
+  private val validBasicAuthHeader =
+    "Basic ${Base64.encode("$validUsername:$validPassword".toByteArray())}"
 
-    private val authenticationResponseHandler: MockRequestHandler = { scope: MockRequestHandleScope, data: HttpRequestData ->
-        if (data.headers["Authorization"] == validBasicAuthHeader) {
-            scope.respond(content = "ok", status = HttpStatusCode.OK)
-        } else {
-            scope.respond(content = "invalid credentials", status = HttpStatusCode.Unauthorized)
-        }
+  private val authenticationResponseHandler: MockRequestHandler = { scope: MockRequestHandleScope, data: HttpRequestData ->
+    if (data.headers["Authorization"] == validBasicAuthHeader) {
+      scope.respond(content = "ok", status = HttpStatusCode.OK)
+    } else {
+      scope.respond(content = "invalid credentials", status = HttpStatusCode.Unauthorized)
     }
+  }
 
-    @Test
-    fun `GIVEN valid credentials WHEN authenticate THEN Authenticated with BasicAuthMethod emitted`() = runTest {
-        val engine = createMockEngine(authenticationResponseHandler)
-        val stateHolder = createStateHolder(httpClient = HttpClient(engine), method = method)
-        val events = collectEvents(stateHolder)
+  @Test
+  fun `GIVEN valid credentials WHEN authenticate THEN Authenticated with BasicAuthMethod emitted`() = runTest {
+    val engine = createMockEngine(authenticationResponseHandler)
+    val stateHolder = createStateHolder(httpClient = HttpClient(engine), method = method)
+    val events = collectEvents(stateHolder)
 
-        stateHolder.changeUsername(validUsername)
-        stateHolder.changePassword(validPassword)
-        advanceUntilIdle()
+    stateHolder.changeUsername(validUsername)
+    stateHolder.changePassword(validPassword)
+    advanceUntilIdle()
 
-        stateHolder.authenticate()
-        advanceUntilIdle()
+    stateHolder.authenticate()
+    advanceUntilIdle()
 
-        assertContains(events, BasicAuthEvent.AuthenticationStarted)
-        assertContains(events, BasicAuthEvent.Authenticated(method, validUsername, validPassword))
+    assertContains(events, BasicAuthEvent.AuthenticationStarted)
+    assertContains(events, BasicAuthEvent.Authenticated(method, validUsername, validPassword))
+  }
+
+  @Test
+  fun `GIVEN invalid credentials WHEN authenticate THEN invalid credentials emitted`() = runTest {
+    val engine = createMockEngine(authenticationResponseHandler)
+    val stateHolder = createStateHolder(httpClient = HttpClient(engine))
+    val events = collectEvents(stateHolder)
+
+    stateHolder.changeUsername("invalidUser")
+    stateHolder.changePassword("someinvalid-password")
+    advanceUntilIdle()
+
+    stateHolder.authenticate()
+    advanceUntilIdle()
+
+    assertEquals(2, events.size, "Two events expected")
+    assertContains(events, BasicAuthEvent.AuthenticationStarted)
+    val outcome = events[1]
+    assertIs<BasicAuthEvent.AuthenticationFailed>(outcome)
+    assertIs<InvalidCredentialsException>(outcome.error)
+  }
+
+  @Test
+  fun `GIVEN error state WHEN credentials change THEN error reset emitted`() = runTest {
+    val engine = createMockEngine(authenticationResponseHandler)
+    val stateHolder = createStateHolder(httpClient = HttpClient(engine))
+    val events = collectEvents(stateHolder)
+
+    stateHolder.changeUsername("invalidUser")
+    stateHolder.changePassword("someinvalid-password")
+    advanceUntilIdle()
+
+    stateHolder.authenticate()
+    advanceUntilIdle()
+
+    assertContains(events, BasicAuthEvent.AuthenticationStarted)
+    assertEquals(2, events.size, "Two events expected")
+    assertIs<BasicAuthEvent.AuthenticationFailed>(events[1])
+
+    stateHolder.changeUsername("newUsername")
+    advanceUntilIdle()
+
+    assertEquals(3, events.size, "Three events expected")
+    assertContains(events, BasicAuthEvent.ErrorReset)
+  }
+
+  /**
+   * Collects the events emitted by the [stateHolder] into the returned list.
+   */
+  private fun TestScope.collectEvents(stateHolder: BasicAuthStateHolder): List<BasicAuthEvent> {
+    val events = mutableListOf<BasicAuthEvent>()
+    backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+      stateHolder.events.collect { events.add(it) }
     }
+    return events
+  }
 
-    @Test
-    fun `GIVEN invalid credentials WHEN authenticate THEN invalid credentials emitted`() = runTest {
-        val engine = createMockEngine(authenticationResponseHandler)
-        val stateHolder = createStateHolder(httpClient = HttpClient(engine))
-        val events = collectEvents(stateHolder)
-
-        stateHolder.changeUsername("invalidUser")
-        stateHolder.changePassword("someinvalid-password")
-        advanceUntilIdle()
-
-        stateHolder.authenticate()
-        advanceUntilIdle()
-
-        assertEquals(2, events.size, "Two events expected")
-        assertContains(events, BasicAuthEvent.AuthenticationStarted)
-        val outcome = events[1]
-        assertIs<BasicAuthEvent.AuthenticationFailed>(outcome)
-        assertIs<InvalidCredentialsException>(outcome.error)
-    }
-
-    @Test
-    fun `GIVEN error state WHEN credentials change THEN error reset emitted`() = runTest {
-        val engine = createMockEngine(authenticationResponseHandler)
-        val stateHolder = createStateHolder(httpClient = HttpClient(engine))
-        val events = collectEvents(stateHolder)
-
-        stateHolder.changeUsername("invalidUser")
-        stateHolder.changePassword("someinvalid-password")
-        advanceUntilIdle()
-
-        stateHolder.authenticate()
-        advanceUntilIdle()
-
-        assertContains(events, BasicAuthEvent.AuthenticationStarted)
-        assertEquals(2, events.size, "Two events expected")
-        assertIs<BasicAuthEvent.AuthenticationFailed>(events[1])
-
-        stateHolder.changeUsername("newUsername")
-        advanceUntilIdle()
-
-        assertEquals(3, events.size, "Three events expected")
-        assertContains(events, BasicAuthEvent.ErrorReset)
-    }
-
-    /**
-     * Collects the events emitted by the [stateHolder] into the returned list.
-     */
-    private fun TestScope.collectEvents(stateHolder: BasicAuthStateHolder): List<BasicAuthEvent> {
-        val events = mutableListOf<BasicAuthEvent>()
-        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
-            stateHolder.events.collect { events.add(it) }
-        }
-        return events
-    }
-
-    /**
-     * Helper function for creating an instance of the [BasicAuthStateHolder].
-     */
-    private fun TestScope.createStateHolder(
-        httpClient: HttpClient = HttpClient(),
-        method: AuthMethod.BasicAuthMethod = AuthMethod.BasicAuthMethod(),
-    ) = BasicAuthStateHolder(
-        scope = this,
-        method = method,
-        basicAuthenticateUseCase = DefaultBasicAuthenticateUseCase(HttpBasicAuthRepository(httpClient)),
-        dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
-    )
+  /**
+   * Helper function for creating an instance of the [BasicAuthStateHolder].
+   */
+  private fun TestScope.createStateHolder(
+    httpClient: HttpClient = HttpClient(),
+    method: AuthMethod.BasicAuthMethod = AuthMethod.BasicAuthMethod(),
+  ) = BasicAuthStateHolder(
+    scope = this,
+    method = method,
+    basicAuthenticateUseCase = DefaultBasicAuthenticateUseCase(HttpBasicAuthRepository(httpClient)),
+    dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+  )
 }

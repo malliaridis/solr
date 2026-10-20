@@ -22,31 +22,31 @@ import org.apache.solr.ui.utils.MAX_CONFIGSET_NAME_LENGTH
 import org.apache.solr.ui.utils.configsetNameRegex
 
 internal class DefaultCreateConfigsetUseCase(
-    private val repository: ConfigsetsRepository,
+  private val repository: ConfigsetsRepository,
 ) : CreateConfigsetUseCase {
-    override suspend fun invoke(
-        configsetName: String,
-        baseConfigset: String?,
-    ): CreateConfigsetResult {
-        if (!configsetName.matches(configsetNameRegex)) {
-            return CreateConfigsetResult.ValidationFailure(
-                error = CreateConfigsetResult.Error.ConfigsetNameContainsInvalidCharacters,
-            )
-        }
-
-        if (configsetName.length > MAX_CONFIGSET_NAME_LENGTH) {
-            return CreateConfigsetResult.ValidationFailure(
-                error = CreateConfigsetResult.Error.ConfigsetNameTooLong,
-            )
-        }
-
-        // TODO v2 API requires baseConfigSet to be set,
-        //  remove fallback to _default once it is truly optional
-        repository.createConfigset(configsetName, baseConfigset ?: "_default")
-            .onSuccess {
-                return CreateConfigsetResult.Success(configset = it)
-            }
-            .onFailure { return CreateConfigsetResult.UnexpectedFailure(cause = it) }
-        return CreateConfigsetResult.UnexpectedFailure(cause = Error("Unknown error"))
+  override suspend fun invoke(
+    configsetName: String,
+    baseConfigset: String?,
+  ): CreateConfigsetResult {
+    if (!configsetName.matches(configsetNameRegex)) {
+      return CreateConfigsetResult.ValidationFailure(
+        error = CreateConfigsetResult.Error.ConfigsetNameContainsInvalidCharacters,
+      )
     }
+
+    if (configsetName.length > MAX_CONFIGSET_NAME_LENGTH) {
+      return CreateConfigsetResult.ValidationFailure(
+        error = CreateConfigsetResult.Error.ConfigsetNameTooLong,
+      )
+    }
+
+    // TODO v2 API requires baseConfigSet to be set,
+    //  remove fallback to _default once it is truly optional
+    repository.createConfigset(configsetName, baseConfigset ?: "_default")
+      .onSuccess {
+        return CreateConfigsetResult.Success(configset = it)
+      }
+      .onFailure { return CreateConfigsetResult.UnexpectedFailure(cause = it) }
+    return CreateConfigsetResult.UnexpectedFailure(cause = Error("Unknown error"))
+  }
 }

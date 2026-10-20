@@ -30,26 +30,26 @@ import kotlinx.coroutines.flow.update
  */
 class ClusterViewModel : ViewModel() {
 
-    /**
-     * UI state of the cluster section.
-     */
-    val uiState: StateFlow<ClusterUiState>
-        field = MutableStateFlow(ClusterUiState())
+  /**
+   * UI state of the cluster section.
+   */
+  val uiState: StateFlow<ClusterUiState>
+    field = MutableStateFlow(ClusterUiState())
 
-    /**
-     * Switches to the cluster [tab] that was provided.
-     *
-     * @param tab The tab to select.
-     */
-    fun selectTab(tab: ClusterTab) = uiState.update { it.copy(selectedTab = tab) }
+  /**
+   * Switches to the cluster [tab] that was provided.
+   *
+   * @param tab The tab to select.
+   */
+  fun selectTab(tab: ClusterTab) = uiState.update { it.copy(selectedTab = tab) }
 }
 
 data class ClusterUiState(
-    val selectedTab: ClusterTab = ClusterTab.Zookeeper,
+  val selectedTab: ClusterTab = ClusterTab.Zookeeper,
 )
 
 enum class ClusterTab {
-    Zookeeper,
-    Nodes,
-    Cores,
+  Zookeeper,
+  Nodes,
+  Cores,
 }

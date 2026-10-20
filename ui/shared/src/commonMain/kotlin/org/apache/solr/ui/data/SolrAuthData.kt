@@ -26,13 +26,13 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class SolrAuthData(
-    @SerialName("client_id")
-    val clientId: String,
-    val tokenEndpoint: String,
-    @SerialName("authorization_flow")
-    val authorizationFlow: String,
-    val scope: String,
-    @SerialName("redirect_uris")
-    val redirectUris: List<String>,
-    val authorizationEndpoint: String,
+  @SerialName("client_id")
+  val clientId: String,
+  val tokenEndpoint: String,
+  @SerialName("authorization_flow")
+  val authorizationFlow: String,
+  val scope: String,
+  @SerialName("redirect_uris")
+  val redirectUris: List<String>,
+  val authorizationEndpoint: String,
 )

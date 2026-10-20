@@ -26,38 +26,38 @@ import org.apache.solr.ui.utils.defaultSolrUrl
 import org.apache.solr.ui.utils.parseError
 
 internal class DefaultConnectUseCase(
-    private val repository: StartRepository,
+  private val repository: StartRepository,
 ) : ConnectUseCase {
 
-    override suspend fun invoke(url: String): ConnectResult {
-        val urlValue = url.ifBlank { defaultSolrUrl() }
-        val solrUrl = parseUrl(urlValue) ?: return ConnectResult.Failure(
-            URLParserException(
-                urlString = urlValue,
-                cause = Error("Invalid URL"),
-            ),
-        )
+  override suspend fun invoke(url: String): ConnectResult {
+    val urlValue = url.ifBlank { defaultSolrUrl() }
+    val solrUrl = parseUrl(urlValue) ?: return ConnectResult.Failure(
+      URLParserException(
+        urlString = urlValue,
+        cause = Error("Invalid URL"),
+      ),
+    )
 
-        return try {
-            repository.connect(solrUrl).fold(
-                // Solr server found with no auth active
-                onSuccess = { ConnectResult.Connected(solrUrl) },
-                onFailure = { error ->
-                    if (error is UnauthorizedException && error.methods.isNotEmpty()) {
-                        // Solr server found, but user is unauthorized
-                        ConnectResult.AuthRequired(url = solrUrl, methods = error.methods)
-                    } else {
-                        // Includes Solr servers that responded with an unauthorized error that
-                        // cannot be processed (supported method or missing information)
-                        ConnectResult.Failure(error)
-                    }
-                },
-            )
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Throwable) {
-            // error thrown here is platform-specific and needs further parsing
-            ConnectResult.Failure(parseError(e))
-        }
+    return try {
+      repository.connect(solrUrl).fold(
+        // Solr server found with no auth active
+        onSuccess = { ConnectResult.Connected(solrUrl) },
+        onFailure = { error ->
+          if (error is UnauthorizedException && error.methods.isNotEmpty()) {
+            // Solr server found, but user is unauthorized
+            ConnectResult.AuthRequired(url = solrUrl, methods = error.methods)
+          } else {
+            // Includes Solr servers that responded with an unauthorized error that
+            // cannot be processed (supported method or missing information)
+            ConnectResult.Failure(error)
+          }
+        },
+      )
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Throwable) {
+      // error thrown here is platform-specific and needs further parsing
+      ConnectResult.Failure(parseError(e))
     }
+  }
 }

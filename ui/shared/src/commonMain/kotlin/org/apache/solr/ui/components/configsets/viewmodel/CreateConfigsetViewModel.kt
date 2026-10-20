@@ -33,77 +33,77 @@ import org.apache.solr.ui.components.configsets.domain.LoadConfigsetsUseCase
 import org.apache.solr.ui.utils.AppDispatchers
 
 class CreateConfigsetViewModel(
-    private val createConfigsetUseCase: CreateConfigsetUseCase,
-    loadConfigsetsUseCase: LoadConfigsetsUseCase,
-    private val dispatchers: AppDispatchers,
+  private val createConfigsetUseCase: CreateConfigsetUseCase,
+  loadConfigsetsUseCase: LoadConfigsetsUseCase,
+  private val dispatchers: AppDispatchers,
 ) : ViewModel() {
 
-    private val configsetsState = ConfigsetsStateHolder(
-        scope = viewModelScope,
-        loadConfigsetsUseCase = loadConfigsetsUseCase,
-        dispatchers = dispatchers,
-    )
+  private val configsetsState = ConfigsetsStateHolder(
+    scope = viewModelScope,
+    loadConfigsetsUseCase = loadConfigsetsUseCase,
+    dispatchers = dispatchers,
+  )
 
-    /**
-     * State of the configset create form.
-     */
-    val uiState: StateFlow<CreateConfigsetFormUiState>
-        field = MutableStateFlow(CreateConfigsetFormUiState())
+  /**
+   * State of the configset create form.
+   */
+  val uiState: StateFlow<CreateConfigsetFormUiState>
+    field = MutableStateFlow(CreateConfigsetFormUiState())
 
-    /**
-     * Configset state that holds the currently selected base configset.
-     */
-    val configsetsUiState = configsetsState.uiState
+  /**
+   * Configset state that holds the currently selected base configset.
+   */
+  val configsetsUiState = configsetsState.uiState
 
-    /**
-     * Events emitted by the viewmodel.
-     */
-    val events: SharedFlow<CreateConfigsetEvent>
-        field = MutableSharedFlow<CreateConfigsetEvent>(extraBufferCapacity = 1)
+  /**
+   * Events emitted by the viewmodel.
+   */
+  val events: SharedFlow<CreateConfigsetEvent>
+    field = MutableSharedFlow<CreateConfigsetEvent>(extraBufferCapacity = 1)
 
-    fun changeConfigsetName(configsetName: String) = uiState.update {
-        it.copy(configsetName = configsetName)
+  fun changeConfigsetName(configsetName: String) = uiState.update {
+    it.copy(configsetName = configsetName)
+  }
+
+  fun changeBaseConfigset(baseConfigset: String) = configsetsState.selectConfigset(baseConfigset)
+
+  fun createConfigset() {
+    uiState.update { it.copy(isLoading = true) }
+    // TODO Validate input data or let use case validate data
+
+    viewModelScope.launch {
+      val result = withContext(context = dispatchers.io) {
+        createConfigsetUseCase(
+          configsetName = uiState.value.configsetName,
+          baseConfigset = configsetsState.uiState.value.selectedConfigset,
+        )
+      }
+
+      when (result) {
+        is CreateConfigsetResult.Success ->
+          events.emit(CreateConfigsetEvent.ConfigsetCreated(result.configset))
+
+        is CreateConfigsetResult.ValidationFailure ->
+          uiState.update { it.copy(configsetNameError = result.error) }
+
+        is CreateConfigsetResult.UnexpectedFailure -> TODO()
+      }
     }
+  }
 
-    fun changeBaseConfigset(baseConfigset: String) = configsetsState.selectConfigset(baseConfigset)
+  fun clearBaseConfigset() = configsetsState.clearSelectedConfigset()
 
-    fun createConfigset() {
-        uiState.update { it.copy(isLoading = true) }
-        // TODO Validate input data or let use case validate data
+  fun toggleInput() = viewModelScope.launch {
+    events.emit(CreateConfigsetEvent.ConfigsetCreateToggleInputForm(useFileInput = true))
+  }
 
-        viewModelScope.launch {
-            val result = withContext(context = dispatchers.io) {
-                createConfigsetUseCase(
-                    configsetName = uiState.value.configsetName,
-                    baseConfigset = configsetsState.uiState.value.selectedConfigset,
-                )
-            }
-
-            when (result) {
-                is CreateConfigsetResult.Success ->
-                    events.emit(CreateConfigsetEvent.ConfigsetCreated(result.configset))
-
-                is CreateConfigsetResult.ValidationFailure ->
-                    uiState.update { it.copy(configsetNameError = result.error) }
-
-                is CreateConfigsetResult.UnexpectedFailure -> TODO()
-            }
-        }
-    }
-
-    fun clearBaseConfigset() = configsetsState.clearSelectedConfigset()
-
-    fun toggleInput() = viewModelScope.launch {
-        events.emit(CreateConfigsetEvent.ConfigsetCreateToggleInputForm(useFileInput = true))
-    }
-
-    fun abortCreation() = viewModelScope.launch {
-        events.emit(CreateConfigsetEvent.ConfigsetCreationAborted)
-    }
+  fun abortCreation() = viewModelScope.launch {
+    events.emit(CreateConfigsetEvent.ConfigsetCreationAborted)
+  }
 }
 
 data class CreateConfigsetFormUiState(
-    val configsetName: String = "",
-    val configsetNameError: CreateConfigsetResult.Error? = null,
-    val isLoading: Boolean = false,
+  val configsetName: String = "",
+  val configsetNameError: CreateConfigsetResult.Error? = null,
+  val isLoading: Boolean = false,
 )

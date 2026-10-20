@@ -22,11 +22,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class SystemMode {
-    Unknown,
+  Unknown,
 
-    @SerialName("solrcloud")
-    SolrCloud,
+  @SerialName("solrcloud")
+  SolrCloud,
 
-    @SerialName("std")
-    Standalone,
+  @SerialName("std")
+  Standalone,
 }

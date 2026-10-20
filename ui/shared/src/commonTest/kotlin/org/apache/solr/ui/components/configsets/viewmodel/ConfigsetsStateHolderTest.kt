@@ -32,62 +32,62 @@ import org.apache.solr.ui.domain.Configset
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConfigsetsStateHolderTest {
 
-    private val configset1 = "_default"
-    private val configset2 = "techproducts"
-    private val configset3 = "getting_started"
-    private val configsets = listOf(configset1, configset2, configset3)
+  private val configset1 = "_default"
+  private val configset2 = "techproducts"
+  private val configset3 = "getting_started"
+  private val configsets = listOf(configset1, configset2, configset3)
 
-    @Test
-    fun `GIVEN configsets WHEN initialized THEN configsets fetched`() = runTest {
-        val stateHolder = ConfigsetsStateHolder(
-            scope = this,
-            loadConfigsetsUseCase = getLoadConfigsetsUseCase(configsets),
-            dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
-        )
-        advanceUntilIdle()
+  @Test
+  fun `GIVEN configsets WHEN initialized THEN configsets fetched`() = runTest {
+    val stateHolder = ConfigsetsStateHolder(
+      scope = this,
+      loadConfigsetsUseCase = getLoadConfigsetsUseCase(configsets),
+      dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+    )
+    advanceUntilIdle()
 
-        stateHolder.uiState.value.configsets.forEach { configset ->
-            assertContains(
-                iterable = configsets,
-                element = configset.name,
-            )
-        }
+    stateHolder.uiState.value.configsets.forEach { configset ->
+      assertContains(
+        iterable = configsets,
+        element = configset.name,
+      )
     }
+  }
 
-    @Test
-    fun `GIVEN configsets WHEN configsets fetched THEN configsets sorted`() = runTest {
-        val stateHolder = ConfigsetsStateHolder(
-            scope = this,
-            loadConfigsetsUseCase = getLoadConfigsetsUseCase(configsets),
-            dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
-        )
-        advanceUntilIdle()
+  @Test
+  fun `GIVEN configsets WHEN configsets fetched THEN configsets sorted`() = runTest {
+    val stateHolder = ConfigsetsStateHolder(
+      scope = this,
+      loadConfigsetsUseCase = getLoadConfigsetsUseCase(configsets),
+      dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+    )
+    advanceUntilIdle()
 
-        assertContentEquals(
-            expected = configsets.sorted(),
-            actual = stateHolder.uiState.value.configsets.map(Configset::name),
-        )
-    }
+    assertContentEquals(
+      expected = configsets.sorted(),
+      actual = stateHolder.uiState.value.configsets.map(Configset::name),
+    )
+  }
 
-    @Test
-    fun `GIVEN configsets WHEN configset selected THEN selectedConfigset updated`() = runTest {
-        val stateHolder = ConfigsetsStateHolder(
-            scope = this,
-            loadConfigsetsUseCase = getLoadConfigsetsUseCase(configsets),
-            dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
-        )
-        advanceUntilIdle()
+  @Test
+  fun `GIVEN configsets WHEN configset selected THEN selectedConfigset updated`() = runTest {
+    val stateHolder = ConfigsetsStateHolder(
+      scope = this,
+      loadConfigsetsUseCase = getLoadConfigsetsUseCase(configsets),
+      dispatchers = TestDispatchers(UnconfinedTestDispatcher(scheduler = testScheduler)),
+    )
+    advanceUntilIdle()
 
-        stateHolder.selectConfigset(configset = configset2)
-        advanceUntilIdle()
+    stateHolder.selectConfigset(configset = configset2)
+    advanceUntilIdle()
 
-        assertEquals(
-            expected = configset2,
-            actual = stateHolder.uiState.value.selectedConfigset,
-        )
-    }
+    assertEquals(
+      expected = configset2,
+      actual = stateHolder.uiState.value.selectedConfigset,
+    )
+  }
 
-    private fun getLoadConfigsetsUseCase(configsets: List<String>) = object : LoadConfigsetsUseCase {
-        override suspend fun invoke(): Result<List<Configset>> = Result.success(configsets.map { Configset(name = it) })
-    }
+  private fun getLoadConfigsetsUseCase(configsets: List<String>) = object : LoadConfigsetsUseCase {
+    override suspend fun invoke(): Result<List<Configset>> = Result.success(configsets.map { Configset(name = it) })
+  }
 }

@@ -22,8 +22,8 @@ package org.apache.solr.ui.components.main.domain
  */
 sealed interface MainEvent {
 
-    /**
-     * Emitted when the user logs out.
-     */
-    data object UserLoggedOut : MainEvent
+  /**
+   * Emitted when the user logs out.
+   */
+  data object UserLoggedOut : MainEvent
 }

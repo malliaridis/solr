@@ -45,38 +45,38 @@ import org.apache.solr.ui.utils.platformDispatchers
  * [httpClient] is pointing to.
  */
 class DefaultAuthenticationComponent(
-    httpClient: HttpClient,
-    private val url: Url,
-    private val methods: List<AuthMethod>,
-    private val dispatchers: AppDispatchers = platformDispatchers(),
+  httpClient: HttpClient,
+  private val url: Url,
+  private val methods: List<AuthMethod>,
+  private val dispatchers: AppDispatchers = platformDispatchers(),
 ) : AuthenticationComponent {
 
-    override val basicAuthRepository: BasicAuthRepository by lazy {
-        HttpBasicAuthRepository(httpClient)
-    }
+  override val basicAuthRepository: BasicAuthRepository by lazy {
+    HttpBasicAuthRepository(httpClient)
+  }
 
-    override val oAuthRepository: OAuthRepository by lazy {
-        PlatformOAuthRepository(httpClient)
-    }
+  override val oAuthRepository: OAuthRepository by lazy {
+    PlatformOAuthRepository(httpClient)
+  }
 
-    override val basicAuthenticateUseCase: BasicAuthenticateUseCase by lazy {
-        DefaultBasicAuthenticateUseCase(basicAuthRepository)
-    }
+  override val basicAuthenticateUseCase: BasicAuthenticateUseCase by lazy {
+    DefaultBasicAuthenticateUseCase(basicAuthRepository)
+  }
 
-    override val createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase by lazy {
-        DefaultCreateOAuthAuthorizationUseCase()
-    }
+  override val createOAuthAuthorizationUseCase: CreateOAuthAuthorizationUseCase by lazy {
+    DefaultCreateOAuthAuthorizationUseCase()
+  }
 
-    override val oAuthAuthenticateUseCase: OAuthAuthenticateUseCase by lazy {
-        DefaultOAuthAuthenticateUseCase(oAuthRepository)
-    }
+  override val oAuthAuthenticateUseCase: OAuthAuthenticateUseCase by lazy {
+    DefaultOAuthAuthenticateUseCase(oAuthRepository)
+  }
 
-    override fun createAuthenticationViewModel(): AuthenticationViewModel = AuthenticationViewModel(
-        url = url,
-        methods = methods,
-        basicAuthenticateUseCase = basicAuthenticateUseCase,
-        createOAuthAuthorizationUseCase = createOAuthAuthorizationUseCase,
-        oAuthAuthenticateUseCase = oAuthAuthenticateUseCase,
-        dispatchers = dispatchers,
-    )
+  override fun createAuthenticationViewModel(): AuthenticationViewModel = AuthenticationViewModel(
+    url = url,
+    methods = methods,
+    basicAuthenticateUseCase = basicAuthenticateUseCase,
+    createOAuthAuthorizationUseCase = createOAuthAuthorizationUseCase,
+    oAuthAuthenticateUseCase = oAuthAuthenticateUseCase,
+    dispatchers = dispatchers,
+  )
 }

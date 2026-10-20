@@ -25,5 +25,5 @@ import org.apache.solr.ui.components.cluster.viewmodel.ClusterViewModel
  */
 class DefaultClusterComponent : ClusterComponent {
 
-    override fun createClusterViewModel(): ClusterViewModel = ClusterViewModel()
+  override fun createClusterViewModel(): ClusterViewModel = ClusterViewModel()
 }

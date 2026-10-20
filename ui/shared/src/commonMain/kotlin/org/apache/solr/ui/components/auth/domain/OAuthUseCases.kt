@@ -29,9 +29,9 @@ import org.apache.solr.ui.domain.AuthMethod
  * @property verifier The code verifier used in the authorization flow.
  */
 data class OAuthAuthorization(
-    val url: Url,
-    val state: String,
-    val verifier: String,
+  val url: Url,
+  val state: String,
+  val verifier: String,
 )
 
 /**
@@ -39,12 +39,12 @@ data class OAuthAuthorization(
  */
 interface CreateOAuthAuthorizationUseCase {
 
-    /**
-     * Creates a new authorization request for the given [method].
-     *
-     * @param method The OAuth method to create the authorization request for.
-     */
-    operator fun invoke(method: AuthMethod.OAuthMethod): OAuthAuthorization
+  /**
+   * Creates a new authorization request for the given [method].
+   *
+   * @param method The OAuth method to create the authorization request for.
+   */
+  operator fun invoke(method: AuthMethod.OAuthMethod): OAuthAuthorization
 }
 
 /**
@@ -52,18 +52,18 @@ interface CreateOAuthAuthorizationUseCase {
  */
 interface OAuthAuthenticateUseCase {
 
-    /**
-     * Waits for the user to authorize the [authorization] request and exchanges the result for
-     * tokens.
-     *
-     * @param authorization The authorization request the user is expected to authorize.
-     * @param method The OAuth method the authorization request was created for.
-     * @return The tokens if the user has successfully authenticated. Otherwise, a failure with the
-     * error that occurred, where invalid credentials are reported as
-     * [org.apache.solr.ui.errors.InvalidCredentialsException].
-     */
-    suspend operator fun invoke(
-        authorization: OAuthAuthorization,
-        method: AuthMethod.OAuthMethod,
-    ): Result<BearerTokens>
+  /**
+   * Waits for the user to authorize the [authorization] request and exchanges the result for
+   * tokens.
+   *
+   * @param authorization The authorization request the user is expected to authorize.
+   * @param method The OAuth method the authorization request was created for.
+   * @return The tokens if the user has successfully authenticated. Otherwise, a failure with the
+   * error that occurred, where invalid credentials are reported as
+   * [org.apache.solr.ui.errors.InvalidCredentialsException].
+   */
+  suspend operator fun invoke(
+    authorization: OAuthAuthorization,
+    method: AuthMethod.OAuthMethod,
+  ): Result<BearerTokens>
 }

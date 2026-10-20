@@ -33,15 +33,15 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun SolrLinearProgressIndicator(
-    modifier: Modifier = Modifier,
-    color: Color = ProgressIndicatorDefaults.linearColor,
-    trackColor: Color = ProgressIndicatorDefaults.linearTrackColor,
-    strokeCap: StrokeCap = StrokeCap.Butt,
-    gapSize: Dp = 0.dp,
+  modifier: Modifier = Modifier,
+  color: Color = ProgressIndicatorDefaults.linearColor,
+  trackColor: Color = ProgressIndicatorDefaults.linearTrackColor,
+  strokeCap: StrokeCap = StrokeCap.Butt,
+  gapSize: Dp = 0.dp,
 ) = LinearProgressIndicator(
-    modifier = modifier,
-    color = color,
-    trackColor = trackColor,
-    strokeCap = strokeCap,
-    gapSize = gapSize,
+  modifier = modifier,
+  color = color,
+  trackColor = trackColor,
+  strokeCap = strokeCap,
+  gapSize = gapSize,
 )

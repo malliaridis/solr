@@ -21,8 +21,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Jmx(
-    val classpath: String = "",
-    val commandLineArgs: List<String> = emptyList(),
-    val startTime: String = "",
-    val upTimeMS: Long = 0,
+  val classpath: String = "",
+  val commandLineArgs: List<String> = emptyList(),
+  val startTime: String = "",
+  val upTimeMS: Long = 0,
 )

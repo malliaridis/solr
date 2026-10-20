@@ -20,9 +20,8 @@ package org.apache.solr.ui.components.auth.domain
 import org.apache.solr.ui.components.auth.repository.BasicAuthRepository
 
 internal class DefaultBasicAuthenticateUseCase(
-    private val repository: BasicAuthRepository,
+  private val repository: BasicAuthRepository,
 ) : BasicAuthenticateUseCase {
 
-    override suspend fun invoke(username: String, password: String): Result<Unit> =
-        authenticationCatching { repository.authenticate(username, password) }
+  override suspend fun invoke(username: String, password: String): Result<Unit> = authenticationCatching { repository.authenticate(username, password) }
 }

@@ -30,13 +30,13 @@ import org.apache.solr.ui.utils.parseError
  * [parseError]. Cancellations are rethrown.
  */
 internal inline fun <T> authenticationCatching(block: () -> Result<T>): Result<T> = try {
-    val result = block()
-    when (result.exceptionOrNull()) {
-        is UnauthorizedException -> Result.failure(InvalidCredentialsException())
-        else -> result
-    }
+  val result = block()
+  when (result.exceptionOrNull()) {
+    is UnauthorizedException -> Result.failure(InvalidCredentialsException())
+    else -> result
+  }
 } catch (e: CancellationException) {
-    throw e
+  throw e
 } catch (e: Throwable) {
-    Result.failure(parseError(e))
+  Result.failure(parseError(e))
 }

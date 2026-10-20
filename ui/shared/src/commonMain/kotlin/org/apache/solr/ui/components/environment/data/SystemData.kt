@@ -22,15 +22,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SystemData(
-    val mode: SystemMode = SystemMode.Unknown,
-    val zkHost: String = "",
-    @SerialName("solr_home")
-    val solrHome: String = "",
-    @SerialName("core_root")
-    val coreRoot: String = "",
-    val lucene: Versions = Versions(),
-    val jvm: JvmData = JvmData(),
-    val security: SecurityConfig = SecurityConfig(),
-    val system: SystemInformation = SystemInformation(),
-    val node: String = "",
+  val mode: SystemMode = SystemMode.Unknown,
+  val zkHost: String = "",
+  @SerialName("solr_home")
+  val solrHome: String = "",
+  @SerialName("core_root")
+  val coreRoot: String = "",
+  val lucene: Versions = Versions(),
+  val jvm: JvmData = JvmData(),
+  val security: SecurityConfig = SecurityConfig(),
+  val system: SystemInformation = SystemInformation(),
+  val node: String = "",
 )

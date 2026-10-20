@@ -36,32 +36,32 @@ import org.w3c.dom.Window
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalWasmJsInterop::class)
 fun main() {
-    val url = Url(window.location.href)
-    val destination = url.parameters["dest"]
+  val url = Url(window.location.href)
+  val destination = url.parameters["dest"]
 
-    // TODO Extend the path and query params analysis for deep links and page reloads
-    if (url.rawSegments.last() == "callback") {
-        // This is a callback request from an authentication attempt,
-        // notify other tab of same origin and close window.
-        // Note that this is a simple way to handle deep links for OAuth callbacks
-        window.opener?.unsafeCast<Window>()
-            ?.postMessage(window.location.search.toJsString(), window.location.origin)
-        window.close()
-        return
+  // TODO Extend the path and query params analysis for deep links and page reloads
+  if (url.rawSegments.last() == "callback") {
+    // This is a callback request from an authentication attempt,
+    // notify other tab of same origin and close window.
+    // Note that this is a simple way to handle deep links for OAuth callbacks
+    window.opener?.unsafeCast<Window>()
+      ?.postMessage(window.location.search.toJsString(), window.location.origin)
+    window.close()
+    return
+  }
+
+  val httpClient = getDefaultClient(url = Url(defaultSolrUrl()))
+
+  val component: RootComponent = SimpleRootComponent(
+    httpClient = httpClient,
+    destination = destination,
+  )
+
+  ComposeViewport {
+    SolrTheme(useDarkTheme = false) {
+      Surface(modifier = Modifier.fillMaxSize()) {
+        RootContent(component)
+      }
     }
-
-    val httpClient = getDefaultClient(url = Url(defaultSolrUrl()))
-
-    val component: RootComponent = SimpleRootComponent(
-        httpClient = httpClient,
-        destination = destination,
-    )
-
-    ComposeViewport {
-        SolrTheme(useDarkTheme = false) {
-            Surface(modifier = Modifier.fillMaxSize()) {
-                RootContent(component)
-            }
-        }
-    }
+  }
 }

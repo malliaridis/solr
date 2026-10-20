@@ -30,13 +30,13 @@ import org.apache.solr.ui.views.theme.SolrTheme
  */
 @Composable
 fun PreviewContainer(
-    modifier: Modifier = Modifier.fillMaxSize(),
-    content: @Composable () -> Unit,
+  modifier: Modifier = Modifier.fillMaxSize(),
+  content: @Composable () -> Unit,
 ) = SolrTheme(useDarkTheme = false) {
-    Surface(modifier = modifier) {
-        Surface(
-            modifier = Modifier.padding(16.dp),
-            content = content,
-        )
-    }
+  Surface(modifier = modifier) {
+    Surface(
+      modifier = Modifier.padding(16.dp),
+      content = content,
+    )
+  }
 }

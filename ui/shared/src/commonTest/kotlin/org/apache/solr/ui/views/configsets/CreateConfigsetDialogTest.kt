@@ -36,48 +36,48 @@ import org.apache.solr.ui.domain.Configset
 
 @OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 class CreateConfigsetDialogTest {
-    @Test
-    fun `WHEN configset name typed THEN creation button enabled`() = runComposeUiTest {
-        setContent {
-            CreateConfigsetDialog(viewModel())
-        }
-
-        val configsetTextField = onNodeWithTag(testTag = "create_configset_name_field")
-        configsetTextField.performTextInput("testconfigset")
-
-        onNodeWithTag(testTag = "configset_create_button").assertIsEnabled()
+  @Test
+  fun `WHEN configset name typed THEN creation button enabled`() = runComposeUiTest {
+    setContent {
+      CreateConfigsetDialog(viewModel())
     }
 
-    @Test
-    fun `GIVEN configset name WHEN clearing configset name THEN creation button disabled`() = runComposeUiTest {
-        setContent {
-            CreateConfigsetDialog(viewModel())
-        }
+    val configsetTextField = onNodeWithTag(testTag = "create_configset_name_field")
+    configsetTextField.performTextInput("testconfigset")
 
-        val configsetTextField = onNodeWithTag(testTag = "create_configset_name_field")
-        configsetTextField.performTextInput("testconfigset")
+    onNodeWithTag(testTag = "configset_create_button").assertIsEnabled()
+  }
 
-        configsetTextField.performTextClearance()
-
-        onNodeWithTag(testTag = "configset_create_button").assertIsNotEnabled()
+  @Test
+  fun `GIVEN configset name WHEN clearing configset name THEN creation button disabled`() = runComposeUiTest {
+    setContent {
+      CreateConfigsetDialog(viewModel())
     }
 
-    private fun viewModel() = CreateConfigsetViewModel(
-        createConfigsetUseCase = SuccessCreateConfigsetUseCase,
-        loadConfigsetsUseCase = SuccessLoadConfigsetsUseCase(),
-        dispatchers = TestDispatchers(io = UnconfinedTestDispatcher()),
-    )
+    val configsetTextField = onNodeWithTag(testTag = "create_configset_name_field")
+    configsetTextField.performTextInput("testconfigset")
+
+    configsetTextField.performTextClearance()
+
+    onNodeWithTag(testTag = "configset_create_button").assertIsNotEnabled()
+  }
+
+  private fun viewModel() = CreateConfigsetViewModel(
+    createConfigsetUseCase = SuccessCreateConfigsetUseCase,
+    loadConfigsetsUseCase = SuccessLoadConfigsetsUseCase(),
+    dispatchers = TestDispatchers(io = UnconfinedTestDispatcher()),
+  )
 }
 
 private object SuccessCreateConfigsetUseCase : CreateConfigsetUseCase {
-    override suspend fun invoke(
-        configsetName: String,
-        baseConfigset: String?,
-    ): CreateConfigsetResult = CreateConfigsetResult.Success(Configset(name = configsetName))
+  override suspend fun invoke(
+    configsetName: String,
+    baseConfigset: String?,
+  ): CreateConfigsetResult = CreateConfigsetResult.Success(Configset(name = configsetName))
 }
 
 private class SuccessLoadConfigsetsUseCase(
-    private val configsets: List<Configset> = emptyList(),
+  private val configsets: List<Configset> = emptyList(),
 ) : LoadConfigsetsUseCase {
-    override suspend fun invoke(): Result<List<Configset>> = Result.success(configsets)
+  override suspend fun invoke(): Result<List<Configset>> = Result.success(configsets)
 }

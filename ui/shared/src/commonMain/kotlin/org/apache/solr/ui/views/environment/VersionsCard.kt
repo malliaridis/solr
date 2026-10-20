@@ -40,38 +40,38 @@ import org.apache.solr.ui.views.components.SolrCard
  */
 @Composable
 internal fun VersionsCard(
-    versions: Versions,
-    jvm: JvmData,
-    modifier: Modifier = Modifier,
+  versions: Versions,
+  jvm: JvmData,
+  modifier: Modifier = Modifier,
 ) = SolrCard(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    Text(
-        text = "Versions",
-        style = MaterialTheme.typography.headlineSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    VersionEntry(
-        label = "solr-spec",
-        value = versions.solrSpecVersion,
-    )
-    VersionEntry(
-        label = "solr-impl",
-        value = versions.solrImplVersion,
-    )
-    VersionEntry(
-        label = "lucene-spec",
-        value = versions.luceneSpecVersion,
-    )
-    VersionEntry(
-        label = "lucene-impl",
-        value = versions.luceneImplVersion,
-    )
-    VersionEntry(
-        label = "Runtime",
-        value = "${jvm.name} ${jvm.version}",
-    )
+  Text(
+    text = "Versions",
+    style = MaterialTheme.typography.headlineSmall,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+  VersionEntry(
+    label = "solr-spec",
+    value = versions.solrSpecVersion,
+  )
+  VersionEntry(
+    label = "solr-impl",
+    value = versions.solrImplVersion,
+  )
+  VersionEntry(
+    label = "lucene-spec",
+    value = versions.luceneSpecVersion,
+  )
+  VersionEntry(
+    label = "lucene-impl",
+    value = versions.luceneImplVersion,
+  )
+  VersionEntry(
+    label = "Runtime",
+    value = "${jvm.name} ${jvm.version}",
+  )
 }
 
 /**
@@ -79,23 +79,23 @@ internal fun VersionsCard(
  */
 @Composable
 private fun VersionEntry(
-    label: String,
-    value: String,
+  label: String,
+  value: String,
 ) = Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = Modifier.fillMaxWidth(),
+  horizontalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    Text(
-        modifier = Modifier.width(96.dp),
-        text = label,
-        textAlign = TextAlign.End,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-        modifier = Modifier.weight(1f),
-        text = value,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-    )
+  Text(
+    modifier = Modifier.width(96.dp),
+    text = label,
+    textAlign = TextAlign.End,
+    style = MaterialTheme.typography.labelLarge,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+  Text(
+    modifier = Modifier.weight(1f),
+    text = value,
+    style = MaterialTheme.typography.bodyMedium,
+    color = MaterialTheme.colorScheme.onSurface,
+  )
 }

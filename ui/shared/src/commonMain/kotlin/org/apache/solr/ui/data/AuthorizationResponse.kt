@@ -22,21 +22,21 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AuthorizationResponse(
-    @SerialName("access_token")
-    val accessToken: String = "",
-    @SerialName("expires_in")
-    val expiresIn: Long = 0,
-    @SerialName("refresh_expires_in")
-    val refreshExpiresIn: Long = 0,
-    @SerialName("refresh_token")
-    val refreshToken: String = "",
-    @SerialName("token_type")
-    val tokenType: String = "",
-    @SerialName("id_token")
-    val idToken: String? = null,
-    @SerialName("not-before-policy")
-    val notBeforePolicy: Int = -1,
-    @SerialName("session_state")
-    val sessionState: String = "",
-    val scope: String = "",
+  @SerialName("access_token")
+  val accessToken: String = "",
+  @SerialName("expires_in")
+  val expiresIn: Long = 0,
+  @SerialName("refresh_expires_in")
+  val refreshExpiresIn: Long = 0,
+  @SerialName("refresh_token")
+  val refreshToken: String = "",
+  @SerialName("token_type")
+  val tokenType: String = "",
+  @SerialName("id_token")
+  val idToken: String? = null,
+  @SerialName("not-before-policy")
+  val notBeforePolicy: Int = -1,
+  @SerialName("session_state")
+  val sessionState: String = "",
+  val scope: String = "",
 )

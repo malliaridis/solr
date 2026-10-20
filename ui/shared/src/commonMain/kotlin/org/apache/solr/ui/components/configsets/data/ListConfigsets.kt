@@ -23,5 +23,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ListConfigsets(
-    val configSets: List<String> = emptyList(),
+  val configSets: List<String> = emptyList(),
 )

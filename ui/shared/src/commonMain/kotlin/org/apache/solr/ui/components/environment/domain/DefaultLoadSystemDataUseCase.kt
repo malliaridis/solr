@@ -21,7 +21,7 @@ import org.apache.solr.ui.components.environment.data.SystemData
 import org.apache.solr.ui.components.environment.repository.EnvironmentRepository
 
 internal class DefaultLoadSystemDataUseCase(
-    private val repository: EnvironmentRepository,
+  private val repository: EnvironmentRepository,
 ) : LoadSystemDataUseCase {
-    override suspend fun invoke(): Result<SystemData> = repository.getSystemData()
+  override suspend fun invoke(): Result<SystemData> = repository.getSystemData()
 }

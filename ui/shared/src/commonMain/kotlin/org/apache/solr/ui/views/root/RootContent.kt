@@ -45,48 +45,48 @@ import org.apache.solr.ui.views.start.StartContent
  */
 @Composable
 fun RootContent(
-    component: RootComponent,
-    modifier: Modifier = Modifier,
+  component: RootComponent,
+  modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel { component.createRootViewModel() }
+  val viewModel = viewModel { component.createRootViewModel() }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        NavDisplay(
-            backStack = viewModel.backStack,
-            modifier = Modifier.weight(1f),
-            onBack = viewModel::navigateBack,
-            entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
-            transitionSpec = noTransition(),
-            popTransitionSpec = noTransition(),
-            predictivePopTransitionSpec = noPredictiveTransition(),
-            entryProvider = entryProvider {
-                entry<RootScene.Start> {
-                    StartContent(
-                        component = remember { component.createStartComponent() },
-                        onEvent = viewModel::onStartEvent,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
+  Column(modifier = modifier.fillMaxSize()) {
+    NavDisplay(
+      backStack = viewModel.backStack,
+      modifier = Modifier.weight(1f),
+      onBack = viewModel::navigateBack,
+      entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
+      transitionSpec = noTransition(),
+      popTransitionSpec = noTransition(),
+      predictivePopTransitionSpec = noPredictiveTransition(),
+      entryProvider = entryProvider {
+        entry<RootScene.Start> {
+          StartContent(
+            component = remember { component.createStartComponent() },
+            onEvent = viewModel::onStartEvent,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
 
-                entry<RootScene.Authentication> { scene ->
-                    UserAuthenticationContent(
-                        component = remember(scene) {
-                            component.createAuthenticationComponent(scene.url, scene.methods)
-                        },
-                        onEvent = viewModel::onAuthenticationEvent,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-
-                entry<RootScene.Main> { scene ->
-                    MainContent(
-                        component = remember(scene) { component.createMainComponent(scene.authOption) },
-                        onEvent = viewModel::onMainEvent,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
+        entry<RootScene.Authentication> { scene ->
+          UserAuthenticationContent(
+            component = remember(scene) {
+              component.createAuthenticationComponent(scene.url, scene.methods)
             },
-        )
-        Footer(modifier = Modifier.fillMaxWidth())
-    }
+            onEvent = viewModel::onAuthenticationEvent,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
+
+        entry<RootScene.Main> { scene ->
+          MainContent(
+            component = remember(scene) { component.createMainComponent(scene.authOption) },
+            onEvent = viewModel::onMainEvent,
+            modifier = Modifier.fillMaxSize(),
+          )
+        }
+      },
+    )
+    Footer(modifier = Modifier.fillMaxWidth())
+  }
 }

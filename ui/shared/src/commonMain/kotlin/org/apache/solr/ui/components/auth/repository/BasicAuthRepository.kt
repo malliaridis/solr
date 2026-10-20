@@ -22,12 +22,12 @@ package org.apache.solr.ui.components.auth.repository
  */
 interface BasicAuthRepository {
 
-    /**
-     * Authenticates the user with the current Solr instance.
-     *
-     * @param username The username to use.
-     * @param password The password to use.
-     * @return Returns success results iff the credentials authenticated the user.
-     */
-    suspend fun authenticate(username: String, password: String): Result<Unit>
+  /**
+   * Authenticates the user with the current Solr instance.
+   *
+   * @param username The username to use.
+   * @param password The password to use.
+   * @return Returns success results iff the credentials authenticated the user.
+   */
+  suspend fun authenticate(username: String, password: String): Result<Unit>
 }

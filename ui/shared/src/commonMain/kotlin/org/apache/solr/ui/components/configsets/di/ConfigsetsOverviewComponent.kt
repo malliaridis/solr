@@ -34,48 +34,48 @@ import org.apache.solr.ui.components.files.domain.SelectFileUseCase
  */
 interface ConfigsetsOverviewComponent {
 
-    /**
-     * Dependencies provided by the application.
-     */
-    val configsetsRepository: ConfigsetsRepository
+  /**
+   * Dependencies provided by the application.
+   */
+  val configsetsRepository: ConfigsetsRepository
 
-    /**
-     * Use case responsible for creating a new configset.
-     */
-    val createConfigsetUseCase: CreateConfigsetUseCase
+  /**
+   * Use case responsible for creating a new configset.
+   */
+  val createConfigsetUseCase: CreateConfigsetUseCase
 
-    /**
-     * Use case responsible for importing a configset from a file.
-     */
-    val importConfigsetUseCase: ImportConfigsetUseCase
+  /**
+   * Use case responsible for importing a configset from a file.
+   */
+  val importConfigsetUseCase: ImportConfigsetUseCase
 
-    /**
-     * Use case responsible for loading the available configsets.
-     */
-    val loadConfigsetsUseCase: LoadConfigsetsUseCase
+  /**
+   * Use case responsible for loading the available configsets.
+   */
+  val loadConfigsetsUseCase: LoadConfigsetsUseCase
 
-    /**
-     * Use case responsible for selecting a configset file.
-     */
-    val selectFileUseCase: SelectFileUseCase
+  /**
+   * Use case responsible for selecting a configset file.
+   */
+  val selectFileUseCase: SelectFileUseCase
 
-    /**
-     * Factory method to create a [ConfigsetsViewModel] instance.
-     */
-    fun createConfigsetsViewModel(): ConfigsetsViewModel
+  /**
+   * Factory method to create a [ConfigsetsViewModel] instance.
+   */
+  fun createConfigsetsViewModel(): ConfigsetsViewModel
 
-    /**
-     * Factory method to create a [CreateConfigsetViewModel] instance.
-     */
-    fun createCreateConfigsetViewModel(): CreateConfigsetViewModel
+  /**
+   * Factory method to create a [CreateConfigsetViewModel] instance.
+   */
+  fun createCreateConfigsetViewModel(): CreateConfigsetViewModel
 
-    /**
-     * Factory method to create a [ImportConfigsetViewModel] instance.
-     */
-    fun createImportConfigsetViewModel(): ImportConfigsetViewModel
+  /**
+   * Factory method to create a [ImportConfigsetViewModel] instance.
+   */
+  fun createImportConfigsetViewModel(): ImportConfigsetViewModel
 
-    /**
-     * Factory method to create a [ConfigsetsOverviewViewModel] instance.
-     */
-    fun createConfigsetsOverviewViewModel(): ConfigsetsOverviewViewModel
+  /**
+   * Factory method to create a [ConfigsetsOverviewViewModel] instance.
+   */
+  fun createConfigsetsOverviewViewModel(): ConfigsetsOverviewViewModel
 }

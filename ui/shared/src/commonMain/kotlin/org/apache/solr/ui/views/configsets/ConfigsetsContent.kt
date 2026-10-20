@@ -18,7 +18,6 @@ package org.apache.solr.ui.views.configsets
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -44,52 +43,51 @@ import org.apache.solr.ui.shared.generated.resources.overview
 import org.apache.solr.ui.shared.generated.resources.schema
 import org.apache.solr.ui.views.navigation.NavigationTabs
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ConfigsetsScene(
-    component: ConfigsetsComponent,
-    modifier: Modifier = Modifier,
+  component: ConfigsetsComponent,
+  modifier: Modifier = Modifier,
 ) = FlowRow(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+  modifier = modifier,
+  horizontalArrangement = Arrangement.spacedBy(16.dp),
+  verticalArrangement = Arrangement.spacedBy(16.dp),
 ) {
-    val viewModel = viewModel { component.createConfigsetsRouteViewModel() }
-    val model by viewModel.uiState.collectAsState()
+  val viewModel = viewModel { component.createConfigsetsRouteViewModel() }
+  val model by viewModel.uiState.collectAsState()
 
-    val sharedConfigsetsViewModel = viewModel { component.createConfigsetsViewModel() }
+  val sharedConfigsetsViewModel = viewModel { component.createConfigsetsViewModel() }
 
-    Column(Modifier.fillMaxSize()) {
-        NavigationTabs(
-            tabs = ConfigsetsTab.entries,
-            selectedTab = model.selectedTab,
-            onSelectTab = viewModel::selectTab,
-            mapper = ::tabLabelRes,
-            modifier = Modifier.padding(1.dp),
-        )
+  Column(Modifier.fillMaxSize()) {
+    NavigationTabs(
+      tabs = ConfigsetsTab.entries,
+      selectedTab = model.selectedTab,
+      onSelectTab = viewModel::selectTab,
+      mapper = ::tabLabelRes,
+      modifier = Modifier.padding(1.dp),
+    )
 
-        NavDisplay(
-            backStack = viewModel.backStack,
-            entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
-            entryProvider = entryProvider {
-                entry<ConfigsetsScene.Overview> {
-                    ConfigsetsOverviewContent(
-                        component = component.createConfigsetsOverviewComponent(),
-                        configsetsViewModel = sharedConfigsetsViewModel,
-                        modifier = Modifier.fillMaxSize().padding(16.dp),
-                    )
-                }
-            },
-        )
-    }
+    NavDisplay(
+      backStack = viewModel.backStack,
+      entryDecorators = listOf(rememberViewModelStoreNavEntryDecorator()),
+      entryProvider = entryProvider {
+        entry<ConfigsetsScene.Overview> {
+          ConfigsetsOverviewContent(
+            component = component.createConfigsetsOverviewComponent(),
+            configsetsViewModel = sharedConfigsetsViewModel,
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+          )
+        }
+      },
+    )
+  }
 }
 
 private fun tabLabelRes(item: ConfigsetsTab) = when (item) {
-    ConfigsetsTab.Overview -> Res.string.overview
-    ConfigsetsTab.Files -> Res.string.files
-    ConfigsetsTab.Schema -> Res.string.schema
-    ConfigsetsTab.UpdateConfig -> Res.string.configsets_update_configuration
-    ConfigsetsTab.IndexQuery -> Res.string.configsets_index_query
-    ConfigsetsTab.Handlers -> Res.string.configsets_request_handlers
-    ConfigsetsTab.SearchComponents -> Res.string.configsets_search_components
+  ConfigsetsTab.Overview -> Res.string.overview
+  ConfigsetsTab.Files -> Res.string.files
+  ConfigsetsTab.Schema -> Res.string.schema
+  ConfigsetsTab.UpdateConfig -> Res.string.configsets_update_configuration
+  ConfigsetsTab.IndexQuery -> Res.string.configsets_index_query
+  ConfigsetsTab.Handlers -> Res.string.configsets_request_handlers
+  ConfigsetsTab.SearchComponents -> Res.string.configsets_search_components
 }

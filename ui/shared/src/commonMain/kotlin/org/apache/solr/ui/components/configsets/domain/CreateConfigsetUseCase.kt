@@ -23,42 +23,42 @@ import org.apache.solr.ui.domain.Configset
  * Use case for creating a new configset.
  */
 interface CreateConfigsetUseCase {
-    /**
-     * Default invocation for creating a new configset with user inputs.
-     *
-     * @param configsetName The configset name to use.
-     * @param baseConfigset The configset to use as base for the new configset.
-     *
-     * @return A Result containing the Configset of the newly created configset or an error if
-     * creation failed.
-     */
-    suspend operator fun invoke(
-        configsetName: String,
-        baseConfigset: String? = null,
-    ): CreateConfigsetResult
+  /**
+   * Default invocation for creating a new configset with user inputs.
+   *
+   * @param configsetName The configset name to use.
+   * @param baseConfigset The configset to use as base for the new configset.
+   *
+   * @return A Result containing the Configset of the newly created configset or an error if
+   * creation failed.
+   */
+  suspend operator fun invoke(
+    configsetName: String,
+    baseConfigset: String? = null,
+  ): CreateConfigsetResult
 }
 
 sealed interface CreateConfigsetResult {
-    data class Success(val configset: Configset) : CreateConfigsetResult
+  data class Success(val configset: Configset) : CreateConfigsetResult
 
-    data class ValidationFailure(val error: Error) : CreateConfigsetResult
+  data class ValidationFailure(val error: Error) : CreateConfigsetResult
 
-    data class UnexpectedFailure(val cause: Throwable) : CreateConfigsetResult
+  data class UnexpectedFailure(val cause: Throwable) : CreateConfigsetResult
 
-    enum class Error {
-        /**
-         * Error for indicating that the configset name contains invalid characters.
-         */
-        ConfigsetNameContainsInvalidCharacters,
+  enum class Error {
+    /**
+     * Error for indicating that the configset name contains invalid characters.
+     */
+    ConfigsetNameContainsInvalidCharacters,
 
-        /**
-         * Error for indicating that the configset name is too long.
-         */
-        ConfigsetNameTooLong,
+    /**
+     * Error for indicating that the configset name is too long.
+     */
+    ConfigsetNameTooLong,
 
-        /**
-         * Error for indicating that the configset with the given name already exists.
-         */
-        DuplicateConfigset,
-    }
+    /**
+     * Error for indicating that the configset with the given name already exists.
+     */
+    DuplicateConfigset,
+  }
 }

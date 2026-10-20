@@ -25,17 +25,17 @@ import org.apache.solr.ui.components.environment.data.SystemData
  */
 interface EnvironmentRepository {
 
-    /**
-     * Fetches a set of system data.
-     *
-     * @return Result with the system data fetched.
-     */
-    suspend fun getSystemData(): Result<SystemData>
+  /**
+   * Fetches a set of system data.
+   *
+   * @return Result with the system data fetched.
+   */
+  suspend fun getSystemData(): Result<SystemData>
 
-    /**
-     * Fetches the configured java properties.
-     *
-     * @return Result with a list of [JavaProperty]s.
-     */
-    suspend fun getJavaProperties(): Result<List<JavaProperty>>
+  /**
+   * Fetches the configured java properties.
+   *
+   * @return Result with a list of [JavaProperty]s.
+   */
+  suspend fun getJavaProperties(): Result<List<JavaProperty>>
 }

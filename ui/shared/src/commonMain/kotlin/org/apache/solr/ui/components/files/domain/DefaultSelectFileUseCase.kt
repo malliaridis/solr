@@ -20,18 +20,18 @@ package org.apache.solr.ui.components.files.domain
 import org.apache.solr.ui.utils.pickFile
 
 internal class DefaultSelectFileUseCase : SelectFileUseCase {
-    override suspend fun invoke(
-        extensions: List<String>,
-        maxSize: Int?,
-    ): SelectFileResult {
-        // Launch in main scope as it is tightly coupled with user-interaction
-        val pickedFile = pickFile(extensions = extensions)
-        // TODO Add additional validation
-        return pickedFile?.let {
-            if (maxSize != null && it.bytes.size > maxSize) {
-                SelectFileResult.ValidationFailure(SelectFileResult.Error.FileTooLarge)
-            }
-            SelectFileResult.Success(it)
-        } ?: SelectFileResult.Aborted
-    }
+  override suspend fun invoke(
+    extensions: List<String>,
+    maxSize: Int?,
+  ): SelectFileResult {
+    // Launch in main scope as it is tightly coupled with user-interaction
+    val pickedFile = pickFile(extensions = extensions)
+    // TODO Add additional validation
+    return pickedFile?.let {
+      if (maxSize != null && it.bytes.size > maxSize) {
+        SelectFileResult.ValidationFailure(SelectFileResult.Error.FileTooLarge)
+      }
+      SelectFileResult.Success(it)
+    } ?: SelectFileResult.Aborted
+  }
 }

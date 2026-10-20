@@ -24,9 +24,9 @@ import org.apache.solr.ui.components.logging.LoggingComponent
 
 @Composable
 fun LoggingContent(
-    component: LoggingComponent,
-    modifier: Modifier = Modifier,
+  component: LoggingComponent,
+  modifier: Modifier = Modifier,
 ) {
-    Text("Logging section")
-    // TODO Add logging content here
+  Text("Logging section")
+  // TODO Add logging content here
 }

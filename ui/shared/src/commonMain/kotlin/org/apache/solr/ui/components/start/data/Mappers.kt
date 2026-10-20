@@ -23,12 +23,12 @@ import org.apache.solr.ui.domain.AuthorizationFlow
 import org.apache.solr.ui.domain.OAuthData
 
 internal fun SolrAuthData.toOAuthData() = OAuthData(
-    clientId = clientId,
-    authorizationFlow = authorizationFlow.toAuthorizationFlow(),
-    scope = scope,
-    redirectUris = redirectUris.map { Url(urlString = it) },
-    authorizationEndpoint = Url(urlString = authorizationEndpoint),
-    tokenEndpoint = Url(urlString = tokenEndpoint),
+  clientId = clientId,
+  authorizationFlow = authorizationFlow.toAuthorizationFlow(),
+  scope = scope,
+  redirectUris = redirectUris.map { Url(urlString = it) },
+  authorizationEndpoint = Url(urlString = authorizationEndpoint),
+  tokenEndpoint = Url(urlString = tokenEndpoint),
 )
 
 /**
@@ -37,6 +37,6 @@ internal fun SolrAuthData.toOAuthData() = OAuthData(
  * Note that only Code flow with Proof Key for Code Exchange (PKCE) is supported right now.
  */
 private fun String.toAuthorizationFlow(): AuthorizationFlow = when (this) {
-    "code_pkce" -> AuthorizationFlow.CodePKCE
-    else -> AuthorizationFlow.Unknown
+  "code_pkce" -> AuthorizationFlow.CodePKCE
+  else -> AuthorizationFlow.Unknown
 }

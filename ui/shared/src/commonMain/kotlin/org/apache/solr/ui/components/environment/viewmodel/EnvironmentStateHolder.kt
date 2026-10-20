@@ -39,82 +39,82 @@ import org.apache.solr.ui.utils.AppDispatchers
  * The environment data is fetched initially, and can be fetched again with [fetchSystemData].
  */
 class EnvironmentStateHolder(
-    private val scope: CoroutineScope,
-    private val loadSystemDataUseCase: LoadSystemDataUseCase,
-    private val loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase,
-    private val dispatchers: AppDispatchers,
+  private val scope: CoroutineScope,
+  private val loadSystemDataUseCase: LoadSystemDataUseCase,
+  private val loadJavaPropertiesUseCase: LoadJavaPropertiesUseCase,
+  private val dispatchers: AppDispatchers,
 ) {
 
-    /**
-     * UI state of the environment.
-     */
-    val uiState: StateFlow<EnvironmentUiState>
-        field = MutableStateFlow(EnvironmentUiState())
+  /**
+   * UI state of the environment.
+   */
+  val uiState: StateFlow<EnvironmentUiState>
+    field = MutableStateFlow(EnvironmentUiState())
 
-    init {
-        fetchSystemData()
-    }
+  init {
+    fetchSystemData()
+  }
 
-    /**
-     * Fetches the system data and the java properties that are part of the environment state.
-     */
-    fun fetchSystemData() {
-        loadSystemData()
-        loadJavaProperties()
-    }
+  /**
+   * Fetches the system data and the java properties that are part of the environment state.
+   */
+  fun fetchSystemData() {
+    loadSystemData()
+    loadJavaProperties()
+  }
 
-    /**
-     * Fetches the system data that are part of the environment state.
-     *
-     * If successful, the state is updated with the new system data.
-     */
-    private fun loadSystemData() = scope.launch {
-        // TODO Add coroutine exception handler
-        withContext(dispatchers.io) {
-            loadSystemDataUseCase()
-        }.onSuccess { data ->
-            uiState.update {
-                it.copy(
-                    mode = data.mode,
-                    zkHost = data.zkHost,
-                    solrHome = data.solrHome,
-                    coreRoot = data.coreRoot,
-                    lucene = data.lucene,
-                    jvm = data.jvm,
-                    security = data.security,
-                    system = data.system,
-                    node = data.node,
-                )
-            }
-        }
-        // TODO Add error handling
+  /**
+   * Fetches the system data that are part of the environment state.
+   *
+   * If successful, the state is updated with the new system data.
+   */
+  private fun loadSystemData() = scope.launch {
+    // TODO Add coroutine exception handler
+    withContext(dispatchers.io) {
+      loadSystemDataUseCase()
+    }.onSuccess { data ->
+      uiState.update {
+        it.copy(
+          mode = data.mode,
+          zkHost = data.zkHost,
+          solrHome = data.solrHome,
+          coreRoot = data.coreRoot,
+          lucene = data.lucene,
+          jvm = data.jvm,
+          security = data.security,
+          system = data.system,
+          node = data.node,
+        )
+      }
     }
+    // TODO Add error handling
+  }
 
-    /**
-     * Fetches the java properties that are part of the environment state.
-     *
-     * If successful, the state is updated with the new java properties.
-     */
-    private fun loadJavaProperties() = scope.launch {
-        // TODO Add coroutine exception handler
-        withContext(dispatchers.io) {
-            loadJavaPropertiesUseCase()
-        }.onSuccess { properties ->
-            uiState.update { it.copy(javaProperties = properties) }
-        }
-        // TODO Add error handling
+  /**
+   * Fetches the java properties that are part of the environment state.
+   *
+   * If successful, the state is updated with the new java properties.
+   */
+  private fun loadJavaProperties() = scope.launch {
+    // TODO Add coroutine exception handler
+    withContext(dispatchers.io) {
+      loadJavaPropertiesUseCase()
+    }.onSuccess { properties ->
+      uiState.update { it.copy(javaProperties = properties) }
     }
+    // TODO Add error handling
+  }
 }
 
 data class EnvironmentUiState(
-    val mode: SystemMode = SystemMode.Unknown,
-    val zkHost: String = "",
-    val solrHome: String = "",
-    val coreRoot: String = "",
-    val lucene: Versions = Versions(),
-    val jvm: JvmData = JvmData(),
-    val security: SecurityConfig = SecurityConfig(),
-    val system: SystemInformation = SystemInformation(),
-    val node: String = "",
-    val javaProperties: List<JavaProperty> = emptyList(),
+  val mode: SystemMode = SystemMode.Unknown,
+  val zkHost: String = "",
+  val solrHome: String = "",
+  val coreRoot: String = "",
+  val lucene: Versions = Versions(),
+  val jvm: JvmData = JvmData(),
+  val security: SecurityConfig = SecurityConfig(),
+  val system: SystemInformation = SystemInformation(),
+  val node: String = "",
+  val javaProperties: List<JavaProperty> = emptyList(),
 )

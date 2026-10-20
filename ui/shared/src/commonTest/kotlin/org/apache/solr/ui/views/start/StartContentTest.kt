@@ -42,69 +42,69 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalTestApi::class)
 class StartContentTest {
 
-    @Test
-    fun `WHEN initialized THEN input is empty`() = runComposeUiTest {
-        setContent {
-            TestStartContent(uiState = StartUiState())
-        }
-
-        assertEquals(
-            "",
-            onNodeWithTag("solr_url_input")
-                .assertExists()
-                .fetchSemanticsNode()
-                .config[SemanticsProperties.EditableText]
-                .text,
-        )
+  @Test
+  fun `WHEN initialized THEN input is empty`() = runComposeUiTest {
+    setContent {
+      TestStartContent(uiState = StartUiState())
     }
 
-    @Test
-    @Ignore // TODO Currently fails on wasmJs
-    fun `GIVEN input error THEN error text shown`() = runComposeUiTest {
-        setContent {
-            TestStartContent(uiState = StartUiState(error = Res.string.error_invalid_url))
-        }
-
-        onNodeWithTag("input_error").assertIsDisplayed()
-    }
-
-    @Test
-    fun `WHEN on connect clicked THEN onConnect called`() = runComposeUiTest {
-        var onConnectClicked = false
-        setContent {
-            TestStartContent(onConnect = { onConnectClicked = true })
-        }
-
-        onNodeWithTag("connect_button").performClick()
-        assertTrue(onConnectClicked)
-    }
-
-    @Test
-    fun `WHEN isConnecting THEN connect inputs disabled`() = runComposeUiTest {
-        setContent {
-            TestStartContent(uiState = StartUiState(isConnecting = true))
-        }
-
-        onNodeWithTag("solr_url_input").assertIsNotEnabled()
-        onNodeWithTag("connect_button").assertIsNotEnabled()
-    }
-
-    @Test
-    fun `WHEN isConnecting THEN loading indicator displayed`() = runComposeUiTest {
-        setContent {
-            TestStartContent(uiState = StartUiState(isConnecting = true))
-        }
-
-        onNodeWithTag("loading_indicator").assertIsDisplayed()
-    }
-
-    @Composable
-    private fun TestStartContent(
-        uiState: StartUiState = StartUiState(),
-        onConnect: () -> Unit = {},
-    ) = StartContent(
-        uiState = uiState,
-        onSolrUrlChange = {},
-        onConnect = onConnect,
+    assertEquals(
+      "",
+      onNodeWithTag("solr_url_input")
+        .assertExists()
+        .fetchSemanticsNode()
+        .config[SemanticsProperties.EditableText]
+        .text,
     )
+  }
+
+  @Test
+  @Ignore // TODO Currently fails on wasmJs
+  fun `GIVEN input error THEN error text shown`() = runComposeUiTest {
+    setContent {
+      TestStartContent(uiState = StartUiState(error = Res.string.error_invalid_url))
+    }
+
+    onNodeWithTag("input_error").assertIsDisplayed()
+  }
+
+  @Test
+  fun `WHEN on connect clicked THEN onConnect called`() = runComposeUiTest {
+    var onConnectClicked = false
+    setContent {
+      TestStartContent(onConnect = { onConnectClicked = true })
+    }
+
+    onNodeWithTag("connect_button").performClick()
+    assertTrue(onConnectClicked)
+  }
+
+  @Test
+  fun `WHEN isConnecting THEN connect inputs disabled`() = runComposeUiTest {
+    setContent {
+      TestStartContent(uiState = StartUiState(isConnecting = true))
+    }
+
+    onNodeWithTag("solr_url_input").assertIsNotEnabled()
+    onNodeWithTag("connect_button").assertIsNotEnabled()
+  }
+
+  @Test
+  fun `WHEN isConnecting THEN loading indicator displayed`() = runComposeUiTest {
+    setContent {
+      TestStartContent(uiState = StartUiState(isConnecting = true))
+    }
+
+    onNodeWithTag("loading_indicator").assertIsDisplayed()
+  }
+
+  @Composable
+  private fun TestStartContent(
+    uiState: StartUiState = StartUiState(),
+    onConnect: () -> Unit = {},
+  ) = StartContent(
+    uiState = uiState,
+    onSolrUrlChange = {},
+    onConnect = onConnect,
+  )
 }

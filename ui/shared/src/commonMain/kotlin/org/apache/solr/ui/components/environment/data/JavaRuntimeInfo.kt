@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class JavaRuntimeInfo(
-    val version: String = "",
-    val vendor: String = "",
-    val name: String? = null,
+  val version: String = "",
+  val vendor: String = "",
+  val name: String? = null,
 )

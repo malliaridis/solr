@@ -21,7 +21,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,91 +61,90 @@ import org.jetbrains.compose.resources.stringResource
  * @param modifier Modifier to apply to the root composable.
  * @param collapseWidth The width at which the footer should be collapsed and display only icons.
  */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Footer(
-    modifier: Modifier = Modifier,
-    collapseWidth: Dp = 1024.dp,
+  modifier: Modifier = Modifier,
+  collapseWidth: Dp = 1024.dp,
 ) = Column(modifier = modifier) {
-    HorizontalDivider()
+  HorizontalDivider()
 
-    BoxWithConstraints {
-        val showIconsOnly = maxWidth < collapseWidth
+  BoxWithConstraints {
+    val showIconsOnly = maxWidth < collapseWidth
 
-        val elements = listOf(
-            FooterElement(
-                drawable = Res.drawable.menu_book,
-                stringRes = Res.string.documentation,
-                uri = "https://solr.apache.org/guide/solr/latest/index.html",
-            ),
-            FooterElement(
-                drawable = Res.drawable.code,
-                stringRes = Res.string.solr_query_syntax,
-                uri = "https://solr.apache.org/guide/solr/latest/query-guide/query-syntax-and-parsers.html",
-            ),
-            FooterElement(
-                drawable = Res.drawable.bug_report,
-                stringRes = Res.string.issue_tracker,
-                uri = "https://issues.apache.org/jira/projects/SOLR",
-            ),
-            FooterElement(
-                drawable = Res.drawable.groups,
-                stringRes = Res.string.community,
-                uri = "https://solr.apache.org/community.html",
-            ),
-            FooterElement(
-                drawable = Res.drawable.broken_image, // TODO Add Slack Logo
-                stringRes = Res.string.slack,
-                uri = "https://the-asf.slack.com/messages/CEKUCUNE9",
-            ),
-            FooterElement(
-                drawable = Res.drawable.info,
-                stringRes = Res.string.support,
-                uri = "https://solr.apache.org/community.html#support",
-            ),
+    val elements = listOf(
+      FooterElement(
+        drawable = Res.drawable.menu_book,
+        stringRes = Res.string.documentation,
+        uri = "https://solr.apache.org/guide/solr/latest/index.html",
+      ),
+      FooterElement(
+        drawable = Res.drawable.code,
+        stringRes = Res.string.solr_query_syntax,
+        uri = "https://solr.apache.org/guide/solr/latest/query-guide/query-syntax-and-parsers.html",
+      ),
+      FooterElement(
+        drawable = Res.drawable.bug_report,
+        stringRes = Res.string.issue_tracker,
+        uri = "https://issues.apache.org/jira/projects/SOLR",
+      ),
+      FooterElement(
+        drawable = Res.drawable.groups,
+        stringRes = Res.string.community,
+        uri = "https://solr.apache.org/community.html",
+      ),
+      FooterElement(
+        drawable = Res.drawable.broken_image, // TODO Add Slack Logo
+        stringRes = Res.string.slack,
+        uri = "https://the-asf.slack.com/messages/CEKUCUNE9",
+      ),
+      FooterElement(
+        drawable = Res.drawable.info,
+        stringRes = Res.string.support,
+        uri = "https://solr.apache.org/community.html#support",
+      ),
+    )
+
+    FlowRow(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+    ) {
+      val uriHandler = LocalUriHandler.current
+      elements.forEach { element ->
+        FooterAction(
+          drawable = element.drawable,
+          stringRes = element.stringRes,
+          iconOnly = showIconsOnly,
+          onClick = { uriHandler.openUri(element.uri) },
         )
-
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            val uriHandler = LocalUriHandler.current
-            elements.forEach { element ->
-                FooterAction(
-                    drawable = element.drawable,
-                    stringRes = element.stringRes,
-                    iconOnly = showIconsOnly,
-                    onClick = { uriHandler.openUri(element.uri) },
-                )
-            }
-        }
+      }
     }
+  }
 }
 
 @Composable
 private fun FooterAction(
-    drawable: DrawableResource,
-    stringRes: StringResource,
-    iconOnly: Boolean = false,
-    onClick: () -> Unit = {},
+  drawable: DrawableResource,
+  stringRes: StringResource,
+  iconOnly: Boolean = false,
+  onClick: () -> Unit = {},
 ) = CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-    Row(
-        modifier = Modifier.clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            painter = painterResource(drawable),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (!iconOnly) Text(stringResource(stringRes))
-    }
+  Row(
+    modifier = Modifier.clickable(onClick = onClick)
+      .padding(horizontal = 16.dp, vertical = 12.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Icon(
+      painter = painterResource(drawable),
+      contentDescription = null,
+      tint = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    if (!iconOnly) Text(stringResource(stringRes))
+  }
 }
 
 private data class FooterElement(
-    val drawable: DrawableResource,
-    val stringRes: StringResource,
-    val uri: String,
+  val drawable: DrawableResource,
+  val stringRes: StringResource,
+  val uri: String,
 )

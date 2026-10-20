@@ -26,30 +26,30 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import org.apache.solr.ui.domain.PickedFile
 
 actual suspend fun pickFile(extensions: List<String>): PickedFile? {
-    val (dir, fileName) = suspendCancellableCoroutine { cont ->
-        SwingUtilities.invokeLater {
-            val dialog = FileDialog(null as Frame?, "Choose a file", FileDialog.LOAD).apply {
-                isMultipleMode = false
-                // Note: FileDialog filtering is platform-dependent; setFilenameFilter is best-effort.
-                if (extensions.isNotEmpty()) {
-                    setFilenameFilter { _, name ->
-                        val lower = name.lowercase()
-                        extensions.any { ext -> lower.endsWith(".${ext.lowercase()}") }
-                    }
-                }
-                isVisible = true
-            }
-            cont.resume(dialog.directory to dialog.file)
-            dialog.dispose()
+  val (dir, fileName) = suspendCancellableCoroutine { cont ->
+    SwingUtilities.invokeLater {
+      val dialog = FileDialog(null as Frame?, "Choose a file", FileDialog.LOAD).apply {
+        isMultipleMode = false
+        // Note: FileDialog filtering is platform-dependent; setFilenameFilter is best-effort.
+        if (extensions.isNotEmpty()) {
+          setFilenameFilter { _, name ->
+            val lower = name.lowercase()
+            extensions.any { ext -> lower.endsWith(".${ext.lowercase()}") }
+          }
         }
+        isVisible = true
+      }
+      cont.resume(dialog.directory to dialog.file)
+      dialog.dispose()
     }
+  }
 
-    if (dir == null || fileName == null) return null
+  if (dir == null || fileName == null) return null
 
-    val f = File(dir, fileName)
-    return PickedFile(
-        name = f.name,
-        bytes = f.readBytes(),
-        extension = f.extension,
-    )
+  val f = File(dir, fileName)
+  return PickedFile(
+    name = f.name,
+    bytes = f.readBytes(),
+    extension = f.extension,
+  )
 }

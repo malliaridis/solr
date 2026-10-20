@@ -38,77 +38,77 @@ import org.apache.solr.ui.domain.AuthOption
  * URL.
  */
 fun getDefaultClient(
-    url: Url = Url(DEFAULT_SOLR_URL),
-    block: HttpClientConfig<*>.() -> Unit = {},
+  url: Url = Url(DEFAULT_SOLR_URL),
+  block: HttpClientConfig<*>.() -> Unit = {},
 ) = HttpClient {
-    defaultRequest {
-        url(url.toString())
-        contentType(ContentType.Application.Json)
-    }
+  defaultRequest {
+    url(url.toString())
+    contentType(ContentType.Application.Json)
+  }
 
-    install(ContentNegotiation) {
-        json(
-            Json {
-                ignoreUnknownKeys = true
-                allowSpecialFloatingPointValues = true
-            },
-        )
-    }
+  install(ContentNegotiation) {
+    json(
+      Json {
+        ignoreUnknownKeys = true
+        allowSpecialFloatingPointValues = true
+      },
+    )
+  }
 
-    block()
+  block()
 }
 
 fun getHttpClientWithAuthOption(option: AuthOption) = when (option) {
-    is AuthOption.None -> getDefaultClient(option.url)
+  is AuthOption.None -> getDefaultClient(option.url)
 
-    is AuthOption.BasicAuthOption -> getHttpClientWithCredentials(
-        url = option.url,
-        realm = option.realm,
-        username = option.username,
-        password = option.password,
-    )
+  is AuthOption.BasicAuthOption -> getHttpClientWithCredentials(
+    url = option.url,
+    realm = option.realm,
+    username = option.username,
+    password = option.password,
+  )
 
-    is AuthOption.OAuthOption -> getHttpClientWithBearerTokens(
-        url = option.url,
-        realm = option.realm,
-        accessToken = option.accessToken,
-        refreshToken = option.refreshToken,
-    )
+  is AuthOption.OAuthOption -> getHttpClientWithBearerTokens(
+    url = option.url,
+    realm = option.realm,
+    accessToken = option.accessToken,
+    refreshToken = option.refreshToken,
+  )
 }
 
 fun getHttpClientWithCredentials(
-    username: String,
-    password: String,
-    url: Url = Url(DEFAULT_SOLR_URL),
-    realm: String? = null,
+  username: String,
+  password: String,
+  url: Url = Url(DEFAULT_SOLR_URL),
+  realm: String? = null,
 ) = getDefaultClient(url) {
-    install(Auth) {
-        basic {
-            credentials { BasicAuthCredentials(username, password) }
-            // Always include the credentials, because we are accessing protected endpoints from a
-            // not protected asset (web-assembly app)
-            sendWithoutRequest { true }
-            this.realm = realm
-        }
+  install(Auth) {
+    basic {
+      credentials { BasicAuthCredentials(username, password) }
+      // Always include the credentials, because we are accessing protected endpoints from a
+      // not protected asset (web-assembly app)
+      sendWithoutRequest { true }
+      this.realm = realm
     }
+  }
 }
 
 fun getHttpClientWithBearerTokens(
-    accessToken: String,
-    refreshToken: String? = null,
-    url: Url = Url(DEFAULT_SOLR_URL),
-    realm: String? = null,
+  accessToken: String,
+  refreshToken: String? = null,
+  url: Url = Url(DEFAULT_SOLR_URL),
+  realm: String? = null,
 ) = getDefaultClient(url) {
-    install(Auth) {
-        bearer {
-            loadTokens {
-                BearerTokens(accessToken, refreshToken)
-            }
-            refreshTokens {
-                TODO("Not implemented yet")
-            }
-            this.realm = realm
-            sendWithoutRequest { true }
-        }
+  install(Auth) {
+    bearer {
+      loadTokens {
+        BearerTokens(accessToken, refreshToken)
+      }
+      refreshTokens {
+        TODO("Not implemented yet")
+      }
+      this.realm = realm
+      sendWithoutRequest { true }
     }
+  }
 }

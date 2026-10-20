@@ -47,64 +47,64 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CreateConfigsetDialog(
-    viewModel: CreateConfigsetViewModel,
-    modifier: Modifier = Modifier,
+  viewModel: CreateConfigsetViewModel,
+  modifier: Modifier = Modifier,
 ) = Dialog(onDismissRequest = viewModel::abortCreation) {
-    val state by viewModel.uiState.collectAsState()
-    val configsetsState by viewModel.configsetsUiState.collectAsState()
+  val state by viewModel.uiState.collectAsState()
+  val configsetsState by viewModel.configsetsUiState.collectAsState()
 
-    SolrCard(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+  SolrCard(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    Text(
+      text = stringResource(Res.string.title_create_configset),
+      style = MaterialTheme.typography.headlineSmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = stringResource(Res.string.title_create_configset),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedTextField(
-                modifier = Modifier.weight(1f)
-                    .height(64.dp)
-                    .testTag("create_configset_name_field"),
-                value = state.configsetName,
-                onValueChange = viewModel::changeConfigsetName,
-                label = { Text(stringResource(Res.string.label_configset_name)) },
-                singleLine = true,
-            )
-            ConfigsetsDropdown(
-                modifier = Modifier.weight(1f),
-                selectedConfigset = configsetsState.selectedConfigset,
-                selectConfigset = viewModel::changeBaseConfigset,
-                configsets = configsetsState.configsets,
-                enableReset = true,
-            )
-        }
-
-        Row(
-            modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            // Dialog actions
-            SolrTextButton(onClick = viewModel::toggleInput) {
-                Text(stringResource(Res.string.action_import_configset))
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                SolrTextButton(onClick = viewModel::abortCreation) {
-                    Text(stringResource(Res.string.action_cancel))
-                }
-                SolrButton(
-                    modifier = Modifier.testTag("configset_create_button"),
-                    onClick = viewModel::createConfigset,
-                    enabled = state.configsetName.isNotBlank(),
-                ) {
-                    Text(stringResource(Res.string.action_create_configset))
-                }
-            }
-        }
+      OutlinedTextField(
+        modifier = Modifier.weight(1f)
+          .height(64.dp)
+          .testTag("create_configset_name_field"),
+        value = state.configsetName,
+        onValueChange = viewModel::changeConfigsetName,
+        label = { Text(stringResource(Res.string.label_configset_name)) },
+        singleLine = true,
+      )
+      ConfigsetsDropdown(
+        modifier = Modifier.weight(1f),
+        selectedConfigset = configsetsState.selectedConfigset,
+        selectConfigset = viewModel::changeBaseConfigset,
+        configsets = configsetsState.configsets,
+        enableReset = true,
+      )
     }
+
+    Row(
+      modifier = Modifier.padding(top = 16.dp).fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      // Dialog actions
+      SolrTextButton(onClick = viewModel::toggleInput) {
+        Text(stringResource(Res.string.action_import_configset))
+      }
+
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        SolrTextButton(onClick = viewModel::abortCreation) {
+          Text(stringResource(Res.string.action_cancel))
+        }
+        SolrButton(
+          modifier = Modifier.testTag("configset_create_button"),
+          onClick = viewModel::createConfigset,
+          enabled = state.configsetName.isNotBlank(),
+        ) {
+          Text(stringResource(Res.string.action_create_configset))
+        }
+      }
+    }
+  }
 }

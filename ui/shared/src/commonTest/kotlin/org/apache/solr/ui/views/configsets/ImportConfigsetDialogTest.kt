@@ -39,78 +39,78 @@ import org.apache.solr.ui.domain.PickedFile
 
 @OptIn(ExperimentalTestApi::class, ExperimentalCoroutinesApi::class)
 class ImportConfigsetDialogTest {
-    val expectedConfigsetName = "testconfigset"
-    val fileName = "${expectedConfigsetName}_configset.zip"
-    val file = PickedFile(name = fileName, bytes = byteArrayOf(), extension = "zip")
+  val expectedConfigsetName = "testconfigset"
+  val fileName = "${expectedConfigsetName}_configset.zip"
+  val file = PickedFile(name = fileName, bytes = byteArrayOf(), extension = "zip")
 
-    @Test
-    fun `WHEN configset file selected THEN import button enabled`() = runComposeUiTest {
-        setContent {
-            val viewModel = viewModel(file)
-            ImportConfigsetDialog(viewModel)
-            viewModel.selectFile()
-        }
-
-        onNodeWithTag(testTag = "configset_import_button").assertIsEnabled()
+  @Test
+  fun `WHEN configset file selected THEN import button enabled`() = runComposeUiTest {
+    setContent {
+      val viewModel = viewModel(file)
+      ImportConfigsetDialog(viewModel)
+      viewModel.selectFile()
     }
 
-    @Test
-    fun `WHEN configset file selected THEN configset name autofilled with modified file name`() = runComposeUiTest {
-        setContent {
-            val viewModel = viewModel(file)
-            ImportConfigsetDialog(viewModel)
-            viewModel.selectFile()
-        }
+    onNodeWithTag(testTag = "configset_import_button").assertIsEnabled()
+  }
 
-        onNodeWithTag(testTag = "import_configset_name_field")
-            .assertTextContains(expectedConfigsetName)
+  @Test
+  fun `WHEN configset file selected THEN configset name autofilled with modified file name`() = runComposeUiTest {
+    setContent {
+      val viewModel = viewModel(file)
+      ImportConfigsetDialog(viewModel)
+      viewModel.selectFile()
     }
 
-    @Test
-    fun `GIVEN configset file selected WHEN clearing configset file THEN import button disabled`() = runComposeUiTest {
-        setContent {
-            val viewModel = viewModel(file)
-            ImportConfigsetDialog(viewModel)
-            viewModel.selectFile()
-        }
+    onNodeWithTag(testTag = "import_configset_name_field")
+      .assertTextContains(expectedConfigsetName)
+  }
 
-        val configsetClearButton = onNodeWithTag(testTag = "file_selector_clear_button")
-        configsetClearButton.performClick()
-
-        onNodeWithTag(testTag = "configset_import_button").assertIsNotEnabled()
+  @Test
+  fun `GIVEN configset file selected WHEN clearing configset file THEN import button disabled`() = runComposeUiTest {
+    setContent {
+      val viewModel = viewModel(file)
+      ImportConfigsetDialog(viewModel)
+      viewModel.selectFile()
     }
 
-    @Test
-    fun `GIVEN configset file selected WHEN clearing configset name THEN import button disabled`() = runComposeUiTest {
-        setContent {
-            val viewModel = viewModel(file)
-            ImportConfigsetDialog(viewModel)
-            viewModel.selectFile()
-        }
+    val configsetClearButton = onNodeWithTag(testTag = "file_selector_clear_button")
+    configsetClearButton.performClick()
 
-        val configsetTextField = onNodeWithTag(testTag = "import_configset_name_field")
-        configsetTextField.performTextClearance()
+    onNodeWithTag(testTag = "configset_import_button").assertIsNotEnabled()
+  }
 
-        onNodeWithTag(testTag = "configset_import_button").assertIsNotEnabled()
+  @Test
+  fun `GIVEN configset file selected WHEN clearing configset name THEN import button disabled`() = runComposeUiTest {
+    setContent {
+      val viewModel = viewModel(file)
+      ImportConfigsetDialog(viewModel)
+      viewModel.selectFile()
     }
 
-    private fun viewModel(file: PickedFile) = ImportConfigsetViewModel(
-        importConfigsetUseCase = SuccessImportConfigsetUseCase,
-        selectFileUseCase = SuccessSelectFileUseCase(file),
-        dispatchers = TestDispatchers(io = UnconfinedTestDispatcher()),
-    )
+    val configsetTextField = onNodeWithTag(testTag = "import_configset_name_field")
+    configsetTextField.performTextClearance()
+
+    onNodeWithTag(testTag = "configset_import_button").assertIsNotEnabled()
+  }
+
+  private fun viewModel(file: PickedFile) = ImportConfigsetViewModel(
+    importConfigsetUseCase = SuccessImportConfigsetUseCase,
+    selectFileUseCase = SuccessSelectFileUseCase(file),
+    dispatchers = TestDispatchers(io = UnconfinedTestDispatcher()),
+  )
 }
 
 private object SuccessImportConfigsetUseCase : ImportConfigsetUseCase {
-    override suspend fun invoke(
-        configsetName: String,
-        file: PickedFile,
-    ): ImportConfigsetResult = ImportConfigsetResult.Success(Configset(name = configsetName))
+  override suspend fun invoke(
+    configsetName: String,
+    file: PickedFile,
+  ): ImportConfigsetResult = ImportConfigsetResult.Success(Configset(name = configsetName))
 }
 
 private class SuccessSelectFileUseCase(private val file: PickedFile) : SelectFileUseCase {
-    override suspend fun invoke(
-        extensions: List<String>,
-        maxSize: Int?,
-    ): SelectFileResult = SelectFileResult.Success(file)
+  override suspend fun invoke(
+    extensions: List<String>,
+    maxSize: Int?,
+  ): SelectFileResult = SelectFileResult.Success(file)
 }

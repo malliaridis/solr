@@ -22,26 +22,26 @@ import org.apache.solr.ui.domain.Configset
 import org.apache.solr.ui.domain.PickedFile
 
 interface ConfigsetsRepository {
-    /**
-     * Create a new configset.
-     *
-     * @param name The name to use for the new configset.
-     * @param baseConfigset The configset to use as base.
-     * @result Result with the created configset.
-     */
-    suspend fun createConfigset(name: String, baseConfigset: String? = null): Result<Configset>
+  /**
+   * Create a new configset.
+   *
+   * @param name The name to use for the new configset.
+   * @param baseConfigset The configset to use as base.
+   * @result Result with the created configset.
+   */
+  suspend fun createConfigset(name: String, baseConfigset: String? = null): Result<Configset>
 
-    /**
-     * Import a configset from a zip file.
-     *
-     * @param name The name to use for the configset that is being imported.
-     * @param file The file to upload for the import.
-     * @result Result with the created configset.
-     */
-    suspend fun importConfigset(name: String, file: PickedFile): Result<Configset>
+  /**
+   * Import a configset from a zip file.
+   *
+   * @param name The name to use for the configset that is being imported.
+   * @param file The file to upload for the import.
+   * @result Result with the created configset.
+   */
+  suspend fun importConfigset(name: String, file: PickedFile): Result<Configset>
 
-    /**
-     * Load the available configsets.
-     */
-    suspend fun loadConfigsets(): Result<List<Configset>>
+  /**
+   * Load the available configsets.
+   */
+  suspend fun loadConfigsets(): Result<List<Configset>>
 }

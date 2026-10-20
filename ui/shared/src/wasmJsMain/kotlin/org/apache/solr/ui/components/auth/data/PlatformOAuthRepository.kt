@@ -61,102 +61,102 @@ private val logger = KotlinLogging.logger {}
 @OptIn(ExperimentalWasmJsInterop::class)
 actual class PlatformOAuthRepository actual constructor(private val httpClient: HttpClient) : OAuthRepository {
 
-    actual override suspend fun authenticate(
-        state: String,
-        verifier: String,
-        data: OAuthData,
-    ): Result<BearerTokens> {
-        val queryParams = getQueryParams()
+  actual override suspend fun authenticate(
+    state: String,
+    verifier: String,
+    data: OAuthData,
+  ): Result<BearerTokens> {
+    val queryParams = getQueryParams()
 
-        val code =
-            queryParams["code"] ?: throw InvalidResponseException("code not retrieved but required")
-        val responseState = queryParams["state"]
-            ?: throw InvalidResponseException("state not retrieved but required")
-        if (state != responseState) {
-            return Result.failure(
-                exception = InvalidResponseException(message = "Invalid state value received"),
-            )
-        }
+    val code =
+      queryParams["code"] ?: throw InvalidResponseException("code not retrieved but required")
+    val responseState = queryParams["state"]
+      ?: throw InvalidResponseException("state not retrieved but required")
+    if (state != responseState) {
+      return Result.failure(
+        exception = InvalidResponseException(message = "Invalid state value received"),
+      )
+    }
 
-        val authResponse = httpClient.submitForm(
-            url = data.tokenEndpoint.toString(),
-            formParameters = parameters {
-                append("grant_type", "authorization_code")
-                append("code", code)
-                append("redirect_uri", pickRedirectUri(data.redirectUris))
-                append("scope", data.scope)
-                append("code_verifier", verifier)
-                append("client_id", data.clientId)
-            },
-        ).body<AuthorizationResponse>()
+    val authResponse = httpClient.submitForm(
+      url = data.tokenEndpoint.toString(),
+      formParameters = parameters {
+        append("grant_type", "authorization_code")
+        append("code", code)
+        append("redirect_uri", pickRedirectUri(data.redirectUris))
+        append("scope", data.scope)
+        append("code_verifier", verifier)
+        append("client_id", data.clientId)
+      },
+    ).body<AuthorizationResponse>()
 
-        val accessToken = authResponse.accessToken
-        val refreshToken = authResponse.refreshToken
+    val accessToken = authResponse.accessToken
+    val refreshToken = authResponse.refreshToken
 
-        val response = httpClient.get("api/node/system") {
-            timeout { connectTimeoutMillis = 5000 }
-            bearerAuth(token = accessToken)
-        }
+    val response = httpClient.get("api/node/system") {
+      timeout { connectTimeoutMillis = 5000 }
+      bearerAuth(token = accessToken)
+    }
 
-        return when (response.status) {
-            HttpStatusCode.OK -> Result.success(BearerTokens(accessToken, refreshToken))
+    return when (response.status) {
+      HttpStatusCode.OK -> Result.success(BearerTokens(accessToken, refreshToken))
 
-            HttpStatusCode.Unauthorized -> {
-                Result.failure(UnauthorizedException(message = "Invalid Credentials"))
+      HttpStatusCode.Unauthorized -> {
+        Result.failure(UnauthorizedException(message = "Invalid Credentials"))
+      }
+
+      else -> Result.failure(UnknownResponseException(response))
+    }
+  }
+
+  /**
+   * Retrieves the query params from the current page.
+   */
+  private suspend fun getQueryParams(): Map<String, String> {
+    return suspendCancellableCoroutine { continuation ->
+      window.addEventListener("message", { event ->
+        event as MessageEvent
+        if (event.origin != window.origin) return@addEventListener // security check
+
+        val params = event.data?.unsafeCast<JsString>().toString()
+          .substring(1) // remove leading ?
+          .split("&") // split params
+          .mapNotNull { param ->
+            // Map params key-value pairs
+            val parts = param.split("=")
+            if (parts.size == 2) {
+              parts[0] to parts[1]
+            } else {
+              null
             }
+          }.toMap()
 
-            else -> Result.failure(UnknownResponseException(response))
-        }
+        continuation.resumeWith(Result.success(params))
+      })
     }
+  }
 
-    /**
-     * Retrieves the query params from the current page.
-     */
-    private suspend fun getQueryParams(): Map<String, String> {
-        return suspendCancellableCoroutine { continuation ->
-            window.addEventListener("message", { event ->
-                event as MessageEvent
-                if (event.origin != window.origin) return@addEventListener // security check
-
-                val params = event.data?.unsafeCast<JsString>().toString()
-                    .substring(1) // remove leading ?
-                    .split("&") // split params
-                    .mapNotNull { param ->
-                        // Map params key-value pairs
-                        val parts = param.split("=")
-                        if (parts.size == 2) {
-                            parts[0] to parts[1]
-                        } else {
-                            null
-                        }
-                    }.toMap()
-
-                continuation.resumeWith(Result.success(params))
-            })
-        }
+  /**
+   * Picks a redirect URI based on provided redirect URIs and some criteria.
+   *
+   * The current criteria requires the redirect URI to end with "callback" (last path segment),
+   * and to be of the same origin. If not all criteria are met for any of the provided
+   * [redirectUris], a fallback URI is used.
+   *
+   * @param redirectUris A list of redirect URIs to try to use.
+   * @return One of the [redirectUris] that match the criteria, or a fallback URI.
+   */
+  private fun pickRedirectUri(redirectUris: List<Url>): String = redirectUris.find {
+    // We have in the Main.kt for web a handler that looks up for the last path segment
+    // to send a postMessage, so that it can be captured here
+    it.rawSegments.last() == "callback" &&
+      // Add also current window's origin as filter
+      it.toString().contains(window.location.origin)
+  }?.toString() ?: run {
+    // fallback to default URI and log non-matching redirect URIs
+    logger.warn {
+      "No matching redirect URI found that is of the same origin and ends with callback"
     }
-
-    /**
-     * Picks a redirect URI based on provided redirect URIs and some criteria.
-     *
-     * The current criteria requires the redirect URI to end with "callback" (last path segment),
-     * and to be of the same origin. If not all criteria are met for any of the provided
-     * [redirectUris], a fallback URI is used.
-     *
-     * @param redirectUris A list of redirect URIs to try to use.
-     * @return One of the [redirectUris] that match the criteria, or a fallback URI.
-     */
-    private fun pickRedirectUri(redirectUris: List<Url>): String = redirectUris.find {
-        // We have in the Main.kt for web a handler that looks up for the last path segment
-        // to send a postMessage, so that it can be captured here
-        it.rawSegments.last() == "callback" &&
-            // Add also current window's origin as filter
-            it.toString().contains(window.location.origin)
-    }?.toString() ?: run {
-        // fallback to default URI and log non-matching redirect URIs
-        logger.warn {
-            "No matching redirect URI found that is of the same origin and ends with callback"
-        }
-        getRedirectUri()
-    }
+    getRedirectUri()
+  }
 }
